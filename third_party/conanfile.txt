@@ -1,4 +1,5 @@
 [requires]
+entt/[>=3.9.0]
 imgui/[>=1.86]
 eigen/[>=3.4]
 sophus/[>=1.0.0]
