@@ -86,10 +86,11 @@ struct SceneParameters final {
   bool animation_paused{false};
 };
 
-// Global variables. This sucks, but as GLfw is a C library, this is the best I can do to provide access to these
-// concepts from C function pointers.
-entt::registry registry{};
-entt::registry::entity_type scene_parameters{};
+class Application final {
+ public:
+  entt::registry registry{};
+  entt::registry::entity_type scene_parameters{};
+};
 
 /**
 
@@ -102,7 +103,6 @@ entt::registry::entity_type scene_parameters{};
           tooth_depth - depth of tooth
 
  **/
-
 void build_gear(const Gear& gear) {
   GLint i;
   GLfloat r0, r1, r2;
@@ -217,14 +217,6 @@ void build_gear(const Gear& gear) {
   glEnd();
 }
 
-/*
-static GLfloat view_rotx = 20.f, view_roty = 30.f, view_rotz = 0.f;
-static GLint num_objects = 3;
-static GLint gear1, gear2, gear3;
-static GLfloat rotation_angle = 0.f;
-static GLfloat z_translation = 0.f;
-*/
-
 /* OpenGL draw function & timing */
 static void component_draw(const entt::registry& registry) {
   glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -255,12 +247,12 @@ static void component_draw(const entt::registry& registry) {
 }
 
 /* update animation parameters */
-static void animate(entt::registry* registry) {
-  SceneParameters& params = registry->get<SceneParameters>(scene_parameters);
+static void animate(Application* app) {
+  SceneParameters& params = app->registry.get<SceneParameters>(app->scene_parameters);
   if (!params.animation_paused) {
     params.gear_rotation_angle = 100.f * (float)glfwGetTime();
 
-    auto gears = registry->view<Gear, Orientation>();
+    auto gears = app->registry.view<Gear, Orientation>();
     gears.each([&params](const Gear& gear, Orientation& orientation) {
       orientation.rot_z = params.gear_rotation_angle * gear.angle_coefficient + gear.phase;
     });
@@ -271,7 +263,8 @@ static void animate(entt::registry* registry) {
 void key(GLFWwindow* window, int k, int s, int action, int mods) {
   if (action != GLFW_PRESS) return;
 
-  SceneParameters& params = registry.get<SceneParameters>(scene_parameters);
+  Application& application = *static_cast<Application*>(glfwGetWindowUserPointer(window));
+  SceneParameters& params = application.registry.get<SceneParameters>(application.scene_parameters);
   switch (k) {
     case GLFW_KEY_Z:
       if (mods & GLFW_MOD_SHIFT)
@@ -413,6 +406,9 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  Application app{};
+  glfwSetWindowUserPointer(window, &app);
+
   // Set callback functions
   glfwSetFramebufferSizeCallback(window, reshape);
   glfwSetKeyCallback(window, key);
@@ -426,31 +422,31 @@ int main(int argc, char* argv[]) {
   glfwGetFramebufferSize(window, &width, &height);
   reshape(window, width, height);
 
-  scene_parameters = registry.create();
-  registry.emplace<SceneParameters>(scene_parameters, SceneParameters{{20.f, 30.f, 0.f}, {0.f, 0.f, 0.f}, 0.f});
+  app.scene_parameters = app.registry.create();
+  app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{{20.f, 30.f, 0.f}, {0.f, 0.f, 0.f}, 0.f});
 
   {
-    const auto gear1 = registry.create();
-    registry.emplace<Position>(gear1, Position{-3.f, -2.f, 0.f});
-    registry.emplace<Orientation>(gear1, Orientation{0.f, 0.f, 0.f});
-    registry.emplace<Gear>(gear1, Gear{1.f, 4.f, 1.f, 20, 0.7f, 1.f, 0.f});
-    registry.emplace<Rgba>(gear1, Rgba{{0.8f, 0.1f, 0.f, 1.f}});
+    const auto gear1 = app.registry.create();
+    app.registry.emplace<Position>(gear1, Position{-3.f, -2.f, 0.f});
+    app.registry.emplace<Orientation>(gear1, Orientation{0.f, 0.f, 0.f});
+    app.registry.emplace<Gear>(gear1, Gear{1.f, 4.f, 1.f, 20, 0.7f, 1.f, 0.f});
+    app.registry.emplace<Rgba>(gear1, Rgba{{0.8f, 0.1f, 0.f, 1.f}});
   }
 
   {
-    const auto gear2 = registry.create();
-    registry.emplace<Position>(gear2, Position{3.1f, -2.f, 0.f});
-    registry.emplace<Orientation>(gear2, Orientation{0.f, 0.f, 0.f});
-    registry.emplace<Gear>(gear2, Gear{0.5f, 2.f, 2.f, 10, 0.7f, -2.f, -9.f});
-    registry.emplace<Rgba>(gear2, Rgba{{0.f, 0.8f, 0.2f, 1.f}});
+    const auto gear2 = app.registry.create();
+    app.registry.emplace<Position>(gear2, Position{3.1f, -2.f, 0.f});
+    app.registry.emplace<Orientation>(gear2, Orientation{0.f, 0.f, 0.f});
+    app.registry.emplace<Gear>(gear2, Gear{0.5f, 2.f, 2.f, 10, 0.7f, -2.f, -9.f});
+    app.registry.emplace<Rgba>(gear2, Rgba{{0.f, 0.8f, 0.2f, 1.f}});
   }
 
   {
-    const auto gear3 = registry.create();
-    registry.emplace<Position>(gear3, Position{-3.1f, 4.2f, 0.f});
-    registry.emplace<Orientation>(gear3, Orientation{0.f, 0.f, 0.f});
-    registry.emplace<Gear>(gear3, Gear{1.3f, 2.f, 0.5f, 10, 0.7f, -2.f, -25.f});
-    registry.emplace<Rgba>(gear3, Rgba{{0.2f, 0.2f, 1.f, 1.f}});
+    const auto gear3 = app.registry.create();
+    app.registry.emplace<Position>(gear3, Position{-3.1f, 4.2f, 0.f});
+    app.registry.emplace<Orientation>(gear3, Orientation{0.f, 0.f, 0.f});
+    app.registry.emplace<Gear>(gear3, Gear{1.3f, 2.f, 0.5f, 10, 0.7f, -2.f, -25.f});
+    app.registry.emplace<Rgba>(gear3, Rgba{{0.2f, 0.2f, 1.f, 1.f}});
   }
 
   // Setup Dear ImGui context
@@ -469,28 +465,28 @@ int main(int argc, char* argv[]) {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(determine_glsl_version());
 
-  component_init(&registry);
+  component_init(&app.registry);
 
   // Main loop
   while (!glfwWindowShouldClose(window)) {
-    component_draw(registry);
-    gui_draw(registry);
+    component_draw(app.registry);
+    gui_draw(app.registry);
 
     // Swap buffers
     glfwSwapBuffers(window);
     glfwPollEvents();
 
     // Update animation
-    animate(&registry);
+    animate(&app);
   }
+
+  // Cleanup and shutdown.
 
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
 
-  // Terminate GLFW
   glfwTerminate();
 
-  // Exit program
   exit(EXIT_SUCCESS);
 }
