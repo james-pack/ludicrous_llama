@@ -1,0 +1,15 @@
+bazel-ludicrous_llama
+bazel-bin
+bazel-out
+bazel-testlogs
+
+.#BUILD.bazel
+.#WORKSPACE
+
+*~
+
+conan.lock
+conanbuildinfo.txt
+conaninfo.txt
+dependencies.bzl
+graph_info.json

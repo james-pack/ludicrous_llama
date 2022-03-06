@@ -1,0 +1,20 @@
+licenses(["notice"])
+
+cc_library(
+    name = "eigen",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@conancenter_eigen//:eigen",
+    ],
+)
+
+cc_test(
+    name = "eigen_test",
+    srcs = [
+        "eigen_test.cc",
+    ],
+    deps = [
+        ":eigen",
+        "//third_party/gtest",
+    ],
+)

@@ -1,0 +1,135 @@
+# Default settings.
+build --define=allow_oversize_protos=true
+build --enable_platform_specific_config
+
+# Settings for different C++ dialects
+build:c++17 --cxxopt=-std=c++17
+build:c++17_windows --cxxopt=/std:c++17
+
+build:c++20 --cxxopt=-std=c++20
+build:c++20_windows --cxxopt=/std:c++20
+
+build:c++2a --cxxopt=-std=c++2a
+build:c++2a_windows --cxxopt=/std:c++latest
+
+# Allow builds using libc++ as a linker library
+build:libc++ --action_env=CC
+build:libc++ --action_env=CXX
+build:libc++ --action_env=CXXFLAGS=-stdlib=libc++
+build:libc++ --action_env=PATH
+build:libc++ --define force_libcpp=enabled
+build:libc++ --linkopt -fuse-ld=lld
+build:libc++ --cxxopt=-stdlib=libc++
+
+# Sets the default Apple platform to macOS.
+build:macos --apple_platform_type=macos
+
+# gRPC on MacOS requires this #define
+build:macos --copt=-DGRPC_BAZEL_BUILD
+
+# Settings for MacOS on ARM CPUs.
+build:macos_arm64 --cpu=darwin_arm64
+
+# Make sure to include as little of windows.h as possible
+build:windows --copt=-DWIN32_LEAN_AND_MEAN
+build:windows --host_copt=-DWIN32_LEAN_AND_MEAN
+build:windows --copt=-DNOGDI
+build:windows --host_copt=-DNOGDI
+build:windows --cxxopt=/Zc:__cplusplus
+
+# MSVC (Windows): Standards-conformant preprocessor mode
+# See https://docs.microsoft.com/en-us/cpp/preprocessor/preprocessor-experimental-overview
+build:windows --copt=/Zc:preprocessor
+build:windows --host_copt=/Zc:preprocessor
+
+# Misc build options we need for windows.
+build:windows --linkopt=/DEBUG
+build:windows --host_linkopt=/DEBUG
+build:windows --linkopt=/OPT:REF
+build:windows --host_linkopt=/OPT:REF
+build:windows --linkopt=/OPT:ICF
+build:windows --host_linkopt=/OPT:ICF
+
+# Verbose failure logs when something goes wrong
+build:windows --verbose_failures
+
+# Work around potential issues with large command lines on windows.
+# See: https://github.com/bazelbuild/bazel/issues/5163
+build:windows --features=compiler_param_file
+
+# On windows, we never cross compile
+build:windows --distinct_host_configuration=false
+# On linux, don't cross compile by default
+build:linux --distinct_host_configuration=false
+
+# Do not risk cache corruption. See:
+# https://github.com/bazelbuild/bazel/issues/3360
+build:linux --experimental_guard_against_concurrent_changes
+
+# Configure short or long logs
+build:short_logs --output_filter=DONT_MATCH_ANYTHING
+build:verbose_logs --output_filter=
+
+# Instruction set optimizations
+# TODO(james): Create a feature in toolchains for avx/avx2 to
+#   avoid having to define linux/win separately.
+build:avx_linux --copt=-mavx
+build:avx_linux --host_copt=-mavx
+build:avx2_linux --copt=-mavx2
+build:native_arch_linux --copt=-march=native
+build:avx_windows --copt=/arch:AVX
+build:avx2_windows --copt=/arch:AVX2
+
+# Config-specific options should come above this line.
+
+# Load rc file with user-specific options.
+try-import %workspace%/.bazelrc.user
+
+# Here are bazelrc configs for release builds
+build:release_base --distinct_host_configuration=false
+test:release_base --test_size_filters=small,medium
+
+build:release_cpu_linux --config=release_base
+build:release_cpu_linux --config=avx2_linux
+test:release_cpu_linux --test_env=LD_LIBRARY_PATH
+
+build:release_cpu_macos --config=release_base
+build:release_cpu_macos --config=avx2_linux
+
+build:release_cpu_windows --config=release_base
+build:release_cpu_windows --config=avx2_windows
+build:release_cpu_windows --define=no_tensorflow_py_deps=true
+# First available in VS 16.4. Speeds Windows compile times by a lot. See
+# https://groups.google.com/a/tensorflow.org/d/topic/build/SsW98Eo7l3o/discussion
+build:release_cpu_windows --copt=/d2ReducedOptimizeHugeFunctions --host_copt=/d2ReducedOptimizeHugeFunctions
+
+# Address sanitizer
+# CC=clang bazel build --config asan
+build:asan --strip=never
+build:asan --copt -fsanitize=address
+build:asan --copt -DADDRESS_SANITIZER
+build:asan --copt -g
+build:asan --copt -O3
+build:asan --copt -fno-omit-frame-pointer
+build:asan --linkopt -fsanitize=address
+
+# Memory sanitizer
+# CC=clang bazel build --config msan
+build:msan --strip=never
+build:msan --copt -fsanitize=memory
+build:msan --copt -DMEMORY_SANITIZER
+build:msan --copt -g
+build:msan --copt -O3
+build:msan --copt -fno-omit-frame-pointer
+build:msan --linkopt -fsanitize=memory
+
+# Undefined Behavior Sanitizer
+# CC=clang bazel build --config ubsan
+build:ubsan --strip=never
+build:ubsan --copt -fsanitize=undefined
+build:ubsan --copt -DUNDEFINED_BEHAVIOR_SANITIZER
+build:ubsan --copt -g
+build:ubsan --copt -O3
+build:ubsan --copt -fno-omit-frame-pointer
+build:ubsan --linkopt -fsanitize=undefined
+build:ubsan --linkopt -lubsan

@@ -1,0 +1,9 @@
+cc_test(
+    name = "absl_test",
+    srcs = ["absl_test.cc"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//third_party/gtest",
+        "@com_google_absl//absl/container:flat_hash_set",
+    ],
+)

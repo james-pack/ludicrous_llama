@@ -1,0 +1,9 @@
+[requires]
+imgui/[>=1.86]
+eigen/[>=3.4]
+sophus/[>=1.0.0]
+glfw/[>=3.3.6]
+zlib/[>=1.2.11]
+
+[generators]
+BazelDeps
