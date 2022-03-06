@@ -1,0 +1,7 @@
+cc_library(
+    name = "entt",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@conancenter_entt//:entt",
+    ],
+)
