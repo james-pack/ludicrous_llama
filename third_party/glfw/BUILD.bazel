@@ -1,0 +1,19 @@
+cc_library(
+    name = "glfw",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@conancenter_glfw//:glfw",
+    ],
+)
+
+cc_binary(
+    name = "gears",
+    srcs = [
+        "gears.cc",
+    ],
+    deps = [
+        ":glfw",
+        "//third_party/glad",
+        "//third_party/xorg",
+    ],
+)
