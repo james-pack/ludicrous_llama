@@ -1,0 +1,8 @@
+cc_library(
+    name = "xorg",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@conancenter_xorg//:xorg",
+    ],
+
+)
