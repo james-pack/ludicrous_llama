@@ -13,6 +13,7 @@ cc_binary(
     ],
     deps = [
         ":glfw",
+        "//third_party/entt",
         "//third_party/glad",
         "//third_party/xorg",
     ],
