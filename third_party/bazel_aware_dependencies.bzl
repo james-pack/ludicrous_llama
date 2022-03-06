@@ -70,3 +70,14 @@ def load_bazel_dependencies():
                 "copy scripts\\pnglibconf.h.prebuilt pnglibconf.h",
             ],
         )
+
+    if not native.existing_rule("com_github_ocornut_imgui"):
+        http_archive(
+            name = "com_github_ocornut_imgui",
+            build_file = "//third_party/imgui:imgui.BUILD",
+            #sha256 = "505e70834d35383537b6491e7ae8641f1a4bed1876dbfe361201fc80868d88ca",
+            strip_prefix = "imgui-1.87",
+            urls = [
+                "https://github.com/ocornut/imgui/archive/v1.87.tar.gz",
+            ],
+        )

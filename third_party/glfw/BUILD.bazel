@@ -15,6 +15,7 @@ cc_binary(
         ":glfw",
         "//third_party/entt",
         "//third_party/glad",
+        "//third_party/imgui",
         "//third_party/xorg",
     ],
 )
