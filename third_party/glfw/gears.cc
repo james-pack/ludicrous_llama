@@ -179,6 +179,7 @@ void build_gear(const Gear& gear) {
 
   glNormal3f(0.f, 0.f, 1.f);
 
+  // TODO(james): Rework as triangles as quads are being deprecated.
   /* draw front face */
   glBegin(GL_QUAD_STRIP);
   for (i = 0; i <= gear.teeth; i++) {
