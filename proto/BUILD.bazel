@@ -1,0 +1,31 @@
+cc_library(
+    name = "proto",
+    hdrs = [
+        "proto_utils.h",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_test(
+    name = "proto_utils_test",
+    srcs = ["proto_utils_test.cc"],
+    deps = [
+        ":proto",
+        ":simple_cc_proto",
+        "//testing",
+        "//third_party/glog",
+        "//third_party/gtest",
+    ],
+)
+
+cc_proto_library(
+    name = "simple_cc_proto",
+    testonly = True,
+    deps = [":simple_proto"],
+)
+
+proto_library(
+    name = "simple_proto",
+    testonly = True,
+    srcs = ["simple.proto"],
+)
