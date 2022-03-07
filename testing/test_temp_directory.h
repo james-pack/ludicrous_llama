@@ -5,7 +5,7 @@
 
 #include "gtest/gtest.h"
 
-namespace pack::iris::testing {
+namespace pack::testing {
 
 class TestTempDirectory : public ::testing::Environment {
  private:
@@ -32,4 +32,4 @@ class TestTempDirectory : public ::testing::Environment {
   bool requires_removal_{false};
 };
 
-}  // namespace pack::iris::testing
+}  // namespace pack::testing

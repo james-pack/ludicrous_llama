@@ -11,7 +11,7 @@
 
 namespace fs = std::filesystem;
 
-namespace pack::iris::testing {
+namespace pack::testing {
 
 TestTempDirectory* TestTempDirectory::instance_{nullptr};
 
@@ -58,4 +58,4 @@ fs::path TestTempDirectory::createTestSubdirectory(std::string_view prefix, std:
   return subdir;
 }
 
-}  // namespace pack::iris::testing
+}  // namespace pack::testing

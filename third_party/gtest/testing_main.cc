@@ -13,7 +13,7 @@ void setup() {
   testing::InitGoogleTest();
   google::InitGoogleLogging();
   google::InstallFailureSignalHandler();
-  ::testing::AddGlobalTestEnvironment(pack::iris::testing::TestTempDirectory::getInstance());
+  ::testing::AddGlobalTestEnvironment(pack::testing::TestTempDirectory::getInstance());
 }
 
 void loop() { RUN_ALL_TESTS(); }
@@ -37,7 +37,7 @@ GTEST_API_ int main(int argc, char **argv) {
 
   google::InstallFailureSignalHandler();
 
-  ::testing::AddGlobalTestEnvironment(pack::iris::testing::TestTempDirectory::getInstance());
+  ::testing::AddGlobalTestEnvironment(pack::testing::TestTempDirectory::getInstance());
 
   return RUN_ALL_TESTS();
 }
