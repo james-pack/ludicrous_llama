@@ -47,16 +47,6 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-struct Gear final {
-  GLfloat inner_radius;
-  GLfloat outer_radius;
-  GLfloat width;
-  GLint teeth;
-  GLfloat tooth_depth;
-  GLfloat angle_coefficient;
-  GLfloat phase;
-};
-
 struct Position final {
   GLfloat x{0.f};
   GLfloat y{0.f};
@@ -70,9 +60,74 @@ struct Orientation final {
   GLfloat rot_z{0.f};
 };
 
-struct Rgba final {
+class Material final {
+ public:
   // Values should be on [0, 1].
-  GLfloat color[4]{0.f, 0.f, 0.f, 1.f};
+  GLfloat ambient[4] = {0.2f, 0.2f, 0.2f, 1.f};
+  GLfloat diffuse[4] = {0.4f, 0.4f, 0.4f, 1.f};
+  GLfloat specular[4] = {0.f, 0.f, 0.f, 1.f};
+
+  // For compatibility with OpenGL, shininess is on [0, 100].
+  GLfloat shininess[1] = {0.f};
+
+  void setAmbient(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f) {
+    ambient[0] = red;
+    ambient[1] = green;
+    ambient[2] = blue;
+    ambient[3] = alpha;
+  }
+
+  void setDiffuse(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f) {
+    diffuse[0] = red;
+    diffuse[1] = green;
+    diffuse[2] = blue;
+    diffuse[3] = alpha;
+  }
+
+  void setSpecular(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f) {
+    specular[0] = red;
+    specular[1] = green;
+    specular[2] = blue;
+    specular[3] = alpha;
+  }
+
+  void setShininess(GLfloat value) { shininess[0] = value; }
+
+  static Material createFromColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f) {
+    Material result{};
+    result.setAmbient(red, green, blue, alpha);
+    result.setDiffuse(red, green, blue, alpha);
+    return result;
+  }
+};
+
+struct Gear final {
+  GLfloat inner_radius;
+  GLfloat outer_radius;
+  GLfloat width;
+  GLint teeth;
+  GLfloat tooth_depth;
+  GLfloat angle_coefficient;
+  GLfloat phase;
+};
+
+struct ComponentVisibility final {
+  // Visibility of the component as controlled by one or more UI elements, not the intrinsic alpha channel of the
+  // component's color. That alpha channel should be multiplied by this visibility to determine the actual opacity.
+  // Similiar approaches should be taken for more complex material modelling.
+  GLfloat visibility{1.f};
+  // Visibility switch for the component. Note that this switch allows the visibility above to maintained.
+  GLboolean is_visible{true};
+};
+
+struct PaneLayout final {
+  // Offset wrt parent layout.
+  GLint lower_left_x{0};
+  GLint lower_left_y{0};
+
+  // -1 means use full available size in that direction.
+  GLint width{-1};
+  GLint height{-1};
 };
 
 struct GLId final {
@@ -88,8 +143,13 @@ struct SceneParameters final {
 
 class Application final {
  public:
+  Application(ImGuiIO& io_) : io(io_) {}
   entt::registry registry{};
+  ImGuiIO& io;
+
+  // TODO(james): Sloppy. Move to ECS.
   entt::registry::entity_type scene_parameters{};
+  PaneLayout viewport{};
 };
 
 /**
@@ -299,42 +359,66 @@ void key(GLFWwindow* window, int k, int s, int action, int mods) {
   }
 }
 
-/* new window size */
+// Window resize, possibly due to monitor resolution change.
 void reshape(GLFWwindow* window, int width, int height) {
-  GLfloat h = (GLfloat)height / (GLfloat)width;
-  GLfloat xmax, znear, zfar;
+  Application& application = *static_cast<Application*>(glfwGetWindowUserPointer(window));
+  application.viewport.width = width;
+  application.viewport.height = height;
 
-  znear = 5.0f;
-  zfar = 50.0f;
-  xmax = znear * 0.5f;
+  // TODO(james): Modify to manage a component pane(s) separately from UI panes.
+  GLfloat aspect = (GLfloat)height / (GLfloat)width;
+  GLfloat znear = 2.f;
+  GLfloat zfar = 50.f;
+  GLfloat xmax = znear / 2.f;
 
-  glViewport(0, 0, (GLint)width, (GLint)height);
+  glViewport(application.viewport.lower_left_x, application.viewport.lower_left_y, application.viewport.width,
+             application.viewport.height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glFrustum(-xmax, xmax, -xmax * h, xmax * h, znear, zfar);
+  glFrustum(-xmax, xmax, -xmax * aspect, xmax * aspect, znear, zfar);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glTranslatef(0.0, 0.0, -20.0);
+  glTranslatef(0.0, 0.0, (znear - zfar) / 2.f);
 }
 
 /* program & OpenGL initialization */
 static void component_init(entt::registry* registry) {
-  static GLfloat pos[4] = {5.f, 5.f, 10.f, 0.f};
-
-  glLightfv(GL_LIGHT0, GL_POSITION, pos);
-  glEnable(GL_CULL_FACE);
+  constexpr int NUM_LIGHTS{4};
+  const GLfloat light_positions[][NUM_LIGHTS] = {
+      {10.f, 0.f, 0.f, 0.f},
+      {0.f, 10.f, 0.f, 0.f},
+      {0.f, 0.f, 10.f, 0.f},
+      {0.f, 0.f, 0.f, 10.f},
+  };
+  const GLfloat light_diffuse_color[][NUM_LIGHTS] = {
+      {0.4f, 0.4f, 0.4f, 0.4f},
+      {0.4f, 0.4f, 0.4f, 0.4f},
+      {0.4f, 0.4f, 0.4f, 0.4f},
+      {0.4f, 0.4f, 0.4f, 0.4f},
+  };
+  for (int i = 0; i < NUM_LIGHTS; ++i) {
+    glLightfv(GL_LIGHT0 + i, GL_POSITION, light_positions[i]);
+    glLightfv(GL_LIGHT0 + i, GL_DIFFUSE, light_diffuse_color[i]);
+    glEnable(GL_LIGHT0 + i);
+  }
   glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
+
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+  glCullFace(GL_BACK);
+  glFrontFace(GL_CCW);
 
   // Make the gears.
-  auto gears = registry->view<Gear, Orientation, Position, Rgba>();
+  auto gears = registry->view<Gear, Orientation, Position, Material>();
   gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
-                        const Orientation& orientation, const Position& position, const Rgba& material) {
+                        const Orientation& orientation, const Position& position, const Material& material) {
     GLId id;
     id.gl_id = glGenLists(1);
     glNewList(id.gl_id, GL_COMPILE);
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, material.color);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, material.ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, material.diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, material.specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, material.shininess);
     build_gear(gear_parameters);
     glEndList();
     registry->emplace<GLId>(entity, id);
@@ -369,7 +453,7 @@ const char* determine_glsl_version() {
   return glsl_version;
 }
 
-void gui_draw(const entt::registry& /*registry*/) {
+void gui_draw(const entt::registry& registry) {
   // Start the Dear ImGui frame
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
@@ -406,14 +490,13 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  Application app{};
+  Application app{ImGui::GetIO()};
+  app.viewport = {0, 0, width, height};
   glfwSetWindowUserPointer(window, &app);
 
   // Set callback functions
   glfwSetFramebufferSizeCallback(window, reshape);
   glfwSetKeyCallback(window, key);
-
-  // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   glfwMakeContextCurrent(window);
   gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -430,7 +513,10 @@ int main(int argc, char* argv[]) {
     app.registry.emplace<Position>(gear1, Position{-3.f, -2.f, 0.f});
     app.registry.emplace<Orientation>(gear1, Orientation{0.f, 0.f, 0.f});
     app.registry.emplace<Gear>(gear1, Gear{1.f, 4.f, 1.f, 20, 0.7f, 1.f, 0.f});
-    app.registry.emplace<Rgba>(gear1, Rgba{{0.8f, 0.1f, 0.f, 1.f}});
+    Material material = Material::createFromColor(0.8f, 0.1f, 0.f);
+    material.setShininess(75.f);
+    material.setSpecular(0.f, 0.9f, 0.25f);
+    app.registry.emplace<Material>(gear1, material);
   }
 
   {
@@ -438,7 +524,10 @@ int main(int argc, char* argv[]) {
     app.registry.emplace<Position>(gear2, Position{3.1f, -2.f, 0.f});
     app.registry.emplace<Orientation>(gear2, Orientation{0.f, 0.f, 0.f});
     app.registry.emplace<Gear>(gear2, Gear{0.5f, 2.f, 2.f, 10, 0.7f, -2.f, -9.f});
-    app.registry.emplace<Rgba>(gear2, Rgba{{0.f, 0.8f, 0.2f, 1.f}});
+    Material material = Material::createFromColor(0.f, 0.8f, 0.2f);
+    material.setShininess(75.f);
+    material.setSpecular(0.f, 0.9f, 0.25f);
+    app.registry.emplace<Material>(gear2, material);
   }
 
   {
@@ -446,7 +535,10 @@ int main(int argc, char* argv[]) {
     app.registry.emplace<Position>(gear3, Position{-3.1f, 4.2f, 0.f});
     app.registry.emplace<Orientation>(gear3, Orientation{0.f, 0.f, 0.f});
     app.registry.emplace<Gear>(gear3, Gear{1.3f, 2.f, 0.5f, 10, 0.7f, -2.f, -25.f});
-    app.registry.emplace<Rgba>(gear3, Rgba{{0.2f, 0.2f, 1.f, 1.f}});
+    Material material = Material::createFromColor(0.2f, 0.2f, 1.f);
+    material.setShininess(80.f);
+    material.setSpecular(0.f, 0.4f, 0.9f);
+    app.registry.emplace<Material>(gear3, material);
   }
 
   // Setup Dear ImGui context
@@ -469,6 +561,9 @@ int main(int argc, char* argv[]) {
 
   // Main loop
   while (!glfwWindowShouldClose(window)) {
+    // Since the component_draw overwrites the full window, we have to draw the gui afterwards.
+    // If we can limit the component drawing to a particular region, then we may be able to optimize GUI redraws only if
+    // changed/dirty.
     component_draw(app.registry);
     gui_draw(app.registry);
 
