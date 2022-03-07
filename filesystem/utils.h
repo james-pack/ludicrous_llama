@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string_view>
 
-namespace pack::iris::filesystem {
+namespace pack::filesystem {
 
 /**
  * Generate a random path under base_dir. The filename of the path will start with prefix and end with suffix. The path
@@ -13,4 +13,4 @@ namespace pack::iris::filesystem {
 std::filesystem::path generate_random_path(const std::filesystem::path& base_dir, std::string_view prefix = "",
                                            std::string_view suffix = "");
 
-}  // namespace pack::iris::filesystem
+}  // namespace pack::filesystem

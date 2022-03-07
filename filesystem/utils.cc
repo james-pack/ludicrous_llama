@@ -6,7 +6,7 @@
 #include <string>
 #include <string_view>
 
-namespace pack::iris::filesystem {
+namespace pack::filesystem {
 
 namespace fs = std::filesystem;
 
@@ -38,4 +38,4 @@ fs::path generate_random_path(const fs::path& base_dir, std::string_view prefix,
   return base_dir / filename;
 }
 
-}  // namespace pack::iris::filesystem
+}  // namespace pack::filesystem
