@@ -1,0 +1,20 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+cc_library(
+    name = "color",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":color_cc_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "color_cc_proto",
+    deps = [":color_proto"],
+)
+
+proto_library(
+    name = "color_proto",
+    srcs = ["color.proto"],
+    visibility = ["//visibility:public"],
+)

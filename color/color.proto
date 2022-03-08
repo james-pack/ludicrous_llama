@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package pack.color;
+
+message Rgba {
+  // Values should be on [0, 1].
+  float red = 1;
+  float green = 2;
+  float blue = 3;
+  float alpha = 4;
+}
+
+message Material {
+  Rgba ambient = 1;
+  Rgba diffuse = 2;
+  Rgba specular = 3;
+
+  // For compatibility with OpenGL, shininess is on [0, 100].
+  float shininess = 4;
+}

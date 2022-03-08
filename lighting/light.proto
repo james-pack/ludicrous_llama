@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "color/color.proto";
+
+package pack.lighting;
+
+message Light {
+  int32 light_num = 1;
+  pack.color.Rgba ambient = 2;
+  pack.color.Rgba diffuse = 3;
+  pack.color.Rgba specular = 4;
+  bool enabled = 5;
+}
+
+message LightingConfiguration {
+  string name = 1;
+  repeated Light lights = 2;
+}
