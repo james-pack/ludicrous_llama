@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package pack.gear;
+
+message Gear {
+  string name = 1;
+  float inner_radius = 2;
+  float outer_radius = 3;
+  float width = 4;
+  int32 teeth = 5;
+  float tooth_depth = 6;
+  float angle_coefficient = 7;
+  float phase = 8;
+}
