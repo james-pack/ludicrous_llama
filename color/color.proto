@@ -3,18 +3,38 @@ syntax = "proto3";
 package pack.color;
 
 message Rgba {
-  // Values should be on [0, 1].
-  float red = 1;
-  float green = 2;
-  float blue = 3;
-  float alpha = 4;
-}
-
-message Material {
-  Rgba ambient = 1;
-  Rgba diffuse = 2;
-  Rgba specular = 3;
-
-  // For compatibility with OpenGL, shininess is on [0, 100].
-  float shininess = 4;
+  message AsFloats {
+    // Values should be on [0., 1.].
+    float red = 1;
+    float green = 2;
+    float blue = 3;
+    float alpha = 4;
+  }
+  message AsInts {
+    // Values should be on [0, 255].
+    int32 red = 1;
+    int32 green = 2;
+    int32 blue = 3;
+    int32 alpha = 4;
+  }
+  message AsUint32s {
+    // Values should be on [0, std::numeric_limits<uint32_t>::max()].
+    fixed32 red = 1;
+    fixed32 green = 2;
+    fixed32 blue = 3;
+    fixed32 alpha = 4;
+  }
+  message Packed {
+    // The color is packed as four 32-bit signed integers. The exact encoding is currently platform-dependent. This type
+    // matches the memory layout that OpenGL wants for its colors in its glMaterialiv() -- int32[4]. That function, and
+    // other material creation functions, only take colors by reference; this message layout is designed to own the
+    // memory for the color in order to make it easier to create materials.
+    bytes bytes = 1;
+  }
+  oneof color_representation {
+    AsFloats float_values = 1;
+    AsInts int_values = 2;
+    AsUint32s uint32_values = 3;
+    Packed packed = 4;
+  }
 }

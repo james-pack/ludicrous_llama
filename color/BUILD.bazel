@@ -2,9 +2,16 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 
 cc_library(
     name = "color",
+    srcs = [
+        "colors.cc",
+    ],
+    hdrs = [
+        "colors.h",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":color_cc_proto",
+        ":material_cc_proto",
     ],
 )
 
@@ -17,4 +24,27 @@ proto_library(
     name = "color_proto",
     srcs = ["color.proto"],
     visibility = ["//visibility:public"],
+)
+
+cc_proto_library(
+    name = "material_cc_proto",
+    deps = [":material_proto"],
+)
+
+proto_library(
+    name = "material_proto",
+    srcs = ["material.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":color_proto",
+    ],
+)
+
+cc_test(
+    name = "colors_test",
+    srcs = ["colors_test.cc"],
+    deps = [
+        ":color",
+        "//third_party/gtest",
+    ],
 )
