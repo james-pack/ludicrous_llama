@@ -43,9 +43,12 @@
 #include <iostream>
 
 #include "entt/entity/registry.hpp"
+#include "gear/gear.pb.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+
+namespace pack::gear {
 
 struct Position final {
   GLfloat x{0.f};
@@ -99,17 +102,6 @@ class Material final {
     result.setDiffuse(red, green, blue, alpha);
     return result;
   }
-};
-
-struct Gear final {
-  std::string name;
-  GLfloat inner_radius;
-  GLfloat outer_radius;
-  GLfloat width;
-  GLint teeth;
-  GLfloat tooth_depth;
-  GLfloat angle_coefficient;
-  GLfloat phase;
 };
 
 struct ComponentVisibility final {
@@ -170,11 +162,11 @@ void build_gear(const Gear& gear) {
   GLfloat angle, da;
   GLfloat u, v, len;
 
-  r0 = gear.inner_radius;
-  r1 = gear.outer_radius - gear.tooth_depth / 2.f;
-  r2 = gear.outer_radius + gear.tooth_depth / 2.f;
+  r0 = gear.inner_radius();
+  r1 = gear.outer_radius() - gear.tooth_depth() / 2.f;
+  r2 = gear.outer_radius() + gear.tooth_depth() / 2.f;
 
-  da = 2.f * (float)M_PI / gear.teeth / 4.f;
+  da = 2.f * (float)M_PI / gear.teeth() / 4.f;
 
   glShadeModel(GL_FLAT);
 
@@ -183,27 +175,27 @@ void build_gear(const Gear& gear) {
   // TODO(james): Rework as triangles as quads are being deprecated.
   /* draw front face */
   glBegin(GL_QUAD_STRIP);
-  for (i = 0; i <= gear.teeth; i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth;
-    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), gear.width * 0.5f);
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), gear.width * 0.5f);
-    if (i < gear.teeth) {
-      glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), gear.width * 0.5f);
-      glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), gear.width * 0.5f);
+  for (i = 0; i <= gear.teeth(); i++) {
+    angle = i * 2.f * (float)M_PI / gear.teeth();
+    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), gear.width() * 0.5f);
+    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), gear.width() * 0.5f);
+    if (i < gear.teeth()) {
+      glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), gear.width() * 0.5f);
+      glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), gear.width() * 0.5f);
     }
   }
   glEnd();
 
   /* draw front sides of teeth */
   glBegin(GL_QUADS);
-  da = 2.f * (float)M_PI / gear.teeth / 4.f;
-  for (i = 0; i < gear.teeth; i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth;
+  da = 2.f * (float)M_PI / gear.teeth() / 4.f;
+  for (i = 0; i < gear.teeth(); i++) {
+    angle = i * 2.f * (float)M_PI / gear.teeth();
 
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), gear.width * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), gear.width * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), gear.width * 0.5f);
-    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), gear.width * 0.5f);
+    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), gear.width() * 0.5f);
+    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), gear.width() * 0.5f);
+    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), gear.width() * 0.5f);
+    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), gear.width() * 0.5f);
   }
   glEnd();
 
@@ -211,58 +203,58 @@ void build_gear(const Gear& gear) {
 
   /* draw back face */
   glBegin(GL_QUAD_STRIP);
-  for (i = 0; i <= gear.teeth; i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth;
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -gear.width * 0.5f);
-    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -gear.width * 0.5f);
-    if (i < gear.teeth) {
-      glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -gear.width * 0.5f);
-      glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -gear.width * 0.5f);
+  for (i = 0; i <= gear.teeth(); i++) {
+    angle = i * 2.f * (float)M_PI / gear.teeth();
+    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -gear.width() * 0.5f);
+    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -gear.width() * 0.5f);
+    if (i < gear.teeth()) {
+      glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -gear.width() * 0.5f);
+      glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -gear.width() * 0.5f);
     }
   }
   glEnd();
 
   /* draw back sides of teeth */
   glBegin(GL_QUADS);
-  da = 2.f * (float)M_PI / gear.teeth / 4.f;
-  for (i = 0; i < gear.teeth; i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth;
+  da = 2.f * (float)M_PI / gear.teeth() / 4.f;
+  for (i = 0; i < gear.teeth(); i++) {
+    angle = i * 2.f * (float)M_PI / gear.teeth();
 
-    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -gear.width * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), -gear.width * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), -gear.width * 0.5f);
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -gear.width * 0.5f);
+    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -gear.width() * 0.5f);
+    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), -gear.width() * 0.5f);
+    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), -gear.width() * 0.5f);
+    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -gear.width() * 0.5f);
   }
   glEnd();
 
   /* draw outward faces of teeth */
   glBegin(GL_QUAD_STRIP);
-  for (i = 0; i < gear.teeth; i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth;
+  for (i = 0; i < gear.teeth(); i++) {
+    angle = i * 2.f * (float)M_PI / gear.teeth();
 
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), gear.width * 0.5f);
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -gear.width * 0.5f);
+    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), gear.width() * 0.5f);
+    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -gear.width() * 0.5f);
     u = r2 * (float)cos(angle + da) - r1 * (float)cos(angle);
     v = r2 * (float)sin(angle + da) - r1 * (float)sin(angle);
     len = (float)sqrt(u * u + v * v);
     u /= len;
     v /= len;
     glNormal3f(v, -u, 0.0);
-    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), gear.width * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), -gear.width * 0.5f);
+    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), gear.width() * 0.5f);
+    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), -gear.width() * 0.5f);
     glNormal3f((float)cos(angle), (float)sin(angle), 0.f);
-    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), gear.width * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), -gear.width * 0.5f);
+    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), gear.width() * 0.5f);
+    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), -gear.width() * 0.5f);
     u = r1 * (float)cos(angle + 3 * da) - r2 * (float)cos(angle + 2 * da);
     v = r1 * (float)sin(angle + 3 * da) - r2 * (float)sin(angle + 2 * da);
     glNormal3f(v, -u, 0.f);
-    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), gear.width * 0.5f);
-    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -gear.width * 0.5f);
+    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), gear.width() * 0.5f);
+    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -gear.width() * 0.5f);
     glNormal3f((float)cos(angle), (float)sin(angle), 0.f);
   }
 
-  glVertex3f(r1 * (float)cos(0), r1 * (float)sin(0), gear.width * 0.5f);
-  glVertex3f(r1 * (float)cos(0), r1 * (float)sin(0), -gear.width * 0.5f);
+  glVertex3f(r1 * (float)cos(0), r1 * (float)sin(0), gear.width() * 0.5f);
+  glVertex3f(r1 * (float)cos(0), r1 * (float)sin(0), -gear.width() * 0.5f);
 
   glEnd();
 
@@ -270,11 +262,11 @@ void build_gear(const Gear& gear) {
 
   /* draw inside radius cylinder */
   glBegin(GL_QUAD_STRIP);
-  for (i = 0; i <= gear.teeth; i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth;
+  for (i = 0; i <= gear.teeth(); i++) {
+    angle = i * 2.f * (float)M_PI / gear.teeth();
     glNormal3f(-(float)cos(angle), -(float)sin(angle), 0.f);
-    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -gear.width * 0.5f);
-    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), gear.width * 0.5f);
+    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -gear.width() * 0.5f);
+    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), gear.width() * 0.5f);
   }
   glEnd();
 }
@@ -316,7 +308,7 @@ static void animate(Application* app) {
 
     auto gears = app->registry.view<Gear, Orientation>();
     gears.each([&params](const Gear& gear, Orientation& orientation) {
-      orientation.rot_z = params.gear_rotation_angle * gear.angle_coefficient + gear.phase;
+      orientation.rot_z = params.gear_rotation_angle * gear.angle_coefficient() + gear.phase();
     });
   }
 }
@@ -410,7 +402,7 @@ static void component_init(entt::registry* registry) {
   glCullFace(GL_BACK);
   glFrontFace(GL_CCW);
 
-  // Make the gears.
+  // Draw the gears.
   auto gears = registry->view<Gear, Orientation, Position, Material>();
   gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
                         const Orientation& orientation, const Position& position, const Material& material) {
@@ -468,7 +460,11 @@ void gui_draw(const entt::registry& registry) {
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+}  // namespace pack::gear
+
 int main(int argc, char* argv[]) {
+  using namespace pack::gear;
+
   GLFWwindow* window;
   int width = 1920;
   int height = 1080;
@@ -511,10 +507,19 @@ int main(int argc, char* argv[]) {
   app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{{20.f, 30.f, 0.f}, {0.f, 0.f, 0.f}, 0.f});
 
   {
+    Gear gear{};
+    gear.set_name("Red");
+    gear.set_inner_radius(1.f);
+    gear.set_outer_radius(4.f);
+    gear.set_width(1.f);
+    gear.set_teeth(20);
+    gear.set_tooth_depth(0.7f);
+    gear.set_angle_coefficient(1.f);
+    gear.set_phase(0.f);
     const auto gear1 = app.registry.create();
     app.registry.emplace<Position>(gear1, Position{-3.f, -2.f, 0.f});
     app.registry.emplace<Orientation>(gear1, Orientation{0.f, 0.f, 0.f});
-    app.registry.emplace<Gear>(gear1, Gear{"Red", 1.f, 4.f, 1.f, 20, 0.7f, 1.f, 0.f});
+    app.registry.emplace<Gear>(gear1, gear);
     Material material = Material::createFromColor(0.8f, 0.1f, 0.f);
     material.setShininess(75.f);
     material.setSpecular(0.f, 0.9f, 0.25f);
@@ -522,10 +527,19 @@ int main(int argc, char* argv[]) {
   }
 
   {
+    Gear gear{};
+    gear.set_name("Green");
+    gear.set_inner_radius(0.5f);
+    gear.set_outer_radius(2.f);
+    gear.set_width(2.f);
+    gear.set_teeth(10);
+    gear.set_tooth_depth(0.7f);
+    gear.set_angle_coefficient(-2.f);
+    gear.set_phase(-9.f);
     const auto gear2 = app.registry.create();
     app.registry.emplace<Position>(gear2, Position{3.1f, -2.f, 0.f});
     app.registry.emplace<Orientation>(gear2, Orientation{0.f, 0.f, 0.f});
-    app.registry.emplace<Gear>(gear2, Gear{"Green", 0.5f, 2.f, 2.f, 10, 0.7f, -2.f, -9.f});
+    app.registry.emplace<Gear>(gear2, gear);
     Material material = Material::createFromColor(0.f, 0.8f, 0.2f);
     material.setShininess(75.f);
     material.setSpecular(0.f, 0.9f, 0.25f);
@@ -533,10 +547,19 @@ int main(int argc, char* argv[]) {
   }
 
   {
+    Gear gear{};
+    gear.set_name("Blue");
+    gear.set_inner_radius(0.8f);
+    gear.set_outer_radius(2.f);
+    gear.set_width(2.f);
+    gear.set_teeth(10);
+    gear.set_tooth_depth(0.7f);
+    gear.set_angle_coefficient(-2.f);
+    gear.set_phase(-25.f);
     const auto gear3 = app.registry.create();
     app.registry.emplace<Position>(gear3, Position{-3.1f, 4.2f, 0.f});
     app.registry.emplace<Orientation>(gear3, Orientation{0.f, 0.f, 0.f});
-    app.registry.emplace<Gear>(gear3, Gear{"Blue", 1.3f, 2.f, 0.5f, 10, 0.7f, -2.f, -25.f});
+    app.registry.emplace<Gear>(gear3, gear);
     Material material = Material::createFromColor(0.2f, 0.2f, 1.f);
     material.setShininess(80.f);
     material.setSpecular(0.f, 0.4f, 0.9f);
