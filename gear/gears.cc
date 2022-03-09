@@ -50,6 +50,7 @@
 #include "entt/entity/registry.hpp"
 #include "gear/gear.h"
 #include "gear/gear.pb.h"
+#include "gear/position.pb.h"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 #include "imgui.h"
@@ -61,19 +62,6 @@
 namespace pack::gear {
 
 using color::Material;
-
-struct Position final {
-  GLfloat x{0.f};
-  GLfloat y{0.f};
-  GLfloat z{0.f};
-};
-
-struct Orientation final {
-  // TODO(james): Original form from GLFW example code. Restructure as quaternions.
-  GLfloat rot_x{0.f};
-  GLfloat rot_y{0.f};
-  GLfloat rot_z{0.f};
-};
 
 struct ComponentVisibility final {
   // Visibility of the component as controlled by one or more UI elements, not the intrinsic alpha channel of the
@@ -99,7 +87,6 @@ struct GLId final {
 };
 
 struct SceneParameters final {
-  Orientation scene_orientation{};
   Position scene_position{};
   GLfloat gear_rotation_angle{0.f};
   bool animation_paused{false};
@@ -125,19 +112,19 @@ static void component_draw(const entt::registry& registry) {
 
   const auto scene_parameters = registry.view<const SceneParameters>();
   scene_parameters.each([](const auto& parameters) {
-    glRotatef(parameters.scene_orientation.rot_x, 1.0, 0.0, 0.0);
-    glRotatef(parameters.scene_orientation.rot_y, 0.0, 1.0, 0.0);
-    glRotatef(parameters.scene_orientation.rot_z, 0.0, 0.0, 1.0);
-    glTranslatef(parameters.scene_position.x, parameters.scene_position.y, parameters.scene_position.z);
+    glRotatef(parameters.scene_position.rot_x(), 1.0, 0.0, 0.0);
+    glRotatef(parameters.scene_position.rot_y(), 0.0, 1.0, 0.0);
+    glRotatef(parameters.scene_position.rot_z(), 0.0, 0.0, 1.0);
+    glTranslatef(parameters.scene_position.x(), parameters.scene_position.y(), parameters.scene_position.z());
   });
 
-  const auto gears = registry.view<GLId, Orientation, Position>();
-  gears.each([](const GLId& id, const Orientation& orientation, const Position& position) {
+  const auto gears = registry.view<GLId, Position>();
+  gears.each([](const GLId& id, const Position& position) {
     glPushMatrix();
-    glTranslatef(position.x, position.y, position.z);
-    glRotatef(orientation.rot_x, 1.0, 0.0, 0.0);
-    glRotatef(orientation.rot_y, 0.0, 1.0, 0.0);
-    glRotatef(orientation.rot_z, 0.0, 0.0, 1.0);
+    glTranslatef(position.x(), position.y(), position.z());
+    glRotatef(position.rot_x(), 1.0, 0.0, 0.0);
+    glRotatef(position.rot_y(), 0.0, 1.0, 0.0);
+    glRotatef(position.rot_z(), 0.0, 0.0, 1.0);
     glCallList(id.gl_id);
     glPopMatrix();
   });
@@ -151,9 +138,9 @@ static void animate(Application* app) {
   if (!params.animation_paused) {
     params.gear_rotation_angle = 100.f * (float)glfwGetTime();
 
-    auto gears = app->registry.view<Gear, Orientation>();
-    gears.each([&params](const Gear& gear, Orientation& orientation) {
-      orientation.rot_z = params.gear_rotation_angle * gear.angle_coefficient() + gear.phase();
+    auto gears = app->registry.view<Gear, Position>();
+    gears.each([&params](const Gear& gear, Position& position) {
+      position.set_rot_z(params.gear_rotation_angle * gear.angle_coefficient() + gear.phase());
     });
   }
 }
@@ -167,24 +154,24 @@ void key(GLFWwindow* window, int k, int s, int action, int mods) {
   switch (k) {
     case GLFW_KEY_Z:
       if (mods & GLFW_MOD_SHIFT)
-        params.scene_orientation.rot_z -= 5.0;
+        params.scene_position.set_rot_z(params.scene_position.rot_z() - 5.0);
       else
-        params.scene_orientation.rot_z += 5.0;
+        params.scene_position.set_rot_z(params.scene_position.rot_z() + 5.0);
       break;
     case GLFW_KEY_ESCAPE:
       glfwSetWindowShouldClose(window, GLFW_TRUE);
       break;
     case GLFW_KEY_UP:
-      params.scene_orientation.rot_x += 5.0;
+      params.scene_position.set_rot_x(params.scene_position.rot_x() + 5.0);
       break;
     case GLFW_KEY_DOWN:
-      params.scene_orientation.rot_x -= 5.0;
+      params.scene_position.set_rot_x(params.scene_position.rot_x() - 5.0);
       break;
     case GLFW_KEY_LEFT:
-      params.scene_orientation.rot_y += 5.0;
+      params.scene_position.set_rot_y(params.scene_position.rot_y() + 5.0);
       break;
     case GLFW_KEY_RIGHT:
-      params.scene_orientation.rot_y -= 5.0;
+      params.scene_position.set_rot_y(params.scene_position.rot_y() - 5.0);
       break;
     case GLFW_KEY_SPACE:
       if (params.animation_paused) {
@@ -248,13 +235,13 @@ static void component_init(entt::registry* registry) {
   glFrontFace(GL_CCW);
 
   // Draw the gears.
-  auto gears = registry->view<Gear, Orientation, Position>();
-  gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
-                        const Orientation& orientation, const Position& position) {
-    GLId id{};
-    id.gl_id = build_gear(gear_parameters);
-    registry->emplace<GLId>(entity, id);
-  });
+  auto gears = registry->view<Gear, Position>();
+  gears.each(
+      [registry](const entt::registry::entity_type& entity, const Gear& gear_parameters, const Position& position) {
+        GLId id{};
+        id.gl_id = build_gear(gear_parameters);
+        registry->emplace<GLId>(entity, id);
+      });
 
   // Is this needed?
   // glEnable(GL_NORMALIZE);
@@ -312,7 +299,7 @@ int main(int argc, char* argv[]) {
 
   // But allow user to override via the command line.
   gflags::ParseCommandLineFlags(&argc, &argv, true);
-  
+
   GLFWwindow* window;
   int width = 1920;
   int height = 1080;
@@ -364,7 +351,7 @@ int main(int argc, char* argv[]) {
   ImGui_ImplOpenGL3_Init(determine_glsl_version());
 
   app.scene_parameters = app.registry.create();
-  app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{{20.f, 30.f, 0.f}, {0.f, 0.f, 0.f}, 0.f});
+  app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{});
 
   Gears gears = load_text_proto<Gears>("gear/trivial_demo_gears.pb.txt");
   DLOG(INFO) << "Gears loaded:\n" << gears.DebugString();
@@ -373,8 +360,10 @@ int main(int argc, char* argv[]) {
     Material* material = gear.mutable_material();
     Materials::pack_colors(material);
     const auto gear_id = app.registry.create();
-    app.registry.emplace<Position>(gear_id, Position{-3.1f, 4.2f, 0.f});
-    app.registry.emplace<Orientation>(gear_id, Orientation{0.f, 0.f, 0.f});
+    Position position{};
+    position.set_x(-3.1f);
+    position.set_y(4.2f);
+    app.registry.emplace<Position>(gear_id, position);
     app.registry.emplace<Gear>(gear_id, std::move(gear));
   }
 

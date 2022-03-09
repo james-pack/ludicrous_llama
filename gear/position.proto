@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package pack.gear;
+
+message Position {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  // TODO(james): Original form from GLFW example code. Consider restructuring as quaternions.
+  float rot_x = 4;
+  float rot_y = 5;
+  float rot_z = 6;
+}

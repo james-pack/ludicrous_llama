@@ -11,6 +11,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":gear_cc_proto",
+        ":position_cc_proto",
         "//color",
         "//third_party/glad",
         "//third_party/glfw",
@@ -28,6 +29,16 @@ proto_library(
     deps = [
         "//color:material_proto",
     ],
+)
+
+cc_proto_library(
+    name = "position_cc_proto",
+    deps = [":position_proto"],
+)
+
+proto_library(
+    name = "position_proto",
+    srcs = ["position.proto"],
 )
 
 filegroup(
@@ -51,9 +62,9 @@ cc_binary(
         "//lighting",
         "//proto",
         "//third_party/entt",
+        "//third_party/gflags",
         "//third_party/glad",
         "//third_party/glfw",
-        "//third_party/gflags",
         "//third_party/glog",
         "//third_party/imgui",
         "//third_party/xorg",
