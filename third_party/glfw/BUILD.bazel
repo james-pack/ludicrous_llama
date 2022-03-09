@@ -5,17 +5,3 @@ cc_library(
         "@conancenter_glfw//:glfw",
     ],
 )
-
-cc_binary(
-    name = "gears",
-    srcs = [
-        "gears.cc",
-    ],
-    deps = [
-        ":glfw",
-        "//third_party/entt",
-        "//third_party/glad",
-        "//third_party/imgui",
-        "//third_party/xorg",
-    ],
-)
