@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "color/color.proto";
+
+package pack.color;
+
+message Material {
+  Rgba ambient = 1;
+  Rgba diffuse = 2;
+  Rgba specular = 3;
+
+  // For compatibility with OpenGL, shininess is on [0, 100].
+  float shininess = 4;
+}
