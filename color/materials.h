@@ -1,6 +1,7 @@
 #pragma once
 
 #include "color/material.pb.h"
+#include "color/colors.h"
 
 namespace pack::color {
 

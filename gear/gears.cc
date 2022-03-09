@@ -24,6 +24,8 @@
  *   - Enabled vsync
  */
 
+// TODO(james): Extract to a separate file to manage math constants. Configure to use C++20 std::numbers::pi when
+// available. Feature testing macro: __cpp_lib_math_constants.
 #if defined(_MSC_VER)
 // Make MS math.h define M_PI
 #define _USE_MATH_DEFINES
@@ -42,13 +44,21 @@
 #include <cstring>
 #include <iostream>
 
+#include "color/color.pb.h"
+#include "color/colors.h"
+#include "color/material.pb.h"
+#include "color/materials.h"
 #include "entt/entity/registry.hpp"
+#include "gear/gear.h"
 #include "gear/gear.pb.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "lighting/light.pb.h"
 
 namespace pack::gear {
+
+using color::Material;
 
 struct Position final {
   GLfloat x{0.f};
@@ -61,47 +71,6 @@ struct Orientation final {
   GLfloat rot_x{0.f};
   GLfloat rot_y{0.f};
   GLfloat rot_z{0.f};
-};
-
-class Material final {
- public:
-  // Values should be on [0, 1].
-  GLfloat ambient[4] = {0.2f, 0.2f, 0.2f, 1.f};
-  GLfloat diffuse[4] = {0.4f, 0.4f, 0.4f, 1.f};
-  GLfloat specular[4] = {0.f, 0.f, 0.f, 1.f};
-
-  // For compatibility with OpenGL, shininess is on [0, 100].
-  GLfloat shininess[1] = {0.f};
-
-  void setAmbient(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f) {
-    ambient[0] = red;
-    ambient[1] = green;
-    ambient[2] = blue;
-    ambient[3] = alpha;
-  }
-
-  void setDiffuse(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f) {
-    diffuse[0] = red;
-    diffuse[1] = green;
-    diffuse[2] = blue;
-    diffuse[3] = alpha;
-  }
-
-  void setSpecular(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f) {
-    specular[0] = red;
-    specular[1] = green;
-    specular[2] = blue;
-    specular[3] = alpha;
-  }
-
-  void setShininess(GLfloat value) { shininess[0] = value; }
-
-  static Material createFromColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f) {
-    Material result{};
-    result.setAmbient(red, green, blue, alpha);
-    result.setDiffuse(red, green, blue, alpha);
-    return result;
-  }
 };
 
 struct ComponentVisibility final {
@@ -144,132 +113,6 @@ class Application final {
   entt::registry::entity_type scene_parameters{};
   PaneLayout viewport{};
 };
-
-/**
-
-  Draw a gear wheel.  You'll probably want to call this function when
-  building a display list since we do a lot of trig here.
-
-  Input:  inner_radius - radius of hole at center
-          outer_radius - radius at center of teeth
-          width - width of gear teeth - number of teeth
-          tooth_depth - depth of tooth
-
- **/
-void build_gear(const Gear& gear) {
-  GLint i;
-  GLfloat r0, r1, r2;
-  GLfloat angle, da;
-  GLfloat u, v, len;
-
-  r0 = gear.inner_radius();
-  r1 = gear.outer_radius() - gear.tooth_depth() / 2.f;
-  r2 = gear.outer_radius() + gear.tooth_depth() / 2.f;
-
-  da = 2.f * (float)M_PI / gear.teeth() / 4.f;
-
-  glShadeModel(GL_FLAT);
-
-  glNormal3f(0.f, 0.f, 1.f);
-
-  // TODO(james): Rework as triangles as quads are being deprecated.
-  /* draw front face */
-  glBegin(GL_QUAD_STRIP);
-  for (i = 0; i <= gear.teeth(); i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth();
-    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), gear.width() * 0.5f);
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), gear.width() * 0.5f);
-    if (i < gear.teeth()) {
-      glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), gear.width() * 0.5f);
-      glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), gear.width() * 0.5f);
-    }
-  }
-  glEnd();
-
-  /* draw front sides of teeth */
-  glBegin(GL_QUADS);
-  da = 2.f * (float)M_PI / gear.teeth() / 4.f;
-  for (i = 0; i < gear.teeth(); i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth();
-
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), gear.width() * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), gear.width() * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), gear.width() * 0.5f);
-    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), gear.width() * 0.5f);
-  }
-  glEnd();
-
-  glNormal3f(0.0, 0.0, -1.0);
-
-  /* draw back face */
-  glBegin(GL_QUAD_STRIP);
-  for (i = 0; i <= gear.teeth(); i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth();
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -gear.width() * 0.5f);
-    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -gear.width() * 0.5f);
-    if (i < gear.teeth()) {
-      glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -gear.width() * 0.5f);
-      glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -gear.width() * 0.5f);
-    }
-  }
-  glEnd();
-
-  /* draw back sides of teeth */
-  glBegin(GL_QUADS);
-  da = 2.f * (float)M_PI / gear.teeth() / 4.f;
-  for (i = 0; i < gear.teeth(); i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth();
-
-    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -gear.width() * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), -gear.width() * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), -gear.width() * 0.5f);
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -gear.width() * 0.5f);
-  }
-  glEnd();
-
-  /* draw outward faces of teeth */
-  glBegin(GL_QUAD_STRIP);
-  for (i = 0; i < gear.teeth(); i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth();
-
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), gear.width() * 0.5f);
-    glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -gear.width() * 0.5f);
-    u = r2 * (float)cos(angle + da) - r1 * (float)cos(angle);
-    v = r2 * (float)sin(angle + da) - r1 * (float)sin(angle);
-    len = (float)sqrt(u * u + v * v);
-    u /= len;
-    v /= len;
-    glNormal3f(v, -u, 0.0);
-    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), gear.width() * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), -gear.width() * 0.5f);
-    glNormal3f((float)cos(angle), (float)sin(angle), 0.f);
-    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), gear.width() * 0.5f);
-    glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), -gear.width() * 0.5f);
-    u = r1 * (float)cos(angle + 3 * da) - r2 * (float)cos(angle + 2 * da);
-    v = r1 * (float)sin(angle + 3 * da) - r2 * (float)sin(angle + 2 * da);
-    glNormal3f(v, -u, 0.f);
-    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), gear.width() * 0.5f);
-    glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -gear.width() * 0.5f);
-    glNormal3f((float)cos(angle), (float)sin(angle), 0.f);
-  }
-
-  glVertex3f(r1 * (float)cos(0), r1 * (float)sin(0), gear.width() * 0.5f);
-  glVertex3f(r1 * (float)cos(0), r1 * (float)sin(0), -gear.width() * 0.5f);
-
-  glEnd();
-
-  glShadeModel(GL_SMOOTH);
-
-  /* draw inside radius cylinder */
-  glBegin(GL_QUAD_STRIP);
-  for (i = 0; i <= gear.teeth(); i++) {
-    angle = i * 2.f * (float)M_PI / gear.teeth();
-    glNormal3f(-(float)cos(angle), -(float)sin(angle), 0.f);
-    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -gear.width() * 0.5f);
-    glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), gear.width() * 0.5f);
-  }
-  glEnd();
-}
 
 /* OpenGL draw function & timing */
 static void component_draw(const entt::registry& registry) {
@@ -405,16 +248,9 @@ static void component_init(entt::registry* registry) {
   // Draw the gears.
   auto gears = registry->view<Gear, Orientation, Position, Material>();
   gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
-                        const Orientation& orientation, const Position& position, const Material& material) {
-    GLId id;
-    id.gl_id = glGenLists(1);
-    glNewList(id.gl_id, GL_COMPILE);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, material.ambient);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, material.diffuse);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, material.specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, material.shininess);
-    build_gear(gear_parameters);
-    glEndList();
+                        const Orientation& orientation, const Position& position, Material& material) {
+    GLId id{};
+    id.gl_id = build_gear(gear_parameters, &material);
     registry->emplace<GLId>(entity, id);
   });
 
@@ -463,6 +299,7 @@ void gui_draw(const entt::registry& registry) {
 }  // namespace pack::gear
 
 int main(int argc, char* argv[]) {
+  using namespace pack::color;
   using namespace pack::gear;
 
   GLFWwindow* window;
@@ -488,6 +325,10 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  // Setup Dear ImGui context. Must be done before calling ImGui::GetIO().
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+
   Application app{ImGui::GetIO()};
   app.viewport = {0, 0, width, height};
   glfwSetWindowUserPointer(window, &app);
@@ -502,6 +343,14 @@ int main(int argc, char* argv[]) {
 
   glfwGetFramebufferSize(window, &width, &height);
   reshape(window, width, height);
+
+  // Setup Dear ImGui style
+  ImGui::StyleColorsDark();
+  // ImGui::StyleColorsClassic();
+
+  // Setup Platform/Renderer backends
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplOpenGL3_Init(determine_glsl_version());
 
   app.scene_parameters = app.registry.create();
   app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{{20.f, 30.f, 0.f}, {0.f, 0.f, 0.f}, 0.f});
@@ -520,9 +369,9 @@ int main(int argc, char* argv[]) {
     app.registry.emplace<Position>(gear1, Position{-3.f, -2.f, 0.f});
     app.registry.emplace<Orientation>(gear1, Orientation{0.f, 0.f, 0.f});
     app.registry.emplace<Gear>(gear1, gear);
-    Material material = Material::createFromColor(0.8f, 0.1f, 0.f);
-    material.setShininess(75.f);
-    material.setSpecular(0.f, 0.9f, 0.25f);
+    Material material = Materials::create(0.8f, 0.1f, 0.f);
+    Materials::set_specular(&material, 0.f, 0.9f, 0.25f);
+    Materials::set_shininess(&material, 75.f);
     app.registry.emplace<Material>(gear1, material);
   }
 
@@ -540,9 +389,9 @@ int main(int argc, char* argv[]) {
     app.registry.emplace<Position>(gear2, Position{3.1f, -2.f, 0.f});
     app.registry.emplace<Orientation>(gear2, Orientation{0.f, 0.f, 0.f});
     app.registry.emplace<Gear>(gear2, gear);
-    Material material = Material::createFromColor(0.f, 0.8f, 0.2f);
-    material.setShininess(75.f);
-    material.setSpecular(0.f, 0.9f, 0.25f);
+    Material material = Materials::create(0.f, 0.8f, 0.2f);
+    Materials::set_specular(&material, 0.f, 0.9f, 0.25f);
+    Materials::set_shininess(&material, 75.f);
     app.registry.emplace<Material>(gear2, material);
   }
 
@@ -560,27 +409,11 @@ int main(int argc, char* argv[]) {
     app.registry.emplace<Position>(gear3, Position{-3.1f, 4.2f, 0.f});
     app.registry.emplace<Orientation>(gear3, Orientation{0.f, 0.f, 0.f});
     app.registry.emplace<Gear>(gear3, gear);
-    Material material = Material::createFromColor(0.2f, 0.2f, 1.f);
-    material.setShininess(80.f);
-    material.setSpecular(0.f, 0.4f, 0.9f);
+    Material material = Materials::create(0.2f, 0.2f, 1.f);
+    Materials::set_specular(&material, 0.f, 0.4f, 0.9f);
+    Materials::set_shininess(&material, 80.f);
     app.registry.emplace<Material>(gear3, material);
   }
-
-  // Setup Dear ImGui context
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  // ImGuiIO& io = ImGui::GetIO();
-  // (void)io;
-  // // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-  // // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-  // Setup Dear ImGui style
-  ImGui::StyleColorsDark();
-  // ImGui::StyleColorsClassic();
-
-  // Setup Platform/Renderer backends
-  ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init(determine_glsl_version());
 
   component_init(&app.registry);
 

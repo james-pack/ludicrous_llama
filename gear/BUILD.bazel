@@ -2,9 +2,18 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 
 cc_library(
     name = "gear",
+    srcs = [
+        "gear.cc",
+    ],
+    hdrs = [
+        "gear.h",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":gear_cc_proto",
+        "//color",
+        "//third_party/glad",
+        "//third_party/glfw",
     ],
 )
 
@@ -16,6 +25,9 @@ cc_proto_library(
 proto_library(
     name = "gear_proto",
     srcs = ["gear.proto"],
+    deps = [
+        "//color:material_proto",
+    ],
 )
 
 cc_binary(
@@ -25,6 +37,8 @@ cc_binary(
     ],
     deps = [
         ":gear",
+        "//color",
+        "//lighting",
         "//third_party/entt",
         "//third_party/glad",
         "//third_party/glfw",
