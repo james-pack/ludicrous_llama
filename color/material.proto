@@ -9,6 +9,6 @@ message Material {
   Rgba diffuse = 2;
   Rgba specular = 3;
 
-  // For compatibility with OpenGL, shininess is on [0, 100].
+  // For compatibility with OpenGL, shininess is on [0, 128].
   float shininess = 4;
 }

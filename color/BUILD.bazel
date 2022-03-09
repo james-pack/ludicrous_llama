@@ -7,6 +7,7 @@ cc_library(
     ],
     hdrs = [
         "colors.h",
+        "materials.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
