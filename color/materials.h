@@ -53,6 +53,18 @@ class Materials final {
 
     return result;
   }
+
+  static void pack_colors(Material* material) {
+    *material->mutable_ambient() = Colors::as_packed(material->ambient());
+    *material->mutable_diffuse() = Colors::as_packed(material->diffuse());
+    *material->mutable_specular() = Colors::as_packed(material->specular());
+  }
+
+  static void unpack_colors(Material* material) {
+    *material->mutable_ambient() = Colors::as_floats(material->ambient());
+    *material->mutable_diffuse() = Colors::as_floats(material->diffuse());
+    *material->mutable_specular() = Colors::as_floats(material->specular());
+  }
 };
 
 }  // namespace pack::color
