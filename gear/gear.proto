@@ -1,14 +1,22 @@
 syntax = "proto3";
 
+import "color/material.proto";
+
 package pack.gear;
 
 message Gear {
-  string name = 1;
-  float inner_radius = 2;
-  float outer_radius = 3;
-  float width = 4;
-  int32 teeth = 5;
-  float tooth_depth = 6;
-  float angle_coefficient = 7;
-  float phase = 8;
+  string id = 1;
+  string name = 2;
+  float inner_radius = 3;
+  float outer_radius = 4;
+  float width = 5;
+  int32 teeth = 6;
+  float tooth_depth = 7;
+  float angle_coefficient = 8;
+  float phase = 9;
+
+  oneof material_specification {
+    pack.color.Material material = 10;
+    string material_id = 11;
+  }
 }
