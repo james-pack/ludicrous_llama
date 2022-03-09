@@ -169,33 +169,33 @@ Rgba Colors::as_uint32s(const Rgba& color) {
       }
       constexpr double scale =
           static_cast<double>(std::numeric_limits<uint32_t>::max()) / std::numeric_limits<int32_t>::max();
-      result.mutable_int_values()->set_red(*(reinterpret_cast<const int32_t*>(bytes.data()) + 0) * scale);
-      result.mutable_int_values()->set_green(*(reinterpret_cast<const int32_t*>(bytes.data()) + 1) * scale);
-      result.mutable_int_values()->set_blue(*(reinterpret_cast<const int32_t*>(bytes.data()) + 2) * scale);
-      result.mutable_int_values()->set_alpha(*(reinterpret_cast<const int32_t*>(bytes.data()) + 3) * scale);
+      result.mutable_uint32_values()->set_red(*(reinterpret_cast<const int32_t*>(bytes.data()) + 0) * scale);
+      result.mutable_uint32_values()->set_green(*(reinterpret_cast<const int32_t*>(bytes.data()) + 1) * scale);
+      result.mutable_uint32_values()->set_blue(*(reinterpret_cast<const int32_t*>(bytes.data()) + 2) * scale);
+      result.mutable_uint32_values()->set_alpha(*(reinterpret_cast<const int32_t*>(bytes.data()) + 3) * scale);
       break;
     }
     case Rgba::ColorRepresentationCase::kFloatValues: {
       constexpr double scale = std::numeric_limits<int32_t>::max();
-      result.mutable_int_values()->set_red(color.float_values().red() * scale);
-      result.mutable_int_values()->set_green(color.float_values().green() * scale);
-      result.mutable_int_values()->set_blue(color.float_values().blue() * scale);
-      result.mutable_int_values()->set_alpha(color.float_values().alpha() * scale);
+      result.mutable_uint32_values()->set_red(color.float_values().red() * scale);
+      result.mutable_uint32_values()->set_green(color.float_values().green() * scale);
+      result.mutable_uint32_values()->set_blue(color.float_values().blue() * scale);
+      result.mutable_uint32_values()->set_alpha(color.float_values().alpha() * scale);
       break;
     }
     case Rgba::ColorRepresentationCase::kIntValues: {
       constexpr double scale = std::numeric_limits<uint32_t>::max() / 255.;
-      result.mutable_int_values()->set_red(color.int_values().red() * scale);
-      result.mutable_int_values()->set_green(color.int_values().green() * scale);
-      result.mutable_int_values()->set_blue(color.int_values().blue() * scale);
-      result.mutable_int_values()->set_alpha(color.int_values().alpha() * scale);
+      result.mutable_uint32_values()->set_red(color.int_values().red() * scale);
+      result.mutable_uint32_values()->set_green(color.int_values().green() * scale);
+      result.mutable_uint32_values()->set_blue(color.int_values().blue() * scale);
+      result.mutable_uint32_values()->set_alpha(color.int_values().alpha() * scale);
       break;
     }
     default:
-      result.mutable_int_values()->set_red(0);
-      result.mutable_int_values()->set_green(0);
-      result.mutable_int_values()->set_blue(0);
-      result.mutable_int_values()->set_alpha(0);
+      result.mutable_uint32_values()->set_red(0);
+      result.mutable_uint32_values()->set_green(0);
+      result.mutable_uint32_values()->set_blue(0);
+      result.mutable_uint32_values()->set_alpha(0);
   }
 
   return result;

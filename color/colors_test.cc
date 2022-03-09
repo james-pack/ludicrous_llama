@@ -213,27 +213,48 @@ namespace pack::color {
 
   uint32_t actual_value;
   uint32_t expected_value;
+  uint32_t delta;
   actual_value = actual.uint32_values().red();
   expected_value = expected.uint32_values().red();
-  if ((actual_value + allowed_delta < expected_value) || (actual_value - allowed_delta > expected_value)) {
+  if (actual_value > expected_value) {
+    delta = actual_value - expected_value;
+  } else {
+    delta = expected_value - actual_value;
+  }
+  if (delta > allowed_delta) {
     return ::testing::AssertionFailure() << "Red channel does not match: " << expected_value << " (expected) vs "
                                          << actual_value << " (actual)";
   }
   actual_value = actual.uint32_values().green();
   expected_value = expected.uint32_values().green();
-  if ((actual_value + allowed_delta < expected_value) || (actual_value - allowed_delta > expected_value)) {
+  if (actual_value > expected_value) {
+    delta = actual_value - expected_value;
+  } else {
+    delta = expected_value - actual_value;
+  }
+  if (delta > allowed_delta) {
     return ::testing::AssertionFailure() << "Green channel does not match: " << expected_value << " (expected) vs "
                                          << actual_value << " (actual)";
   }
   actual_value = actual.uint32_values().blue();
   expected_value = expected.uint32_values().blue();
-  if ((actual_value + allowed_delta < expected_value) || (actual_value - allowed_delta > expected_value)) {
+  if (actual_value > expected_value) {
+    delta = actual_value - expected_value;
+  } else {
+    delta = expected_value - actual_value;
+  }
+  if (delta > allowed_delta) {
     return ::testing::AssertionFailure() << "Blue channel does not match: " << expected_value << " (expected) vs "
                                          << actual_value << " (actual)";
   }
   actual_value = actual.uint32_values().alpha();
   expected_value = expected.uint32_values().alpha();
-  if ((actual_value + allowed_delta < expected_value) || (actual_value - allowed_delta > expected_value)) {
+  if (actual_value > expected_value) {
+    delta = actual_value - expected_value;
+  } else {
+    delta = expected_value - actual_value;
+  }
+  if (delta > allowed_delta) {
     return ::testing::AssertionFailure() << "Alpha channel does not match: " << expected_value << " (expected) vs "
                                          << actual_value << " (actual)";
   }
@@ -425,7 +446,7 @@ TEST(AsPackedTest, NonTrivialValues) {
 }
 
 TEST(AsFloatsTest, CanRoundTripViaPacked) {
-  constexpr int REQUIRED_ACCURACY_BITS{30};
+  constexpr int REQUIRED_ACCURACY_BITS{31};
   for (float value = 0.f; value < 1.f; value += 0.05f) {
     Rgba color_float{};
     color_float.mutable_float_values()->set_red(value);
@@ -443,6 +464,33 @@ TEST(AsFloatsTest, CanRoundTripViaPacked) {
     color_float.mutable_float_values()->set_alpha(value);
     EXPECT_TRUE(is_same_color(color_float, Colors::as_floats(Colors::as_packed(color_float)), REQUIRED_ACCURACY_BITS));
     color_float.mutable_float_values()->set_alpha(0.f);
+  }
+}
+
+TEST(AsUInt32sTest, CanRoundTripViaPacked) {
+  constexpr int REQUIRED_ACCURACY_BITS{31};
+  constexpr uint32_t STRIDE = (static_cast<uint32_t>(1) << 24) + 169;
+  for (uint32_t value = 0; value < std::numeric_limits<uint32_t>::max() - STRIDE; value += STRIDE) {
+    Rgba color_uint32{};
+    color_uint32.mutable_uint32_values()->set_red(value);
+    EXPECT_TRUE(
+        is_same_color(color_uint32, Colors::as_uint32s(Colors::as_packed(color_uint32)), REQUIRED_ACCURACY_BITS));
+    color_uint32.mutable_uint32_values()->set_red(0);
+
+    color_uint32.mutable_uint32_values()->set_green(value);
+    EXPECT_TRUE(
+        is_same_color(color_uint32, Colors::as_uint32s(Colors::as_packed(color_uint32)), REQUIRED_ACCURACY_BITS));
+    color_uint32.mutable_uint32_values()->set_green(0);
+
+    color_uint32.mutable_uint32_values()->set_blue(value);
+    EXPECT_TRUE(
+        is_same_color(color_uint32, Colors::as_uint32s(Colors::as_packed(color_uint32)), REQUIRED_ACCURACY_BITS));
+    color_uint32.mutable_uint32_values()->set_blue(0);
+
+    color_uint32.mutable_uint32_values()->set_alpha(value);
+    EXPECT_TRUE(
+        is_same_color(color_uint32, Colors::as_uint32s(Colors::as_packed(color_uint32)), REQUIRED_ACCURACY_BITS));
+    color_uint32.mutable_uint32_values()->set_alpha(0);
   }
 }
 
