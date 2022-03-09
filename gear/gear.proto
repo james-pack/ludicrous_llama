@@ -20,3 +20,7 @@ message Gear {
     string material_id = 11;
   }
 }
+
+message Gears {
+  repeated Gear gear = 1;
+}

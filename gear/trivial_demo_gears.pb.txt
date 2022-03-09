@@ -1,0 +1,103 @@
+gear {
+  name: "Red"
+  inner_radius: 1
+  outer_radius: 4
+  width: 1
+  teeth: 20
+  tooth_depth: 0.7
+  angle_coefficient: 1
+  material {
+    ambient {
+      float_values {
+        red: 0.8
+        green: 0.1
+        alpha: 1
+      }
+    }
+    diffuse {
+      float_values {
+        red: 0.8
+        green: 0.1
+        alpha: 1
+      }
+    }
+    specular {
+      float_values {
+        green: 0.9
+        blue: 0.25
+        alpha: 1
+      }
+    }
+    shininess: 75
+  }
+}
+gear {
+  name: "Green"
+  inner_radius: 0.5
+  outer_radius: 2
+  width: 2
+  teeth: 10
+  tooth_depth: 0.7
+  angle_coefficient: -2
+  phase: -9
+  material {
+    ambient {
+      float_values {
+        green: 0.8
+        blue: 0.2
+        alpha: 1
+      }
+    }
+    diffuse {
+      float_values {
+        green: 0.8
+        blue: 0.2
+        alpha: 1
+      }
+    }
+    specular {
+      float_values {
+        green: 0.9
+        blue: 0.25
+        alpha: 1
+      }
+    }
+    shininess: 75
+  }
+}
+gear {
+  name: "Blue"
+  inner_radius: 0.8
+  outer_radius: 2
+  width: 2
+  teeth: 10
+  tooth_depth: 0.7
+  angle_coefficient: -2
+  phase: -25
+  material {
+    ambient {
+      float_values {
+        red: 0.2
+        green: 0.2
+        blue: 1
+        alpha: 1
+      }
+    }
+    diffuse {
+      float_values {
+        red: 0.2
+        green: 0.2
+        blue: 1
+        alpha: 1
+      }
+    }
+    specular {
+      float_values {
+        green: 0.4
+        blue: 0.9
+        alpha: 1
+      }
+    }
+    shininess: 80
+  }
+}

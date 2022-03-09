@@ -30,18 +30,31 @@ proto_library(
     ],
 )
 
+filegroup(
+    name = "demo_files",
+    srcs = [
+        "trivial_demo_gears.pb.txt",
+    ],
+)
+
 cc_binary(
     name = "gears",
     srcs = [
         "gears.cc",
     ],
+    data = [
+        ":demo_files",
+    ],
     deps = [
         ":gear",
         "//color",
         "//lighting",
+        "//proto",
         "//third_party/entt",
         "//third_party/glad",
         "//third_party/glfw",
+        "//third_party/gflags",
+        "//third_party/glog",
         "//third_party/imgui",
         "//third_party/xorg",
     ],

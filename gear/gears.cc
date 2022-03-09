@@ -42,7 +42,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 
 #include "color/color.pb.h"
 #include "color/colors.h"
@@ -51,10 +50,13 @@
 #include "entt/entity/registry.hpp"
 #include "gear/gear.h"
 #include "gear/gear.pb.h"
+#include "gflags/gflags.h"
+#include "glog/logging.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "lighting/light.pb.h"
+#include "proto/proto_utils.h"
 
 namespace pack::gear {
 
@@ -246,11 +248,11 @@ static void component_init(entt::registry* registry) {
   glFrontFace(GL_CCW);
 
   // Draw the gears.
-  auto gears = registry->view<Gear, Orientation, Position, Material>();
+  auto gears = registry->view<Gear, Orientation, Position>();
   gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
-                        const Orientation& orientation, const Position& position, Material& material) {
+                        const Orientation& orientation, const Position& position) {
     GLId id{};
-    id.gl_id = build_gear(gear_parameters, &material);
+    id.gl_id = build_gear(gear_parameters);
     registry->emplace<GLId>(entity, id);
   });
 
@@ -301,7 +303,16 @@ void gui_draw(const entt::registry& registry) {
 int main(int argc, char* argv[]) {
   using namespace pack::color;
   using namespace pack::gear;
+  using namespace pack::proto;
 
+  // Default logging configuration.
+  FLAGS_logtostderr = true;
+  FLAGS_stderrthreshold = 0;
+  google::InitGoogleLogging(argv[0]);
+
+  // But allow user to override via the command line.
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  
   GLFWwindow* window;
   int width = 1920;
   int height = 1080;
@@ -355,64 +366,16 @@ int main(int argc, char* argv[]) {
   app.scene_parameters = app.registry.create();
   app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{{20.f, 30.f, 0.f}, {0.f, 0.f, 0.f}, 0.f});
 
-  {
-    Gear gear{};
-    gear.set_name("Red");
-    gear.set_inner_radius(1.f);
-    gear.set_outer_radius(4.f);
-    gear.set_width(1.f);
-    gear.set_teeth(20);
-    gear.set_tooth_depth(0.7f);
-    gear.set_angle_coefficient(1.f);
-    gear.set_phase(0.f);
-    const auto gear1 = app.registry.create();
-    app.registry.emplace<Position>(gear1, Position{-3.f, -2.f, 0.f});
-    app.registry.emplace<Orientation>(gear1, Orientation{0.f, 0.f, 0.f});
-    app.registry.emplace<Gear>(gear1, gear);
-    Material material = Materials::create(0.8f, 0.1f, 0.f);
-    Materials::set_specular(&material, 0.f, 0.9f, 0.25f);
-    Materials::set_shininess(&material, 75.f);
-    app.registry.emplace<Material>(gear1, material);
-  }
+  Gears gears = load_text_proto<Gears>("gear/trivial_demo_gears.pb.txt");
+  DLOG(INFO) << "Gears loaded:\n" << gears.DebugString();
 
-  {
-    Gear gear{};
-    gear.set_name("Green");
-    gear.set_inner_radius(0.5f);
-    gear.set_outer_radius(2.f);
-    gear.set_width(2.f);
-    gear.set_teeth(10);
-    gear.set_tooth_depth(0.7f);
-    gear.set_angle_coefficient(-2.f);
-    gear.set_phase(-9.f);
-    const auto gear2 = app.registry.create();
-    app.registry.emplace<Position>(gear2, Position{3.1f, -2.f, 0.f});
-    app.registry.emplace<Orientation>(gear2, Orientation{0.f, 0.f, 0.f});
-    app.registry.emplace<Gear>(gear2, gear);
-    Material material = Materials::create(0.f, 0.8f, 0.2f);
-    Materials::set_specular(&material, 0.f, 0.9f, 0.25f);
-    Materials::set_shininess(&material, 75.f);
-    app.registry.emplace<Material>(gear2, material);
-  }
-
-  {
-    Gear gear{};
-    gear.set_name("Blue");
-    gear.set_inner_radius(0.8f);
-    gear.set_outer_radius(2.f);
-    gear.set_width(2.f);
-    gear.set_teeth(10);
-    gear.set_tooth_depth(0.7f);
-    gear.set_angle_coefficient(-2.f);
-    gear.set_phase(-25.f);
-    const auto gear3 = app.registry.create();
-    app.registry.emplace<Position>(gear3, Position{-3.1f, 4.2f, 0.f});
-    app.registry.emplace<Orientation>(gear3, Orientation{0.f, 0.f, 0.f});
-    app.registry.emplace<Gear>(gear3, gear);
-    Material material = Materials::create(0.2f, 0.2f, 1.f);
-    Materials::set_specular(&material, 0.f, 0.4f, 0.9f);
-    Materials::set_shininess(&material, 80.f);
-    app.registry.emplace<Material>(gear3, material);
+  for (Gear gear : gears.gear()) {
+    Material* material = gear.mutable_material();
+    Materials::pack_colors(material);
+    const auto gear_id = app.registry.create();
+    app.registry.emplace<Position>(gear_id, Position{-3.1f, 4.2f, 0.f});
+    app.registry.emplace<Orientation>(gear_id, Orientation{0.f, 0.f, 0.f});
+    app.registry.emplace<Gear>(gear_id, std::move(gear));
   }
 
   component_init(&app.registry);

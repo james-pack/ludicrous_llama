@@ -15,22 +15,32 @@
 #include "GLFW/glfw3.h"
 // End of order dependent headers.
 
+#include <stdexcept>
+
 #include "color/material.pb.h"
 #include "color/materials.h"
 #include "gear/gear.pb.h"
 
 namespace pack::gear {
 
-unsigned int build_gear(const Gear& gear, color::Material* material) {
+unsigned int build_gear(const Gear& gear) {
   const unsigned int id = glGenLists(1);
   glNewList(id, GL_COMPILE);
 
-  color::Materials::pack_colors(material);
-
-  glMaterialiv(GL_FRONT, GL_AMBIENT, reinterpret_cast<const int32_t*>(material->ambient().packed().bytes().data()));
-  glMaterialiv(GL_FRONT, GL_DIFFUSE, reinterpret_cast<const int32_t*>(material->diffuse().packed().bytes().data()));
-  glMaterialiv(GL_FRONT, GL_SPECULAR, reinterpret_cast<const int32_t*>(material->specular().packed().bytes().data()));
-  glMaterialf(GL_FRONT, GL_SHININESS, material->shininess());
+  const color::Material& material = gear.material();
+  if (!material.ambient().has_packed()) {
+    throw std::logic_error("Material color data must be packed.");
+  }
+  if (!material.diffuse().has_packed()) {
+    throw std::logic_error("Material color data must be packed.");
+  }
+  if (!material.specular().has_packed()) {
+    throw std::logic_error("Material color data must be packed.");
+  }
+  glMaterialiv(GL_FRONT, GL_AMBIENT, reinterpret_cast<const int32_t*>(material.ambient().packed().bytes().data()));
+  glMaterialiv(GL_FRONT, GL_DIFFUSE, reinterpret_cast<const int32_t*>(material.diffuse().packed().bytes().data()));
+  glMaterialiv(GL_FRONT, GL_SPECULAR, reinterpret_cast<const int32_t*>(material.specular().packed().bytes().data()));
+  glMaterialf(GL_FRONT, GL_SHININESS, material.shininess());
 
   GLint i;
   GLfloat r0, r1, r2;
