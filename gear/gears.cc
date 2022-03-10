@@ -47,10 +47,10 @@
 #include "color/colors.h"
 #include "color/material.pb.h"
 #include "color/materials.h"
+#include "component/gear.h"
+#include "component/gear.pb.h"
 #include "component/position.pb.h"
 #include "entt/entity/registry.hpp"
-#include "gear/gear.h"
-#include "gear/gear.pb.h"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 #include "imgui.h"
@@ -63,6 +63,7 @@
 namespace pack::gear {
 
 using color::Material;
+using component::Gear;
 using component::Orientation;
 using component::Position;
 using lighting::Light;
@@ -323,6 +324,7 @@ void gui_draw(const entt::registry& registry) {
 
 int main(int argc, char* argv[]) {
   using namespace pack::color;
+  using namespace pack::component;
   using namespace pack::gear;
   using namespace pack::lighting;
   using namespace pack::proto;
@@ -406,7 +408,8 @@ int main(int argc, char* argv[]) {
   }
 
   {
-    LightingConfiguration lighting_configuration = load_text_proto<LightingConfiguration>("gear/lighting_configuration.pb.txt");
+    LightingConfiguration lighting_configuration =
+        load_text_proto<LightingConfiguration>("gear/lighting_configuration.pb.txt");
     DLOG(INFO) << "Lighting configuration:\n" << lighting_configuration.DebugString();
     for (Light light : lighting_configuration.light()) {
       light = Lights::as_packed(light);

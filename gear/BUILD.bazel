@@ -1,36 +1,5 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 
-cc_library(
-    name = "gear",
-    srcs = [
-        "gear.cc",
-    ],
-    hdrs = [
-        "gear.h",
-    ],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":gear_cc_proto",
-        "//component",
-        "//color",
-        "//third_party/glad",
-        "//third_party/glfw",
-    ],
-)
-
-cc_proto_library(
-    name = "gear_cc_proto",
-    deps = [":gear_proto"],
-)
-
-proto_library(
-    name = "gear_proto",
-    srcs = ["gear.proto"],
-    deps = [
-        "//color:material_proto",
-    ],
-)
-
 filegroup(
     name = "demo_files",
     srcs = [
@@ -55,8 +24,8 @@ cc_binary(
         ":lighting_configuration",
     ],
     deps = [
-        ":gear",
         "//color",
+        "//component",
         "//lighting",
         "//proto",
         "//third_party/entt",

@@ -3,14 +3,20 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 cc_library(
     name = "component",
     srcs = [
+        "gear.cc",
         "positions.cc",
     ],
     hdrs = [
+        "gear.h",
         "positions.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
+        ":gear_cc_proto",
         ":position_cc_proto",
+        "//color",
+        "//third_party/glad",
+        "//third_party/glfw",
     ],
 )
 
@@ -23,4 +29,17 @@ proto_library(
     name = "position_proto",
     srcs = ["position.proto"],
     visibility = ["//visibility:public"],
+)
+
+cc_proto_library(
+    name = "gear_cc_proto",
+    deps = [":gear_proto"],
+)
+
+proto_library(
+    name = "gear_proto",
+    srcs = ["gear.proto"],
+    deps = [
+        "//color:material_proto",
+    ],
 )
