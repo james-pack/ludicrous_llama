@@ -96,8 +96,6 @@ void LightingModel::load(const lighting::LightingConfiguration& lighting) {
     light.specular[2] = color.float_values().blue();
     light.specular[3] = color.float_values().alpha();
     light.enabled = config.enabled();
-    DLOG_IF(INFO, light.enabled) << "light " << light.light_num << " is enabled";
-    DLOG_IF(INFO, !light.enabled) << "light " << light.light_num << " is disabled";
     dirty = true;
   }
 

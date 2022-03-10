@@ -14,11 +14,11 @@ void lighting_im_render(const LightingModel& lighting) {
   for (GLint light_num = 0; light_num <= max_light_num; ++light_num) {
     if (lighting.is_enabled(light_num)) {
       DLOG(INFO) << "light_num: " << light_num << " is enabled";
+      glEnable(GL_LIGHT0 + light_num);
       glLightfv(GL_LIGHT0 + light_num, GL_POSITION, lighting.position(light_num));
       glLightfv(GL_LIGHT0 + light_num, GL_AMBIENT, lighting.ambient(light_num));
       glLightfv(GL_LIGHT0 + light_num, GL_DIFFUSE, lighting.diffuse(light_num));
       glLightfv(GL_LIGHT0 + light_num, GL_SPECULAR, lighting.specular(light_num));
-      glEnable(GL_LIGHT0 + light_num);
     } else {
       DLOG(INFO) << "light_num: " << light_num << " is disabled";
       glDisable(GL_LIGHT0 + light_num);
