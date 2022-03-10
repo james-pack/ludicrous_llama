@@ -23,6 +23,7 @@ enum class LightingModelSignal : int8_t {
   ENABLED_UPDATE,
   RESET_UPDATE,
 };
+std::string to_string(LightingModelSignal value);
 
 class LightingModel final : public Signaller<LightingModel, LightingModelSignal> {
  private:
@@ -66,6 +67,9 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
   LightModel& create_light(GLint light_num) {
     if (light_num < 0) {
       throw std::invalid_argument("Light numbers must be non-negative.");
+    }
+    if (light_num >= GL_MAX_LIGHTS) {
+      throw std::invalid_argument("Light numbers must be less than GL_MAX_LIGHTS.");
     }
 
     auto iter = std::lower_bound(lights_.begin(), lights_.end(), light_num,

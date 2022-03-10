@@ -1,6 +1,7 @@
 #include "ui/lighting_model.h"
 
 #include <algorithm>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -8,12 +9,30 @@
 #include "color/colors.h"
 #include "component/position.pb.h"
 #include "component/positions.h"
+#include "glog/logging.h"
 #include "lighting/light.pb.h"
 #include "lighting/lights.h"
 #include "ui/signaller.h"
 #include "ui/ui.h"
 
 namespace pack::ui {
+
+std::string to_string(LightingModelSignal value) {
+  switch (value) {
+    case LightingModelSignal::INVALID:
+      return "INVALID";
+    case LightingModelSignal::POSITION_UPDATE:
+      return "POSITION_UPDATE";
+    case LightingModelSignal::COLOR_UPDATE:
+      return "COLOR_UPDATE";
+    case LightingModelSignal::ENABLED_UPDATE:
+      return "ENABLED_UPDATE";
+    case LightingModelSignal::RESET_UPDATE:
+      return "RESET_UPDATE";
+    default:
+      throw std::domain_error("to_string not implemented for given LightingModelSignal enum value");
+  }
+}
 
 void LightingModel::reset() {
   if (!lights_.empty()) {
@@ -57,6 +76,8 @@ void LightingModel::configure(const lighting::LightingConfiguration& lighting) {
     light.specular[2] = color.float_values().blue();
     light.specular[3] = color.float_values().alpha();
     light.enabled = config.enabled();
+    DLOG_IF(INFO, light.enabled) << "light " << light.light_num << " is enabled";
+    DLOG_IF(INFO, !light.enabled) << "light " << light.light_num << " is disabled";
     dirty = true;
   }
 

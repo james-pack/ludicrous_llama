@@ -25,15 +25,6 @@
  */
 
 // clang-format off
-// This block of defines and includes must appear first.
-
-// TODO(james): Extract to a separate file to manage math constants. Configure to use C++20 std::numbers::pi when
-// available. Feature testing macro: __cpp_lib_math_constants.
-#if defined(_MSC_VER)
-// Make MS math.h define M_PI
-#define _USE_MATH_DEFINES
-#endif
-
 #include "ui/ui.h"
 // clang-format on
 
@@ -58,6 +49,9 @@
 #include "lighting/light.pb.h"
 #include "lighting/lights.h"
 #include "proto/proto_utils.h"
+#include "ui/event_queue.h"
+#include "ui/lighting_im_render.h"
+#include "ui/lighting_model.h"
 
 namespace pack::demo {
 
@@ -65,7 +59,7 @@ using color::Material;
 using component::Gear;
 using component::Orientation;
 using component::Position;
-using lighting::Light;
+using ui::LightingModel;
 
 struct ComponentVisibility final {
   // Visibility of the component as controlled by one or more UI elements, not the intrinsic alpha channel of the
@@ -215,59 +209,6 @@ void reshape(GLFWwindow* window, int width, int height) {
 
 /* program & OpenGL initialization */
 static void component_init(entt::registry* registry) {
-  const auto& lights = registry->view<Light>();
-  lights.each([](const Light& light) {
-    if (!light.position().has_packed()) {
-      throw std::logic_error("Light position data must be packed.");
-    }
-    if (!light.ambient().has_packed()) {
-      throw std::logic_error("Material color data must be packed.");
-    }
-    if (!light.diffuse().has_packed()) {
-      throw std::logic_error("Material color data must be packed.");
-    }
-    if (!light.specular().has_packed()) {
-      throw std::logic_error("Material color data must be packed.");
-    }
-    glLightfv(GL_LIGHT0 + light.light_num(), GL_POSITION,
-              reinterpret_cast<const float*>(light.position().packed().bytes().data()));
-    glLightiv(GL_LIGHT0 + light.light_num(), GL_AMBIENT,
-              reinterpret_cast<const int32_t*>(light.ambient().packed().bytes().data()));
-    glLightiv(GL_LIGHT0 + light.light_num(), GL_DIFFUSE,
-              reinterpret_cast<const int32_t*>(light.diffuse().packed().bytes().data()));
-    glLightiv(GL_LIGHT0 + light.light_num(), GL_SPECULAR,
-              reinterpret_cast<const int32_t*>(light.specular().packed().bytes().data()));
-    if (light.enabled()) {
-      glEnable(GL_LIGHT0 + light.light_num());
-    } else {
-      glDisable(GL_LIGHT0 + light.light_num());
-    }
-  });
-  glEnable(GL_LIGHTING);
-
-  /*
-  constexpr int NUM_LIGHTS{4};
-  const GLfloat light_positions[][NUM_LIGHTS] = {
-      {10.f, 0.f, 0.f, 0.f},
-      {0.f, 10.f, 0.f, 0.f},
-      {0.f, 0.f, 10.f, 0.f},
-      {0.f, 0.f, 0.f, 10.f},
-  };
-  const GLfloat light_diffuse_color[][NUM_LIGHTS] = {
-      {0.4f, 0.4f, 0.4f, 0.4f},
-      {0.4f, 0.4f, 0.4f, 0.4f},
-      {0.4f, 0.4f, 0.4f, 0.4f},
-      {0.4f, 0.4f, 0.4f, 0.4f},
-  };
-  for (int i = 0; i < NUM_LIGHTS; ++i) {
-  }
-  */
-
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-  glCullFace(GL_BACK);
-  glFrontFace(GL_CCW);
-
   // Draw the gears.
   auto gears = registry->view<Gear, Position, Orientation>();
   gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
@@ -279,31 +220,6 @@ static void component_init(entt::registry* registry) {
 
   // Is this needed?
   // glEnable(GL_NORMALIZE);
-}
-
-const char* determine_glsl_version() {
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-  // GL ES 2.0 + GLSL 100
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-  const char* glsl_version = "#version 100";
-#elif defined(__APPLE__)
-  // GL 3.2 + GLSL 150
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
-  const char* glsl_version = "#version 150";
-#else
-  // GL 3.3 + GLSL 130
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-  // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-  const char* glsl_version = "#version 130";
-#endif
-  return glsl_version;
 }
 
 void gui_draw(const entt::registry& registry) {
@@ -327,6 +243,7 @@ int main(int argc, char* argv[]) {
   using namespace pack::demo;
   using namespace pack::lighting;
   using namespace pack::proto;
+  using namespace pack::ui;
 
   // Default logging configuration.
   FLAGS_logtostderr = true;
@@ -384,7 +301,7 @@ int main(int argc, char* argv[]) {
 
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
-  ImGui_ImplOpenGL3_Init(determine_glsl_version());
+  ImGui_ImplOpenGL3_Init(pack::ui::determine_glsl_version());
 
   app.scene_parameters = app.registry.create();
   app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{});
@@ -406,15 +323,18 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  const auto ui_models = app.registry.create();
   {
+    app.registry.emplace<LightingModel>(ui_models, LightingModel{});
     LightingConfiguration lighting_configuration =
         load_text_proto<LightingConfiguration>("demo/lighting_configuration.pb.txt");
     DLOG(INFO) << "Lighting configuration:\n" << lighting_configuration.DebugString();
-    for (Light light : lighting_configuration.light()) {
-      light = Lights::as_packed(light);
-      const auto light_id = app.registry.create();
-      app.registry.emplace<Light>(light_id, std::move(light));
-    }
+    LightingModel& model = app.registry.get<LightingModel>(ui_models);
+    model.connect(LightingModelSignal::POSITION_UPDATE, lighting_im_signal_render);
+    model.connect(LightingModelSignal::COLOR_UPDATE, lighting_im_signal_render);
+    model.connect(LightingModelSignal::ENABLED_UPDATE, lighting_im_signal_render);
+    model.connect(LightingModelSignal::RESET_UPDATE, lighting_im_signal_render);
+    model.configure(lighting_configuration);
   }
 
   component_init(&app.registry);
@@ -430,6 +350,9 @@ int main(int argc, char* argv[]) {
     // Swap buffers
     glfwSwapBuffers(window);
     glfwPollEvents();
+
+    // Distribute events, mostly from the UI models to their respective views and rendering functions.
+    EventQueue::distribute();
 
     // Update animation
     animate(&app);
