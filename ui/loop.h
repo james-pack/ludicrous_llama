@@ -13,9 +13,9 @@ class Loop final {
  public:
   static Loop& get();
 
-  static void distribute();
+  static void distribute_events();
 
-  static void add(std::function<void()> fn);
+  static void add_event(std::function<void()> fn);
 };
 
 }  // namespace pack::ui

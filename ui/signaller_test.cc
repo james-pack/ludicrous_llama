@@ -52,7 +52,7 @@ TEST_F(SignallerTest, CanFireSignal) {
   ASSERT_FALSE(lighting.is_enabled(0));
   lighting.enable(0);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::ENABLED_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);
@@ -70,7 +70,7 @@ TEST_F(SignallerTest, CanDisconnectSlot) {
   ASSERT_FALSE(lighting.is_enabled(0));
   lighting.enable(0);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   ASSERT_EQ(LightingModelSignal::ENABLED_UPDATE, signal_received);
   ASSERT_EQ(&lighting, model_received);
@@ -85,7 +85,7 @@ TEST_F(SignallerTest, CanDisconnectSlot) {
   ASSERT_TRUE(lighting.is_enabled(0));
   lighting.disable(0);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::INVALID, signal_received);
   EXPECT_EQ(nullptr, model_received);
@@ -105,7 +105,7 @@ TEST_F(SignallerTest, CanFireMultipleSignalsOfSameTypeFromSameObjectToSameDestin
   lighting.disable(0);
   lighting.enable(0);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::ENABLED_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);
@@ -125,7 +125,7 @@ TEST_F(SignallerTest, CanFireMultipleSignalsToDifferentDestinations) {
   lighting.disable(0);
   lighting.enable(0);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::ENABLED_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);
@@ -146,7 +146,7 @@ TEST_F(SignallerTest, CanFireSignalsToDifferentDestinations) {
   lighting.connect(LightingModelSignal::ENABLED_UPDATE, receive_signal2);
 
   lighting.set_ambient(LIGHT_NUM, 1.f, 1.f, 1.f, 1.f);
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::INVALID, signal_received);
   EXPECT_EQ(nullptr, model_received);
@@ -159,7 +159,7 @@ TEST_F(SignallerTest, CanFireSignalsToDifferentDestinations) {
   clear_reception_state();
 
   lighting.set_position(LIGHT_NUM, 1.f, 2.f, 3.f);
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::POSITION_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);
@@ -181,9 +181,9 @@ TEST_F(SignallerTest, CanFireMultipleSignalsOfDifferentTypes) {
   lighting.enable(0);
   lighting.set_ambient(LIGHT_NUM, 1.f, 1.f, 1.f, 1.f);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
-  // No guarantee of signal order when fired in the same distribute() call.
+  // No guarantee of signal order when fired in the same distribute_events() call.
   EXPECT_TRUE((signal_received == LightingModelSignal::ENABLED_UPDATE) ||
               (signal_received == LightingModelSignal::COLOR_UPDATE));
   EXPECT_EQ(&lighting, model_received);

@@ -10,12 +10,12 @@ Loop& Loop::get() {
   return instance;
 }
 
-void Loop::add(std::function<void()> fn) {
+void Loop::add_event(std::function<void()> fn) {
   Loop& instance{get()};
   instance.event_queue_.emplace_back(std::move(fn));
 }
 
-void Loop::distribute() {
+void Loop::distribute_events() {
   Loop& instance{get()};
   std::vector<std::function<void()>> queue{instance.event_queue_};
   instance.event_queue_.clear();

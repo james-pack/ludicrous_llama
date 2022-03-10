@@ -351,7 +351,7 @@ int main(int argc, char* argv[]) {
     glfwPollEvents();
 
     // Distribute events, mostly from the UI models to their respective views and rendering functions.
-    Loop::distribute();
+    Loop::distribute_events();
 
     // Update animation
     animate(&app);

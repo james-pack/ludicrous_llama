@@ -38,7 +38,7 @@ TEST_F(LightingModelTest, EnableLightFiresSignal) {
   ASSERT_FALSE(lighting.is_enabled(0));
   lighting.enable(0);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::ENABLED_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);
@@ -55,7 +55,7 @@ TEST_F(LightingModelTest, EnableLightOnlyFiresSignalIfDisabled) {
   ASSERT_FALSE(lighting.is_enabled(0));
   lighting.enable(0);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   ASSERT_EQ(LightingModelSignal::ENABLED_UPDATE, signal_received);
   ASSERT_EQ(&lighting, model_received);
@@ -65,7 +65,7 @@ TEST_F(LightingModelTest, EnableLightOnlyFiresSignalIfDisabled) {
   ASSERT_TRUE(lighting.is_enabled(0));
   lighting.enable(0);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::INVALID, signal_received);
   EXPECT_EQ(nullptr, model_received);
@@ -81,7 +81,7 @@ TEST_F(LightingModelTest, ChangingPositionFiresSignal) {
   lighting.connect(LightingModelSignal::RESET_UPDATE, receive_signal);
 
   lighting.set_position(LIGHT_NUM, 1.f, 2.f, 3.f);
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::POSITION_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);
@@ -98,7 +98,7 @@ TEST_F(LightingModelTest, ChangingAmbientColorFiresSignal) {
 
   lighting.set_ambient(LIGHT_NUM, 1.f, 1.f, 1.f, 1.f);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::COLOR_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);
@@ -115,7 +115,7 @@ TEST_F(LightingModelTest, ChangingDiffuseColorFiresSignal) {
 
   lighting.set_diffuse(LIGHT_NUM, 1.f, 1.f, 1.f, 1.f);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::COLOR_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);
@@ -132,7 +132,7 @@ TEST_F(LightingModelTest, ChangingSpecularColorFiresSignal) {
 
   lighting.set_specular(LIGHT_NUM, 1.f, 1.f, 1.f, 1.f);
 
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::COLOR_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);
@@ -149,11 +149,11 @@ TEST_F(LightingModelTest, ResetFiresSignal) {
 
   // Ensure the lighting model is not empty.
   lighting.set_specular(LIGHT_NUM, 1.f, 1.f, 1.f, 1.f);
-  Loop::distribute();
+  Loop::distribute_events();
   clear_reception_state();
 
   lighting.reset();
-  Loop::distribute();
+  Loop::distribute_events();
 
   EXPECT_EQ(LightingModelSignal::RESET_UPDATE, signal_received);
   EXPECT_EQ(&lighting, model_received);

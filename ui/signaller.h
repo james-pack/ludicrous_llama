@@ -23,7 +23,7 @@ class Signaller {
         break;
       }
       const auto& slot = iter->second;
-      Loop::add([signal, &instance, &slot]() { slot(signal, instance); });
+      Loop::add_event([signal, &instance, &slot]() { slot(signal, instance); });
     }
   }
 
