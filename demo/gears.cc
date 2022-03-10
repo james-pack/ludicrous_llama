@@ -52,6 +52,7 @@
 #include "ui/loop.h"
 #include "ui/lighting_im_render.h"
 #include "ui/lighting_model.h"
+#include "ui/renderable.h"
 
 namespace pack::demo {
 
@@ -60,6 +61,7 @@ using component::Gear;
 using component::Orientation;
 using component::Position;
 using ui::LightingModel;
+using ui::Renderable;
 
 struct PaneLayout final {
   // Offset wrt parent layout.
@@ -71,10 +73,7 @@ struct PaneLayout final {
   GLint height{-1};
 };
 
-struct GLId final {
-  GLint gl_id;
-};
-
+// TODO(james): Refactor. Mixture of camera parameters and animation details.
 struct Animation final {
   Position scene_position{};
   Orientation scene_orientation{};
@@ -107,15 +106,10 @@ static void component_draw(const entt::registry& registry) {
                  parameters.scene_position.float_values().z());
   });
 
-  const auto gears = registry.view<GLId, Position, Orientation>();
-  gears.each([](const GLId& id, const Position& position, const Orientation& orientation) {
-    glPushMatrix();
-    glTranslatef(position.float_values().x(), position.float_values().y(), position.float_values().z());
-    glRotatef(orientation.rot_x(), 1.0, 0.0, 0.0);
-    glRotatef(orientation.rot_y(), 0.0, 1.0, 0.0);
-    glRotatef(orientation.rot_z(), 0.0, 0.0, 1.0);
-    glCallList(id.gl_id);
-    glPopMatrix();
+  const auto gears = registry.view<Renderable, Gear, Position, Orientation>();
+  gears.each([](const Renderable& renderable, const Gear& component, const Position& position,
+                const Orientation& orientation) {  //
+    renderable(component, position, orientation);
   });
 
   glPopMatrix();
@@ -202,9 +196,8 @@ static void component_init(entt::registry* registry) {
   auto gears = registry->view<Gear, Position, Orientation>();
   gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
                         const Position& position, const Orientation& orientation) {
-    GLId id{};
-    id.gl_id = build_gear(gear_parameters);
-    registry->emplace<GLId>(entity, id);
+    GLint draw_list_id = build_gear(gear_parameters);
+    registry->emplace<Renderable>(entity, ui::construct_draw_list_renderable(draw_list_id));
   });
 
   // Is this needed?
