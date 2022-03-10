@@ -60,7 +60,7 @@
 #include "lighting/lights.h"
 #include "proto/proto_utils.h"
 
-namespace pack::gear {
+namespace pack::demo {
 
 using color::Material;
 using component::Gear;
@@ -320,12 +320,12 @@ void gui_draw(const entt::registry& registry) {
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-}  // namespace pack::gear
+}  // namespace pack::demo
 
 int main(int argc, char* argv[]) {
   using namespace pack::color;
   using namespace pack::component;
-  using namespace pack::gear;
+  using namespace pack::demo;
   using namespace pack::lighting;
   using namespace pack::proto;
 
@@ -391,7 +391,7 @@ int main(int argc, char* argv[]) {
   app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{});
 
   {
-    Gears gears = load_text_proto<Gears>("gear/trivial_demo_gears.pb.txt");
+    Gears gears = load_text_proto<Gears>("demo/trivial_demo_gears.pb.txt");
     DLOG(INFO) << "Gears loaded:\n" << gears.DebugString();
 
     for (Gear gear : gears.gear()) {
@@ -409,7 +409,7 @@ int main(int argc, char* argv[]) {
 
   {
     LightingConfiguration lighting_configuration =
-        load_text_proto<LightingConfiguration>("gear/lighting_configuration.pb.txt");
+        load_text_proto<LightingConfiguration>("demo/lighting_configuration.pb.txt");
     DLOG(INFO) << "Lighting configuration:\n" << lighting_configuration.DebugString();
     for (Light light : lighting_configuration.light()) {
       light = Lights::as_packed(light);

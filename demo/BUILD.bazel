@@ -1,14 +1,14 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 
 filegroup(
-    name = "demo_files",
+    name = "gears_components",
     srcs = [
         "trivial_demo_gears.pb.txt",
     ],
 )
 
 filegroup(
-    name = "lighting_configuration",
+    name = "lighting_configurations",
     srcs = [
         "lighting_configuration.pb.txt",
     ],
@@ -20,8 +20,8 @@ cc_binary(
         "gears.cc",
     ],
     data = [
-        ":demo_files",
-        ":lighting_configuration",
+        ":gears_components",
+        ":lighting_configurations",
     ],
     deps = [
         "//color",
