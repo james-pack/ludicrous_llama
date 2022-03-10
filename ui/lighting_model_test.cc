@@ -181,7 +181,7 @@ TEST_F(LightingModelTest, CanConfigureFromProto) {
   const lighting::LightingConfiguration configuration =
       proto::load_text_proto<lighting::LightingConfiguration>("ui/testing/lighting_configuration.pb.txt");
   LightingModel lighting{};
-  lighting.configure(configuration);
+  lighting.load(configuration);
 
   lighting::LightingConfiguration returned{};
   lighting.save(&returned);
