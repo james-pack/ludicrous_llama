@@ -61,15 +61,6 @@ using component::Orientation;
 using component::Position;
 using ui::LightingModel;
 
-struct ComponentVisibility final {
-  // Visibility of the component as controlled by one or more UI elements, not the intrinsic alpha channel of the
-  // component's color. That alpha channel should be multiplied by this visibility to determine the actual opacity.
-  // Similiar approaches should be taken for more complex material modelling.
-  GLfloat visibility{1.f};
-  // Visibility switch for the component. Note that this switch allows the visibility above to maintained.
-  GLboolean is_visible{true};
-};
-
 struct PaneLayout final {
   // Offset wrt parent layout.
   GLint lower_left_x{0};
