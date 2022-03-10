@@ -1,0 +1,26 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+cc_library(
+    name = "component",
+    srcs = [
+        "positions.cc",
+    ],
+    hdrs = [
+        "positions.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":position_cc_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "position_cc_proto",
+    deps = [":position_proto"],
+)
+
+proto_library(
+    name = "position_proto",
+    srcs = ["position.proto"],
+    visibility = ["//visibility:public"],
+)
