@@ -4,6 +4,7 @@ cc_library(
     name = "ui",
     srcs = [
         "event_queue.cc",
+        "lighting_model.cc",
     ],
     hdrs = [
         "event_queue.h",
