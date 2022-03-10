@@ -389,9 +389,8 @@ int main(int argc, char* argv[]) {
   app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{});
 
   {
-    LOG(INFO) << "Loading gears";
     Gears gears = load_text_proto<Gears>("gear/trivial_demo_gears.pb.txt");
-    LOG(INFO) << "Gears loaded:\n" << gears.DebugString();
+    DLOG(INFO) << "Gears loaded:\n" << gears.DebugString();
 
     for (Gear gear : gears.gear()) {
       Material* material = gear.mutable_material();
@@ -404,14 +403,11 @@ int main(int argc, char* argv[]) {
       app.registry.emplace<Position>(gear_id, position);
       app.registry.emplace<Orientation>(gear_id, Orientation{});
     }
-    LOG(INFO) << "Loaded gears";
   }
 
   {
-    LOG(INFO) << "Loading lighting";
     LightingConfiguration lighting_configuration = load_text_proto<LightingConfiguration>("gear/lighting_configuration.pb.txt");
-    LOG(INFO) << "Generating lighting debug string";
-    LOG(INFO) << "Lighting configuration:\n" << lighting_configuration.DebugString();
+    DLOG(INFO) << "Lighting configuration:\n" << lighting_configuration.DebugString();
     for (Light light : lighting_configuration.light()) {
       light = Lights::as_packed(light);
       const auto light_id = app.registry.create();
