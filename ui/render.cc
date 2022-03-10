@@ -1,4 +1,4 @@
-#include "ui/renderable.h"
+#include "ui/render.h"
 
 #include "component/gear.pb.h"
 #include "component/position.pb.h"
@@ -6,7 +6,7 @@
 
 namespace pack::ui {
 
-Renderable construct_draw_list_renderable(GLint draw_list_id) {
+Render construct_draw_list_renderable(GLint draw_list_id) {
   return [draw_list_id](const component::Gear& /*unused*/, const component::Position& position,
                         const component::Orientation& orientation) {
     glPushMatrix();

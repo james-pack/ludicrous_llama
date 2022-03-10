@@ -52,7 +52,7 @@
 #include "ui/loop.h"
 #include "ui/lighting_im_render.h"
 #include "ui/lighting_model.h"
-#include "ui/renderable.h"
+#include "ui/render.h"
 
 namespace pack::demo {
 
@@ -61,7 +61,7 @@ using component::Gear;
 using component::Orientation;
 using component::Position;
 using ui::LightingModel;
-using ui::Renderable;
+using ui::Render;
 
 struct PaneLayout final {
   // Offset wrt parent layout.
@@ -106,10 +106,10 @@ static void component_draw(const entt::registry& registry) {
                  parameters.scene_position.float_values().z());
   });
 
-  const auto gears = registry.view<Renderable, Gear, Position, Orientation>();
-  gears.each([](const Renderable& renderable, const Gear& component, const Position& position,
+  const auto gears = registry.view<Render, Gear, Position, Orientation>();
+  gears.each([](const Render& render, const Gear& component, const Position& position,
                 const Orientation& orientation) {  //
-    renderable(component, position, orientation);
+    render(component, position, orientation);
   });
 
   glPopMatrix();
@@ -197,7 +197,7 @@ static void component_init(entt::registry* registry) {
   gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
                         const Position& position, const Orientation& orientation) {
     GLint draw_list_id = build_gear(gear_parameters);
-    registry->emplace<Renderable>(entity, ui::construct_draw_list_renderable(draw_list_id));
+    registry->emplace<Render>(entity, ui::construct_draw_list_renderable(draw_list_id));
   });
 
   // Is this needed?
@@ -284,7 +284,7 @@ int main(int argc, char* argv[]) {
   ImGui::StyleColorsDark();
   // ImGui::StyleColorsClassic();
 
-  // Setup Platform/Renderer backends
+  // Setup Platform/Render backends
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(pack::ui::determine_glsl_version());
 
