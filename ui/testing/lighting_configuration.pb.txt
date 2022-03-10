@@ -1,0 +1,98 @@
+light {
+  position {
+    float_values {
+      x: 10
+    }
+  }
+  ambient {
+    float_values {
+      red: 0.8
+      green: 0.8
+      blue: 0.8
+      alpha: 1
+    }
+  }
+  diffuse {
+    float_values {
+      red: 0.8
+      green: 0.8
+      blue: 0.8
+      alpha: 1
+    }
+  }
+  specular {
+    float_values {
+      red: 0.8
+      green: 0.8
+      blue: 0.8
+      alpha: 1
+    }
+  }
+  enabled: true
+}
+light {
+  light_num: 1
+  position {
+    float_values {
+      y: 10
+    }
+  }
+  ambient {
+    float_values {
+      red: 0.8
+      green: 0.8
+      blue: 0.8
+      alpha: 1
+    }
+  }
+  diffuse {
+    float_values {
+      red: 0.8
+      green: 0.8
+      blue: 0.8
+      alpha: 1
+    }
+  }
+  specular {
+    float_values {
+      red: 1
+      green: 1
+      blue: 1
+      alpha: 1
+    }
+  }
+  enabled: false
+}
+light {
+  light_num: 2
+  position {
+    float_values {
+      z: 10
+    }
+  }
+  ambient {
+    float_values {
+      red: 0.8
+      green: 0.8
+      blue: 0.8
+      alpha: 1
+    }
+  }
+  diffuse {
+    float_values {
+      red: 0.8
+      green: 0
+      blue: 0
+      alpha: 1
+    }
+  }
+  specular {
+    float_values {
+      red: 0
+      green: 0.8
+      blue: 0
+      alpha: 1
+    }
+  }
+  enabled: true
+}

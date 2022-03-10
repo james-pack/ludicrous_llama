@@ -24,6 +24,9 @@
  *   - Enabled vsync
  */
 
+// clang-format off
+// This block of defines and includes must appear first.
+
 // TODO(james): Extract to a separate file to manage math constants. Configure to use C++20 std::numbers::pi when
 // available. Feature testing macro: __cpp_lib_math_constants.
 #if defined(_MSC_VER)
@@ -31,12 +34,8 @@
 #define _USE_MATH_DEFINES
 #endif
 
-// This group of headers is order dependent and must be included before other headers.
-#define GLAD_GL_IMPLEMENTATION
-#include "glad/glad.h"
-#define GLFW_INCLUDE_NONE
-#include "GLFW/glfw3.h"
-// End of order dependent headers.
+#include "ui/ui.h"
+// clang-format on
 
 #include <cmath>
 #include <cstdio>

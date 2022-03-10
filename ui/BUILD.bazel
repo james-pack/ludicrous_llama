@@ -1,0 +1,60 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+cc_library(
+    name = "ui",
+    srcs = [
+        "event_queue.cc",
+    ],
+    hdrs = [
+        "event_queue.h",
+        "lighting_model.h",
+        "signaller.h",
+        "ui.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//color",
+        "//component",
+        "//lighting",
+        "//third_party/entt",
+        "//third_party/gflags",
+        "//third_party/glad",
+        "//third_party/glfw",
+        "//third_party/glog",
+        "//third_party/imgui",
+        "//third_party/xorg",
+    ],
+)
+
+filegroup(
+    name = "test_lighting_configurations",
+    srcs = glob(["testing/*.pb.txt"]),
+)
+
+cc_test(
+    name = "signaller_test",
+    srcs = [
+        "signaller_test.cc",
+    ],
+    deps = [
+        ":ui",
+        "//lighting",
+        "//third_party/gtest",
+    ],
+)
+
+cc_test(
+    name = "lighting_model_test",
+    srcs = [
+        "lighting_model_test.cc",
+    ],
+    data = [
+        ":test_lighting_configurations",
+    ],
+    deps = [
+        ":ui",
+        "//lighting",
+        "//proto",
+        "//third_party/gtest",
+    ],
+)
