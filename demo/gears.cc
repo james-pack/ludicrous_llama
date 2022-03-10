@@ -326,15 +326,13 @@ int main(int argc, char* argv[]) {
   const auto ui_models = app.registry.create();
   {
     app.registry.emplace<LightingModel>(ui_models, LightingModel{});
-    LightingConfiguration lighting_configuration =
-        load_text_proto<LightingConfiguration>("demo/lighting_configuration.pb.txt");
-    DLOG(INFO) << "Lighting configuration:\n" << lighting_configuration.DebugString();
     LightingModel& model = app.registry.get<LightingModel>(ui_models);
     model.connect(LightingModelSignal::POSITION_UPDATE, lighting_im_signal_render);
     model.connect(LightingModelSignal::COLOR_UPDATE, lighting_im_signal_render);
     model.connect(LightingModelSignal::ENABLED_UPDATE, lighting_im_signal_render);
     model.connect(LightingModelSignal::RESET_UPDATE, lighting_im_signal_render);
-    model.configure(lighting_configuration);
+    model.set_lighting_configuration_path("demo/lighting_configuration.pb.txt");
+    model.load();
   }
 
   component_init(&app.registry);

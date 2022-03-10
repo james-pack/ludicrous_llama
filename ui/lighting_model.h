@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <filesystem>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -22,6 +23,7 @@ enum class LightingModelSignal : int8_t {
   COLOR_UPDATE,
   ENABLED_UPDATE,
   RESET_UPDATE,
+  FILENAME_UPDATE,
 };
 std::string to_string(LightingModelSignal value);
 
@@ -37,7 +39,8 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
   };
 
   std::vector<LightModel> lights_{};
-
+  std::filesystem::path lighting_configuration_path_{};
+  
   void reset_light(LightModel* light) {
     for (int i = 0; i < 4; ++i) {
       light->position[i] = 0.f;
@@ -106,8 +109,24 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
 
   void reset();
 
-  void configure(const lighting::LightingConfiguration& lighting);
+  /**
+   * Load the lighting configuration from the lighting_configuration_path.
+   */
+  void load();
+  void load(const lighting::LightingConfiguration& lighting);
+
+  /**
+   * Save the lighting configuration to the lighting_configuration_path.
+   */
+  void save() const;
   void save(lighting::LightingConfiguration* lighting) const;
+
+  const std::filesystem::path& lighting_configuration_path() const {
+    return lighting_configuration_path_;
+  }
+  void set_lighting_configuration_path(const std::filesystem::path& lighting_configuration_path) {
+    lighting_configuration_path_ = lighting_configuration_path;
+  }
 
   GLboolean is_enabled(GLint light_num) const {
     const auto* light = find_light(light_num);

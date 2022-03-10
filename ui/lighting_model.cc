@@ -1,6 +1,7 @@
 #include "ui/lighting_model.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -12,12 +13,13 @@
 #include "glog/logging.h"
 #include "lighting/light.pb.h"
 #include "lighting/lights.h"
-#include "ui/signaller.h"
+#include "proto/proto_utils.h"
 #include "ui/ui.h"
 
 namespace pack::ui {
 
 std::string to_string(LightingModelSignal value) {
+  using std::to_string;
   switch (value) {
     case LightingModelSignal::INVALID:
       return "INVALID";
@@ -29,8 +31,13 @@ std::string to_string(LightingModelSignal value) {
       return "ENABLED_UPDATE";
     case LightingModelSignal::RESET_UPDATE:
       return "RESET_UPDATE";
+    case LightingModelSignal::FILENAME_UPDATE:
+      return "FILENAME_UPDATE";
     default:
-      throw std::domain_error("to_string not implemented for given LightingModelSignal enum value");
+      typename std::underlying_type_t<LightingModelSignal> unknown_value{
+          static_cast<std::underlying_type_t<LightingModelSignal>>(value)};
+      throw std::domain_error("to_string not implemented for given LightingModelSignal enum value '" +
+                              to_string(unknown_value) + "'");
   }
 }
 
@@ -41,7 +48,20 @@ void LightingModel::reset() {
   }
 }
 
-void LightingModel::configure(const lighting::LightingConfiguration& lighting) {
+void LightingModel::load() {
+  const lighting::LightingConfiguration lighting_configuration =
+      proto::load_text_proto<lighting::LightingConfiguration>(lighting_configuration_path_);
+  load(lighting_configuration);
+}
+
+void LightingModel::save() const {
+  lighting::LightingConfiguration lighting_configuration{};
+  save(&lighting_configuration);
+  proto::save_text_proto(lighting_configuration_path_, lighting_configuration);
+}
+
+void LightingModel::load(const lighting::LightingConfiguration& lighting) {
+  DLOG(INFO) << "Lighting configuration:\n" << lighting.DebugString();
   bool dirty{false};
 
   if (!lights_.empty()) {
