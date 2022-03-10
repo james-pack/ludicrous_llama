@@ -84,7 +84,7 @@ struct GLId final {
   GLint gl_id;
 };
 
-struct SceneParameters final {
+struct Animation final {
   Position scene_position{};
   Orientation scene_orientation{};
   GLfloat gear_rotation_angle{0.f};
@@ -93,12 +93,10 @@ struct SceneParameters final {
 
 class Application final {
  public:
-  Application(ImGuiIO& io_) : io(io_) {}
   entt::registry registry{};
-  ImGuiIO& io;
 
   // TODO(james): Sloppy. Move to ECS.
-  entt::registry::entity_type scene_parameters{};
+  entt::registry::entity_type animation{};
   PaneLayout viewport{};
 };
 
@@ -109,8 +107,8 @@ static void component_draw(const entt::registry& registry) {
 
   glPushMatrix();
 
-  const auto scene_parameters = registry.view<const SceneParameters>();
-  scene_parameters.each([](const auto& parameters) {
+  const auto animation = registry.view<const Animation>();
+  animation.each([](const auto& parameters) {
     glRotatef(parameters.scene_orientation.rot_x(), 1.0, 0.0, 0.0);
     glRotatef(parameters.scene_orientation.rot_y(), 0.0, 1.0, 0.0);
     glRotatef(parameters.scene_orientation.rot_z(), 0.0, 0.0, 1.0);
@@ -134,7 +132,7 @@ static void component_draw(const entt::registry& registry) {
 
 /* update animation parameters */
 static void animate(Application* app) {
-  SceneParameters& params = app->registry.get<SceneParameters>(app->scene_parameters);
+  Animation& params = app->registry.get<Animation>(app->animation);
   if (!params.animation_paused) {
     params.gear_rotation_angle = 100.f * (float)glfwGetTime();
 
@@ -150,7 +148,7 @@ void key(GLFWwindow* window, int k, int s, int action, int mods) {
   if (action != GLFW_PRESS) return;
 
   Application& application = *static_cast<Application*>(glfwGetWindowUserPointer(window));
-  SceneParameters& params = application.registry.get<SceneParameters>(application.scene_parameters);
+  Animation& params = application.registry.get<Animation>(application.animation);
   switch (k) {
     case GLFW_KEY_Z:
       if (mods & GLFW_MOD_SHIFT)
@@ -220,6 +218,9 @@ static void component_init(entt::registry* registry) {
 
   // Is this needed?
   // glEnable(GL_NORMALIZE);
+  glEnable(GL_RESCALE_NORMAL);
+
+  glEnable(GL_LINE_SMOOTH);
 }
 
 void gui_draw(const entt::registry& registry) {
@@ -262,8 +263,8 @@ int main(int argc, char* argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  glfwWindowHint(GLFW_DEPTH_BITS, 16);
-  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+  glfwWindowHint(GLFW_DEPTH_BITS, 32);
+  // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
   {
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
@@ -280,7 +281,7 @@ int main(int argc, char* argv[]) {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
 
-  Application app{ImGui::GetIO()};
+  Application app{};
   app.viewport = {0, 0, width, height};
   glfwSetWindowUserPointer(window, &app);
 
@@ -292,8 +293,8 @@ int main(int argc, char* argv[]) {
   gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
   glfwSwapInterval(1);
 
-  glfwGetFramebufferSize(window, &width, &height);
-  reshape(window, width, height);
+  // glfwGetFramebufferSize(window, &width, &height);
+  // reshape(window, width, height);
 
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
@@ -303,8 +304,8 @@ int main(int argc, char* argv[]) {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(pack::ui::determine_glsl_version());
 
-  app.scene_parameters = app.registry.create();
-  app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{});
+  app.animation = app.registry.create();
+  app.registry.emplace<Animation>(app.animation, Animation{});
 
   {
     Gears gears = load_text_proto<Gears>("demo/trivial_demo_gears.pb.txt");
