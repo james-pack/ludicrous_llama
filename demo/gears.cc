@@ -49,7 +49,7 @@
 #include "lighting/light.pb.h"
 #include "lighting/lights.h"
 #include "proto/proto_utils.h"
-#include "ui/event_queue.h"
+#include "ui/loop.h"
 #include "ui/lighting_im_render.h"
 #include "ui/lighting_model.h"
 
@@ -351,7 +351,7 @@ int main(int argc, char* argv[]) {
     glfwPollEvents();
 
     // Distribute events, mostly from the UI models to their respective views and rendering functions.
-    EventQueue::distribute();
+    Loop::distribute();
 
     // Update animation
     animate(&app);

@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ui/event_queue.h"
+#include "ui/loop.h"
 
 namespace pack::ui {
 
@@ -23,7 +23,7 @@ class Signaller {
         break;
       }
       const auto& slot = iter->second;
-      EventQueue::add([signal, &instance, &slot]() { slot(signal, instance); });
+      Loop::add([signal, &instance, &slot]() { slot(signal, instance); });
     }
   }
 
@@ -36,8 +36,8 @@ class Signaller {
       }
       const auto& registered_slot = iter->second;
       if (slot == registered_slot) {
-	observers_.erase(iter);
-	break;
+        observers_.erase(iter);
+        break;
       }
     }
   }

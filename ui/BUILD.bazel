@@ -3,12 +3,12 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 cc_library(
     name = "ui",
     srcs = [
-        "event_queue.cc",
+        "loop.cc",
         "lighting_im_render.cc",
         "lighting_model.cc",
     ],
     hdrs = [
-        "event_queue.h",
+        "loop.h",
         "lighting_im_render.h",
         "lighting_model.h",
         "signaller.h",
