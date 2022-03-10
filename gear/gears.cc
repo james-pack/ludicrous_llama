@@ -407,27 +407,6 @@ int main(int argc, char* argv[]) {
     LOG(INFO) << "Loaded gears";
   }
 
-  // {
-  //   LOG(INFO) << "Creating lighting configuration";
-  //   LightingConfiguration lighting_configuration{};
-
-  //   for (int i = 0; i < 3; ++i) {
-  //     Light* light = lighting_configuration.add_light();
-  //     light->set_light_num(i);
-  //     light->set_enabled(true);
-  //     light->mutable_position()->mutable_float_values()->set_x(10.f);
-  //     light->mutable_position()->mutable_float_values()->set_y(0.f);
-  //     light->mutable_position()->mutable_float_values()->set_z(0.f);
-  //     light->mutable_position()->mutable_float_values()->set_w(0.f);
-  //     light->mutable_diffuse()->mutable_float_values()->set_red(0.8f);
-  //     light->mutable_diffuse()->mutable_float_values()->set_green(0.8f);
-  //     light->mutable_diffuse()->mutable_float_values()->set_blue(0.8f);
-  //     light->mutable_diffuse()->mutable_float_values()->set_alpha(1.f);
-  //   }
-  //   save_text_proto("gear/lighting_configuration.pb.txt", lighting_configuration);
-  //   LOG(INFO) << "Saved lighting configuration";
-  // }
-
   {
     LOG(INFO) << "Loading lighting";
     LightingConfiguration lighting_configuration = load_text_proto<LightingConfiguration>("gear/lighting_configuration.pb.txt");
