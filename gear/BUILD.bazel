@@ -11,7 +11,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":gear_cc_proto",
-        ":position_cc_proto",
+        "//component",
         "//color",
         "//third_party/glad",
         "//third_party/glfw",
@@ -31,20 +31,17 @@ proto_library(
     ],
 )
 
-cc_proto_library(
-    name = "position_cc_proto",
-    deps = [":position_proto"],
-)
-
-proto_library(
-    name = "position_proto",
-    srcs = ["position.proto"],
-)
-
 filegroup(
     name = "demo_files",
     srcs = [
         "trivial_demo_gears.pb.txt",
+    ],
+)
+
+filegroup(
+    name = "lighting_configuration",
+    srcs = [
+        "lighting_configuration.pb.txt",
     ],
 )
 
@@ -55,6 +52,7 @@ cc_binary(
     ],
     data = [
         ":demo_files",
+        ":lighting_configuration",
     ],
     deps = [
         ":gear",

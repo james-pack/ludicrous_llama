@@ -1,0 +1,50 @@
+light {
+  position {
+    float_values {
+      x: 10
+    }
+  }
+  diffuse {
+    float_values {
+      red: 0.8
+      green: 0.8
+      blue: 0.8
+      alpha: 1
+    }
+  }
+  enabled: true
+}
+light {
+  light_num: 1
+  position {
+    float_values {
+      y: 10
+    }
+  }
+  diffuse {
+    float_values {
+      red: 0.8
+      green: 0.8
+      blue: 0.8
+      alpha: 1
+    }
+  }
+  enabled: true
+}
+light {
+  light_num: 2
+  position {
+    float_values {
+      z: 10
+    }
+  }
+  diffuse {
+    float_values {
+      red: 0.8
+      green: 0.8
+      blue: 0.8
+      alpha: 1
+    }
+  }
+  enabled: true
+}

@@ -47,21 +47,25 @@
 #include "color/colors.h"
 #include "color/material.pb.h"
 #include "color/materials.h"
+#include "component/position.pb.h"
 #include "entt/entity/registry.hpp"
 #include "gear/gear.h"
 #include "gear/gear.pb.h"
-#include "gear/position.pb.h"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "lighting/light.pb.h"
+#include "lighting/lights.h"
 #include "proto/proto_utils.h"
 
 namespace pack::gear {
 
 using color::Material;
+using component::Orientation;
+using component::Position;
+using lighting::Light;
 
 struct ComponentVisibility final {
   // Visibility of the component as controlled by one or more UI elements, not the intrinsic alpha channel of the
@@ -88,6 +92,7 @@ struct GLId final {
 
 struct SceneParameters final {
   Position scene_position{};
+  Orientation scene_orientation{};
   GLfloat gear_rotation_angle{0.f};
   bool animation_paused{false};
 };
@@ -112,19 +117,20 @@ static void component_draw(const entt::registry& registry) {
 
   const auto scene_parameters = registry.view<const SceneParameters>();
   scene_parameters.each([](const auto& parameters) {
-    glRotatef(parameters.scene_position.rot_x(), 1.0, 0.0, 0.0);
-    glRotatef(parameters.scene_position.rot_y(), 0.0, 1.0, 0.0);
-    glRotatef(parameters.scene_position.rot_z(), 0.0, 0.0, 1.0);
-    glTranslatef(parameters.scene_position.x(), parameters.scene_position.y(), parameters.scene_position.z());
+    glRotatef(parameters.scene_orientation.rot_x(), 1.0, 0.0, 0.0);
+    glRotatef(parameters.scene_orientation.rot_y(), 0.0, 1.0, 0.0);
+    glRotatef(parameters.scene_orientation.rot_z(), 0.0, 0.0, 1.0);
+    glTranslatef(parameters.scene_position.float_values().x(), parameters.scene_position.float_values().y(),
+                 parameters.scene_position.float_values().z());
   });
 
-  const auto gears = registry.view<GLId, Position>();
-  gears.each([](const GLId& id, const Position& position) {
+  const auto gears = registry.view<GLId, Position, Orientation>();
+  gears.each([](const GLId& id, const Position& position, const Orientation& orientation) {
     glPushMatrix();
-    glTranslatef(position.x(), position.y(), position.z());
-    glRotatef(position.rot_x(), 1.0, 0.0, 0.0);
-    glRotatef(position.rot_y(), 0.0, 1.0, 0.0);
-    glRotatef(position.rot_z(), 0.0, 0.0, 1.0);
+    glTranslatef(position.float_values().x(), position.float_values().y(), position.float_values().z());
+    glRotatef(orientation.rot_x(), 1.0, 0.0, 0.0);
+    glRotatef(orientation.rot_y(), 0.0, 1.0, 0.0);
+    glRotatef(orientation.rot_z(), 0.0, 0.0, 1.0);
     glCallList(id.gl_id);
     glPopMatrix();
   });
@@ -138,9 +144,9 @@ static void animate(Application* app) {
   if (!params.animation_paused) {
     params.gear_rotation_angle = 100.f * (float)glfwGetTime();
 
-    auto gears = app->registry.view<Gear, Position>();
-    gears.each([&params](const Gear& gear, Position& position) {
-      position.set_rot_z(params.gear_rotation_angle * gear.angle_coefficient() + gear.phase());
+    auto gears = app->registry.view<Gear, Orientation>();
+    gears.each([&params](const Gear& gear, Orientation& orientation) {
+      orientation.set_rot_z(params.gear_rotation_angle * gear.angle_coefficient() + gear.phase());
     });
   }
 }
@@ -154,24 +160,24 @@ void key(GLFWwindow* window, int k, int s, int action, int mods) {
   switch (k) {
     case GLFW_KEY_Z:
       if (mods & GLFW_MOD_SHIFT)
-        params.scene_position.set_rot_z(params.scene_position.rot_z() - 5.0);
+        params.scene_orientation.set_rot_z(params.scene_orientation.rot_z() - 5.0);
       else
-        params.scene_position.set_rot_z(params.scene_position.rot_z() + 5.0);
+        params.scene_orientation.set_rot_z(params.scene_orientation.rot_z() + 5.0);
       break;
     case GLFW_KEY_ESCAPE:
       glfwSetWindowShouldClose(window, GLFW_TRUE);
       break;
     case GLFW_KEY_UP:
-      params.scene_position.set_rot_x(params.scene_position.rot_x() + 5.0);
+      params.scene_orientation.set_rot_x(params.scene_orientation.rot_x() + 5.0);
       break;
     case GLFW_KEY_DOWN:
-      params.scene_position.set_rot_x(params.scene_position.rot_x() - 5.0);
+      params.scene_orientation.set_rot_x(params.scene_orientation.rot_x() - 5.0);
       break;
     case GLFW_KEY_LEFT:
-      params.scene_position.set_rot_y(params.scene_position.rot_y() + 5.0);
+      params.scene_orientation.set_rot_y(params.scene_orientation.rot_y() + 5.0);
       break;
     case GLFW_KEY_RIGHT:
-      params.scene_position.set_rot_y(params.scene_position.rot_y() - 5.0);
+      params.scene_orientation.set_rot_y(params.scene_orientation.rot_y() - 5.0);
       break;
     case GLFW_KEY_SPACE:
       if (params.animation_paused) {
@@ -209,6 +215,37 @@ void reshape(GLFWwindow* window, int width, int height) {
 
 /* program & OpenGL initialization */
 static void component_init(entt::registry* registry) {
+  const auto& lights = registry->view<Light>();
+  lights.each([](const Light& light) {
+    if (!light.position().has_packed()) {
+      throw std::logic_error("Light position data must be packed.");
+    }
+    if (!light.ambient().has_packed()) {
+      throw std::logic_error("Material color data must be packed.");
+    }
+    if (!light.diffuse().has_packed()) {
+      throw std::logic_error("Material color data must be packed.");
+    }
+    if (!light.specular().has_packed()) {
+      throw std::logic_error("Material color data must be packed.");
+    }
+    glLightfv(GL_LIGHT0 + light.light_num(), GL_POSITION,
+              reinterpret_cast<const float*>(light.position().packed().bytes().data()));
+    glLightiv(GL_LIGHT0 + light.light_num(), GL_AMBIENT,
+              reinterpret_cast<const int32_t*>(light.ambient().packed().bytes().data()));
+    glLightiv(GL_LIGHT0 + light.light_num(), GL_DIFFUSE,
+              reinterpret_cast<const int32_t*>(light.diffuse().packed().bytes().data()));
+    glLightiv(GL_LIGHT0 + light.light_num(), GL_SPECULAR,
+              reinterpret_cast<const int32_t*>(light.specular().packed().bytes().data()));
+    if (light.enabled()) {
+      glEnable(GL_LIGHT0 + light.light_num());
+    } else {
+      glDisable(GL_LIGHT0 + light.light_num());
+    }
+  });
+  glEnable(GL_LIGHTING);
+
+  /*
   constexpr int NUM_LIGHTS{4};
   const GLfloat light_positions[][NUM_LIGHTS] = {
       {10.f, 0.f, 0.f, 0.f},
@@ -223,11 +260,8 @@ static void component_init(entt::registry* registry) {
       {0.4f, 0.4f, 0.4f, 0.4f},
   };
   for (int i = 0; i < NUM_LIGHTS; ++i) {
-    glLightfv(GL_LIGHT0 + i, GL_POSITION, light_positions[i]);
-    glLightfv(GL_LIGHT0 + i, GL_DIFFUSE, light_diffuse_color[i]);
-    glEnable(GL_LIGHT0 + i);
   }
-  glEnable(GL_LIGHTING);
+  */
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -235,13 +269,13 @@ static void component_init(entt::registry* registry) {
   glFrontFace(GL_CCW);
 
   // Draw the gears.
-  auto gears = registry->view<Gear, Position>();
-  gears.each(
-      [registry](const entt::registry::entity_type& entity, const Gear& gear_parameters, const Position& position) {
-        GLId id{};
-        id.gl_id = build_gear(gear_parameters);
-        registry->emplace<GLId>(entity, id);
-      });
+  auto gears = registry->view<Gear, Position, Orientation>();
+  gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
+                        const Position& position, const Orientation& orientation) {
+    GLId id{};
+    id.gl_id = build_gear(gear_parameters);
+    registry->emplace<GLId>(entity, id);
+  });
 
   // Is this needed?
   // glEnable(GL_NORMALIZE);
@@ -262,10 +296,10 @@ const char* determine_glsl_version() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
   const char* glsl_version = "#version 150";
 #else
-  // GL 3.0 + GLSL 130
+  // GL 3.3 + GLSL 130
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-  // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
   // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
   const char* glsl_version = "#version 130";
 #endif
@@ -290,6 +324,7 @@ void gui_draw(const entt::registry& registry) {
 int main(int argc, char* argv[]) {
   using namespace pack::color;
   using namespace pack::gear;
+  using namespace pack::lighting;
   using namespace pack::proto;
 
   // Default logging configuration.
@@ -353,18 +388,56 @@ int main(int argc, char* argv[]) {
   app.scene_parameters = app.registry.create();
   app.registry.emplace<SceneParameters>(app.scene_parameters, SceneParameters{});
 
-  Gears gears = load_text_proto<Gears>("gear/trivial_demo_gears.pb.txt");
-  DLOG(INFO) << "Gears loaded:\n" << gears.DebugString();
+  {
+    LOG(INFO) << "Loading gears";
+    Gears gears = load_text_proto<Gears>("gear/trivial_demo_gears.pb.txt");
+    LOG(INFO) << "Gears loaded:\n" << gears.DebugString();
 
-  for (Gear gear : gears.gear()) {
-    Material* material = gear.mutable_material();
-    Materials::pack_colors(material);
-    const auto gear_id = app.registry.create();
-    Position position{};
-    position.set_x(-3.1f);
-    position.set_y(4.2f);
-    app.registry.emplace<Position>(gear_id, position);
-    app.registry.emplace<Gear>(gear_id, std::move(gear));
+    for (Gear gear : gears.gear()) {
+      Material* material = gear.mutable_material();
+      Materials::pack_colors(material);
+      const auto gear_id = app.registry.create();
+      app.registry.emplace<Gear>(gear_id, std::move(gear));
+      Position position{};
+      position.mutable_float_values()->set_x(-3.1f);
+      position.mutable_float_values()->set_y(4.2f);
+      app.registry.emplace<Position>(gear_id, position);
+      app.registry.emplace<Orientation>(gear_id, Orientation{});
+    }
+    LOG(INFO) << "Loaded gears";
+  }
+
+  // {
+  //   LOG(INFO) << "Creating lighting configuration";
+  //   LightingConfiguration lighting_configuration{};
+
+  //   for (int i = 0; i < 3; ++i) {
+  //     Light* light = lighting_configuration.add_light();
+  //     light->set_light_num(i);
+  //     light->set_enabled(true);
+  //     light->mutable_position()->mutable_float_values()->set_x(10.f);
+  //     light->mutable_position()->mutable_float_values()->set_y(0.f);
+  //     light->mutable_position()->mutable_float_values()->set_z(0.f);
+  //     light->mutable_position()->mutable_float_values()->set_w(0.f);
+  //     light->mutable_diffuse()->mutable_float_values()->set_red(0.8f);
+  //     light->mutable_diffuse()->mutable_float_values()->set_green(0.8f);
+  //     light->mutable_diffuse()->mutable_float_values()->set_blue(0.8f);
+  //     light->mutable_diffuse()->mutable_float_values()->set_alpha(1.f);
+  //   }
+  //   save_text_proto("gear/lighting_configuration.pb.txt", lighting_configuration);
+  //   LOG(INFO) << "Saved lighting configuration";
+  // }
+
+  {
+    LOG(INFO) << "Loading lighting";
+    LightingConfiguration lighting_configuration = load_text_proto<LightingConfiguration>("gear/lighting_configuration.pb.txt");
+    LOG(INFO) << "Generating lighting debug string";
+    LOG(INFO) << "Lighting configuration:\n" << lighting_configuration.DebugString();
+    for (Light light : lighting_configuration.light()) {
+      light = Lights::as_packed(light);
+      const auto light_id = app.registry.create();
+      app.registry.emplace<Light>(light_id, std::move(light));
+    }
   }
 
   component_init(&app.registry);

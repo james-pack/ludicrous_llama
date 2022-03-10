@@ -2,9 +2,17 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 
 cc_library(
     name = "lighting",
+    srcs = [
+        "lights.cc",
+    ],
+    hdrs = [
+        "lights.h",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":light_cc_proto",
+        "//color",
+        "//component",
         "//proto",
     ],
 )
@@ -19,5 +27,6 @@ proto_library(
     srcs = ["light.proto"],
     deps = [
         "//color:color_proto",
+        "//component:position_proto",
     ],
 )
