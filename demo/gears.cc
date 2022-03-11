@@ -57,6 +57,8 @@
 namespace pack::demo {
 
 using color::Material;
+using component::Animate;
+using component::Animator;
 using component::Gear;
 using component::Orientation;
 using component::Position;
@@ -73,20 +75,17 @@ struct PaneLayout final {
   GLint height{-1};
 };
 
-// TODO(james): Refactor. Mixture of camera parameters and animation details.
-struct Animation final {
+// TODO(james): Build a real camera concept.
+struct Camera final {
   Position scene_position{};
   Orientation scene_orientation{};
-  GLfloat gear_rotation_angle{0.f};
-  bool animation_paused{false};
 };
 
 class Application final {
  public:
   entt::registry registry{};
+  Animator animator{registry};
 
-  // TODO(james): Sloppy. Move to ECS.
-  entt::registry::entity_type animation{};
   PaneLayout viewport{};
 };
 
@@ -97,8 +96,8 @@ static void component_draw(const entt::registry& registry) {
 
   glPushMatrix();
 
-  const auto animation = registry.view<const Animation>();
-  animation.each([](const auto& parameters) {
+  const auto cameras = registry.view<const Camera>();
+  cameras.each([](const auto& parameters) {
     glRotatef(parameters.scene_orientation.rot_x(), 1.0, 0.0, 0.0);
     glRotatef(parameters.scene_orientation.rot_y(), 0.0, 1.0, 0.0);
     glRotatef(parameters.scene_orientation.rot_z(), 0.0, 0.0, 1.0);
@@ -115,58 +114,44 @@ static void component_draw(const entt::registry& registry) {
   glPopMatrix();
 }
 
-/* update animation parameters */
-static void animate(Application* app) {
-  Animation& params = app->registry.get<Animation>(app->animation);
-  if (!params.animation_paused) {
-    params.gear_rotation_angle = 100.f * (float)glfwGetTime();
-
-    auto gears = app->registry.view<Gear, Orientation>();
-    gears.each([&params](const Gear& gear, Orientation& orientation) {
-      orientation.set_rot_z(params.gear_rotation_angle * gear.angle_coefficient() + gear.phase());
-    });
-  }
-}
-
 /* change view angle, exit upon ESC */
 void key(GLFWwindow* window, int k, int s, int action, int mods) {
   if (action != GLFW_PRESS) return;
 
   Application& application = *static_cast<Application*>(glfwGetWindowUserPointer(window));
-  Animation& params = application.registry.get<Animation>(application.animation);
-  switch (k) {
-    case GLFW_KEY_Z:
-      if (mods & GLFW_MOD_SHIFT)
-        params.scene_orientation.set_rot_z(params.scene_orientation.rot_z() - 5.0);
-      else
-        params.scene_orientation.set_rot_z(params.scene_orientation.rot_z() + 5.0);
-      break;
-    case GLFW_KEY_ESCAPE:
-      glfwSetWindowShouldClose(window, GLFW_TRUE);
-      break;
-    case GLFW_KEY_UP:
-      params.scene_orientation.set_rot_x(params.scene_orientation.rot_x() + 5.0);
-      break;
-    case GLFW_KEY_DOWN:
-      params.scene_orientation.set_rot_x(params.scene_orientation.rot_x() - 5.0);
-      break;
-    case GLFW_KEY_LEFT:
-      params.scene_orientation.set_rot_y(params.scene_orientation.rot_y() + 5.0);
-      break;
-    case GLFW_KEY_RIGHT:
-      params.scene_orientation.set_rot_y(params.scene_orientation.rot_y() - 5.0);
-      break;
-    case GLFW_KEY_SPACE:
-      if (params.animation_paused) {
-        params.animation_paused = false;
-      } else {
-        params.animation_paused = true;
+  if (k == GLFW_KEY_SPACE) {
+    application.animator.toggle_pause();
+  } else if (k == GLFW_KEY_ESCAPE) {
+    glfwSetWindowShouldClose(window, GLFW_TRUE);
+  } else {
+    auto cameras = application.registry.view<Camera>();
+    cameras.each([k, mods](Camera& params) {
+      switch (k) {
+        case GLFW_KEY_UP:
+          params.scene_orientation.set_rot_x(params.scene_orientation.rot_x() + 5.0);
+          break;
+        case GLFW_KEY_DOWN:
+          params.scene_orientation.set_rot_x(params.scene_orientation.rot_x() - 5.0);
+          break;
+        case GLFW_KEY_LEFT:
+          params.scene_orientation.set_rot_y(params.scene_orientation.rot_y() + 5.0);
+          break;
+        case GLFW_KEY_RIGHT:
+          params.scene_orientation.set_rot_y(params.scene_orientation.rot_y() - 5.0);
+          break;
+        case GLFW_KEY_Z:
+          if (mods & GLFW_MOD_SHIFT) {
+            params.scene_orientation.set_rot_z(params.scene_orientation.rot_z() - 5.0);
+          } else {
+            params.scene_orientation.set_rot_z(params.scene_orientation.rot_z() + 5.0);
+          }
+          break;
+        default:
+          return;
       }
-      break;
-    default:
-      return;
+    });
   }
-}
+}  // namespace pack::demo
 
 // Window resize, possibly due to monitor resolution change.
 void reshape(GLFWwindow* window, int width, int height) {
@@ -197,7 +182,8 @@ static void component_init(entt::registry* registry) {
   gears.each([registry](const entt::registry::entity_type& entity, const Gear& gear_parameters,
                         const Position& position, const Orientation& orientation) {
     GLint draw_list_id = build_gear(gear_parameters);
-    registry->emplace<Render>(entity, ui::construct_draw_list_renderable(draw_list_id));
+    registry->emplace<Render>(entity, ui::construct_draw_list_renderer(draw_list_id));
+    registry->emplace<Animate>(entity, component::construct_gear_animator(gear_parameters));
   });
 
   // Is this needed?
@@ -288,8 +274,10 @@ int main(int argc, char* argv[]) {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(pack::ui::determine_glsl_version());
 
-  app.animation = app.registry.create();
-  app.registry.emplace<Animation>(app.animation, Animation{});
+  {
+    const auto camera = app.registry.create();
+    app.registry.emplace<Camera>(camera, Camera{});
+  }
 
   {
     Gears gears = load_text_proto<Gears>("demo/trivial_demo_gears.pb.txt");
@@ -338,11 +326,10 @@ int main(int argc, char* argv[]) {
     Loop::distribute_events();
 
     // Update animation
-    animate(&app);
+    app.animator.animate();
   }
 
   // Cleanup and shutdown.
-
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();

@@ -3,10 +3,12 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 cc_library(
     name = "component",
     srcs = [
+        "animate.cc",
         "gear.cc",
         "positions.cc",
     ],
     hdrs = [
+        "animate.h",
         "gear.h",
         "positions.h",
     ],
@@ -15,6 +17,7 @@ cc_library(
         ":gear_cc_proto",
         ":position_cc_proto",
         "//color",
+        "//third_party/entt",
         "//third_party/glad",
         "//third_party/glfw",
     ],

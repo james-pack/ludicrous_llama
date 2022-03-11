@@ -6,7 +6,7 @@
 
 namespace pack::ui {
 
-Render construct_draw_list_renderable(GLint draw_list_id) {
+Render construct_draw_list_renderer(GLint draw_list_id) {
   return [draw_list_id](const component::Gear& /*unused*/, const component::Position& position,
                         const component::Orientation& orientation) {
     glPushMatrix();
