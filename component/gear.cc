@@ -162,7 +162,7 @@ unsigned int build_gear(const Gear& gear) {
 
 Animate construct_gear_animator(const Gear& /* ignored */) {
   return [](double seconds, Gear& component, Position& /* ignored */, Orientation& orientation) {
-    orientation.set_rot_z(1.5f * 1000.f * seconds / component.teeth() * component.angle_coefficient() + component.phase());
+    orientation.set_rot_z(2.f * 1000.f * seconds / component.teeth() * component.angle_coefficient() + component.phase());
   };
 }
 

@@ -3,7 +3,6 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 cc_library(
     name = "component",
     srcs = [
-        "animate.cc",
         "gear.cc",
         "positions.cc",
     ],

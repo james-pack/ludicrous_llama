@@ -3,18 +3,23 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 cc_library(
     name = "ui",
     srcs = [
+        "animator.cc",
+        "application.cc",
         "lighting_im_render.cc",
         "lighting_model.cc",
-        "loop.cc",
         "render.cc",
+        "window.cc",
     ],
     hdrs = [
+        "animator.h",
+        "application.h",
+        "camera.h",
         "lighting_im_render.h",
         "lighting_model.h",
-        "loop.h",
         "render.h",
         "signaller.h",
         "ui.h",
+        "window.h",
     ],
     visibility = ["//visibility:public"],
     deps = [

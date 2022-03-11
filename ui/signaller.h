@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ui/loop.h"
+#include "ui/application.h"
 
 namespace pack::ui {
 
@@ -23,7 +23,7 @@ class Signaller {
         break;
       }
       const auto& slot = iter->second;
-      Loop::add_event([signal, &instance, &slot]() { slot(signal, instance); });
+      Application::current().add_event([signal, &instance, &slot]() { slot(signal, instance); });
     }
   }
 
