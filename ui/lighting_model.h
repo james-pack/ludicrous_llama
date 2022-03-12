@@ -31,6 +31,7 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
  private:
   struct LightModel final {
     GLint light_num;
+    std::string name{};
     GLfloat position[4] = {0.f, 0.f, 0.f, 0.f};
     GLfloat ambient[4] = {0.f, 0.f, 0.f, 0.f};
     GLfloat diffuse[4] = {0.f, 0.f, 0.f, 0.f};
@@ -51,6 +52,17 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
     light->enabled = false;
   }
 
+  LightModel* find_light(GLint light_num) {
+    for (auto& light : lights_) {
+      if (light.light_num == light_num) {
+        return &light;
+      } else if (light.light_num > light_num) {
+        break;
+      }
+    }
+    return nullptr;
+  }
+
   const LightModel* find_light(GLint light_num) const {
     for (const auto& light : lights_) {
       if (light.light_num == light_num) {
@@ -68,6 +80,7 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
   }
 
   LightModel& create_light(GLint light_num) {
+    using std::to_string;
     if (light_num < 0) {
       throw std::invalid_argument("Light numbers must be non-negative.");
     }
@@ -78,7 +91,7 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
     auto iter = std::lower_bound(lights_.begin(), lights_.end(), light_num,
                                  [](const LightModel& entry, GLint light_num) { return entry.light_num < light_num; });
     if ((iter == lights_.end()) || (iter->light_num > light_num)) {
-      return *lights_.insert(iter, LightModel{light_num});
+      return *lights_.insert(iter, LightModel{light_num, "Light " + to_string(light_num)});
     } else {
       using std::to_string;
       throw std::logic_error("Light with light_num of " + to_string(light_num) + " already exists.");
@@ -135,11 +148,37 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
     }
   }
 
+  GLboolean* enabled(GLint light_num) {
+    auto* light = find_light(light_num);
+    if (light) {
+      return &light->enabled;
+    } else {
+      return nullptr;
+    }
+  }
+
   void enable(GLint light_num);
   void disable(GLint light_num);
   void erase(GLint light_num);
 
+  const std::string* name(GLint light_num) const {
+    auto* light = find_light(light_num);
+    if (light) {
+      return &light->name;
+    } else {
+      return nullptr;
+    }
+  }
+
   void set_position(GLint light_num, GLfloat x, GLfloat y, GLfloat z, GLfloat w = 0.f);
+  GLfloat* position(GLint light_num) {
+    auto* light = find_light(light_num);
+    if (light) {
+      return light->position;
+    } else {
+      return nullptr;
+    }
+  }
   const GLfloat* position(GLint light_num) const {
     auto* light = find_light(light_num);
     if (light) {
@@ -186,6 +225,14 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
   }
 
   void set_ambient(GLint light_num, GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f);
+  GLfloat* ambient(GLint light_num) {
+    auto* light = find_light(light_num);
+    if (light) {
+      return light->ambient;
+    } else {
+      return nullptr;
+    }
+  }
   const GLfloat* ambient(GLint light_num) const {
     auto* light = find_light(light_num);
     if (light) {
@@ -196,6 +243,14 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
   }
 
   void set_diffuse(GLint light_num, GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f);
+  GLfloat* diffuse(GLint light_num) {
+    auto* light = find_light(light_num);
+    if (light) {
+      return light->diffuse;
+    } else {
+      return nullptr;
+    }
+  }
   const GLfloat* diffuse(GLint light_num) const {
     auto* light = find_light(light_num);
     if (light) {
@@ -206,6 +261,14 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
   }
 
   void set_specular(GLint light_num, GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha = 1.f);
+  GLfloat* specular(GLint light_num) {
+    auto* light = find_light(light_num);
+    if (light) {
+      return light->specular;
+    } else {
+      return nullptr;
+    }
+  }
   const GLfloat* specular(GLint light_num) const {
     auto* light = find_light(light_num);
     if (light) {
