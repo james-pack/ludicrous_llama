@@ -31,7 +31,7 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
  private:
   struct LightModel final {
     GLint light_num;
-    std::string name{};
+    std::string name;
     GLfloat position[4] = {0.f, 0.f, 0.f, 0.f};
     GLfloat ambient[4] = {0.f, 0.f, 0.f, 0.f};
     GLfloat diffuse[4] = {0.f, 0.f, 0.f, 0.f};
@@ -162,7 +162,7 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
   void erase(GLint light_num);
 
   const std::string* name(GLint light_num) const {
-    auto* light = find_light(light_num);
+    const auto* light = find_light(light_num);
     if (light) {
       return &light->name;
     } else {
@@ -185,42 +185,6 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
       return light->position;
     } else {
       return nullptr;
-    }
-  }
-
-  GLfloat pos_x(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->position[0];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat pos_y(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->position[1];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat pos_z(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->position[2];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat pos_w(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->position[3];
-    } else {
-      return 0.f;
     }
   }
 
@@ -275,114 +239,6 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
       return light->specular;
     } else {
       return nullptr;
-    }
-  }
-
-  GLfloat ambient_red(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->ambient[0];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat ambient_green(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->ambient[1];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat ambient_blue(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->ambient[2];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat ambient_alpha(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->ambient[3];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat diffuse_red(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->diffuse[0];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat diffuse_green(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->diffuse[1];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat diffuse_blue(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->diffuse[2];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat diffuse_alpha(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->diffuse[3];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat specular_red(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->specular[0];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat specular_green(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->specular[1];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat specular_blue(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->specular[2];
-    } else {
-      return 0.f;
-    }
-  }
-
-  GLfloat specular_alpha(GLint light_num) const {
-    auto* light = find_light(light_num);
-    if (light) {
-      return light->specular[3];
-    } else {
-      return 0.f;
     }
   }
 };
