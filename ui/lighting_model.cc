@@ -14,7 +14,7 @@
 #include "lighting/light.pb.h"
 #include "lighting/lights.h"
 #include "proto/proto_utils.h"
-#include "ui/ui.h"
+#include "third_party/glfw/glfw.h"
 
 namespace pack::ui {
 

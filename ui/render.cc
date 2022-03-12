@@ -2,7 +2,7 @@
 
 #include "component/gear.pb.h"
 #include "component/position.pb.h"
-#include "ui/ui.h"
+#include "third_party/glfw/glfw.h"
 
 namespace pack::ui {
 

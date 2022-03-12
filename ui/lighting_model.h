@@ -12,8 +12,8 @@
 #include "component/positions.h"
 #include "lighting/light.pb.h"
 #include "lighting/lights.h"
+#include "third_party/glfw/glfw.h"
 #include "ui/signaller.h"
-#include "ui/ui.h"
 
 namespace pack::ui {
 
@@ -40,7 +40,7 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
 
   std::vector<LightModel> lights_{};
   std::filesystem::path lighting_configuration_path_{};
-  
+
   void reset_light(LightModel* light) {
     for (int i = 0; i < 4; ++i) {
       light->position[i] = 0.f;
@@ -121,9 +121,7 @@ class LightingModel final : public Signaller<LightingModel, LightingModelSignal>
   void save() const;
   void save(lighting::LightingConfiguration* lighting) const;
 
-  const std::filesystem::path& lighting_configuration_path() const {
-    return lighting_configuration_path_;
-  }
+  const std::filesystem::path& lighting_configuration_path() const { return lighting_configuration_path_; }
   void set_lighting_configuration_path(const std::filesystem::path& lighting_configuration_path) {
     lighting_configuration_path_ = lighting_configuration_path;
   }

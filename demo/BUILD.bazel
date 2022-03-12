@@ -18,6 +18,7 @@ cc_binary(
     name = "gears",
     srcs = [
         "gears.cc",
+        "gears_ui.h",
     ],
     data = [
         ":gears_components",
@@ -28,7 +29,6 @@ cc_binary(
         "//component",
         "//lighting",
         "//proto",
-        "//ui",
         "//third_party/entt",
         "//third_party/gflags",
         "//third_party/glad",
@@ -36,5 +36,6 @@ cc_binary(
         "//third_party/glog",
         "//third_party/imgui",
         "//third_party/xorg",
+        "//ui",
     ],
 )

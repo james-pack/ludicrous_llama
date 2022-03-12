@@ -7,26 +7,23 @@
 #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
-
-// This group of headers is order dependent and must be included before other headers.
-#define GLAD_GL_IMPLEMENTATION
-#include "glad/glad.h"
-#define GLFW_INCLUDE_NONE
-#include "GLFW/glfw3.h"
-// End of order dependent headers.
-
 #include <stdexcept>
 
 #include "color/material.pb.h"
 #include "color/materials.h"
 #include "component/gear.pb.h"
+#include "glog/logging.h"
+#include "third_party/glfw/glfw.h"
 
 namespace pack::component {
 
-unsigned int build_gear(const Gear& gear) {
+GLint build_gear(const Gear& gear) {
+  DLOG(INFO) << "Construct draw list identifier";
   const unsigned int id = glGenLists(1);
+  DLOG(INFO) << "Instantiate draw list";
   glNewList(id, GL_COMPILE);
 
+  DLOG(INFO) << "Add materials to draw list";
   const color::Material& material = gear.material();
   if (!material.ambient().has_packed()) {
     throw std::logic_error("Material color data must be packed.");
@@ -42,6 +39,7 @@ unsigned int build_gear(const Gear& gear) {
   glMaterialiv(GL_FRONT, GL_SPECULAR, reinterpret_cast<const int32_t*>(material.specular().packed().bytes().data()));
   glMaterialf(GL_FRONT, GL_SHININESS, material.shininess());
 
+  DLOG(INFO) << "Add vertices to draw list";
   GLint i;
   GLfloat r0, r1, r2;
   GLfloat angle, da;
@@ -162,7 +160,8 @@ unsigned int build_gear(const Gear& gear) {
 
 Animate construct_gear_animator(const Gear& /* ignored */) {
   return [](double seconds, Gear& component, Position& /* ignored */, Orientation& orientation) {
-    orientation.set_rot_z(2.f * 1000.f * seconds / component.teeth() * component.angle_coefficient() + component.phase());
+    orientation.set_rot_z(2.f * 1000.f * seconds / component.teeth() * component.angle_coefficient() +
+                          component.phase());
   };
 }
 

@@ -1,7 +1,11 @@
 cc_library(
     name = "glfw",
     visibility = ["//visibility:public"],
+    hdrs = [
+        "glfw.h",
+    ],
     deps = [
         "@conancenter_glfw//:glfw",
+        "//third_party/glad",
     ],
 )

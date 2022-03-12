@@ -2,6 +2,7 @@
 
 #include "component/animate.h"
 #include "component/gear.pb.h"
+#include "third_party/glfw/glfw.h"
 
 namespace pack::component {
 
@@ -10,7 +11,7 @@ namespace pack::component {
  *
  * Note that the material(s) in the gear be configured to use packed color data for use with glMaterial().
  */
-unsigned int build_gear(const Gear& gear_configuration);
+GLint build_gear(const Gear& gear_configuration);
 
 Animate construct_gear_animator(const Gear& gear_configuration);
 

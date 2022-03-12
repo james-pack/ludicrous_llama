@@ -1,7 +1,11 @@
 cc_library(
     name = "imgui",
     visibility = ["//visibility:public"],
+    hdrs = [
+        "imgui.h",
+    ],
     deps = [
         "@com_github_ocornut_imgui//:opengl3_glfw",
+        "//third_party/glfw",
     ],
 )

@@ -4,8 +4,8 @@
 #include <string>
 
 #include "glog/logging.h"
+#include "third_party/glfw/glfw.h"
 #include "ui/lighting_model.h"
-#include "ui/ui.h"
 
 namespace pack::ui {
 

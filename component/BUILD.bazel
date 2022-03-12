@@ -19,6 +19,7 @@ cc_library(
         "//third_party/entt",
         "//third_party/glad",
         "//third_party/glfw",
+        "//third_party/glog",
     ],
 )
 
