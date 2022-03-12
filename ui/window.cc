@@ -13,6 +13,7 @@
 #include "third_party/glfw/glfw.h"
 #include "third_party/imgui/imgui.h"
 #include "ui/camera.h"
+#include "ui/imgui_framer.h"
 #include "ui/lighting_im_render.h"
 #include "ui/lighting_model.h"
 #include "ui/pane.h"
@@ -121,13 +122,18 @@ void Window::render() {
     return;
   }
 
-  // Since the component render overwrites the full window, we have to render the gui afterwards.
-  // If we can limit the component drawing to a particular region, then we may be able to optimize GUI redraws only if
-  // changed/dirty.
+  {
+    // Note that this scope exists to ensure that the framer goes out of scope before the buffer swap below.
+    ImGuiFramer framer{};
 
-  // Draw components.
-  for (Pane* pane : panes_) {
-    pane->render();
+    // Since the component render overwrites the full window, we have to render the gui afterwards.
+    // If we can limit the component drawing to a particular region, then we may be able to optimize GUI redraws only if
+    // changed/dirty.
+
+    // Draw components.
+    for (Pane* pane : panes_) {
+      pane->render();
+    }
   }
 
   // Swap buffers

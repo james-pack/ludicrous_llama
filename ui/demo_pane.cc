@@ -11,16 +11,8 @@ void DemoPane::set_bounds(int lower_left_x, int lower_left_y, int width, int hei
 }
 
 void DemoPane::render() {
-  // Start the Dear ImGui frame
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplGlfw_NewFrame();
-  ImGui::NewFrame();
-
   bool show_demo_window{false};
   ImGui::ShowDemoWindow(&show_demo_window);
-
-  ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 }  // namespace pack::ui
