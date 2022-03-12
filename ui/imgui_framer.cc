@@ -20,4 +20,14 @@ ImGuiFramer::~ImGuiFramer() {
   }
 }
 
+ImGuiFramer::ImGuiFramer(ImGuiFramer&& rhs) : should_close_frame_(rhs.should_close_frame_) {
+  rhs.should_close_frame_ = false;
+}
+
+ImGuiFramer& ImGuiFramer::operator=(ImGuiFramer&& rhs) {
+  should_close_frame_ = rhs.should_close_frame_;
+  rhs.should_close_frame_ = false;
+  return *this;
+}
+
 }  // namespace pack::ui

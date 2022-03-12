@@ -12,17 +12,13 @@ namespace pack::ui {
  */
 class ImGuiFramer final {
  private:
+  // Is this instance responsible for closing the frame. Allows for move construction and assignment.
   bool should_close_frame_{true};
 
  public:
   ImGuiFramer();
-  ImGuiFramer(ImGuiFramer&& rhs) : should_close_frame_(rhs.should_close_frame_) { rhs.should_close_frame_ = false; }
-  ImGuiFramer& operator=(ImGuiFramer&& rhs) {
-    should_close_frame_ = rhs.should_close_frame_;
-    rhs.should_close_frame_ = false;
-    return *this;
-  }
-
+  ImGuiFramer(ImGuiFramer&& rhs);
+  ImGuiFramer& operator=(ImGuiFramer&& rhs);
   ~ImGuiFramer();
 };
 
