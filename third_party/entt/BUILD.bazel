@@ -5,3 +5,14 @@ cc_library(
         "@conancenter_entt//:entt",
     ],
 )
+
+cc_test(
+    name = "entt_test",
+    srcs = [
+        "entt_test.cc",
+    ],
+    deps = [
+        ":entt",
+        "//third_party/gtest",
+    ],
+)
