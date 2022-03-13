@@ -8,6 +8,7 @@
 
 namespace pack::ui {
 
+// TODO(james): Delete this class and replace it with EnTT's built-in observer mechanism.
 template <typename SubT, typename SignalT>
 class Signaller {
  public:
