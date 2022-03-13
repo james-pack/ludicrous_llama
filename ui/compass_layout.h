@@ -53,16 +53,6 @@ class CompassLayout final : public Layout {
   static std::tuple<int, int, int> distribute_space(int size, const RegionConfiguration& region_1,
                                                     const RegionConfiguration& region_2, bool allocate_center_space);
 
-  std::tuple<int, int, int, int> compute_bounds(const Pane& pane) const {
-    for (Region region : {Region::NORTH, Region::EAST, Region::SOUTH, Region::WEST, Region::CENTER}) {
-      const RegionConfiguration& config = configurations_[as_int(region)];
-      if (config.pane == &pane) {
-        return compute_bounds(region);
-      }
-    }
-    return {0, 0, 0, 0};
-  }
-
  public:
   void place(Pane& pane, Region region) { configurations_[as_int(region)].pane = &pane; }
 
