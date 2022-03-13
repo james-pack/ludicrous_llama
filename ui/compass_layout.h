@@ -9,7 +9,7 @@
 
 namespace pack::ui {
 
-class CompassLayout final {
+class CompassLayout final : public Layout {
  public:
   enum class Region {
     NORTH = 0,
@@ -35,7 +35,7 @@ class CompassLayout final {
   static constexpr int NUM_REGIONS{5};
 
   struct RegionConfiguration {
-    const Pane* pane{nullptr};
+    Pane* pane{nullptr};
 
     float size{0.f};
     Unit size_unit{Unit::RELATIVE};
@@ -51,11 +51,20 @@ class CompassLayout final {
   static constexpr auto as_int(Region region) { return static_cast<std::underlying_type_t<Region>>(region); }
 
   static std::tuple<int, int, int> distribute_space(int size, const RegionConfiguration& region_1,
-                                                    const RegionConfiguration& region_2,
-                                                    bool allocate_center_space);
+                                                    const RegionConfiguration& region_2, bool allocate_center_space);
+
+  std::tuple<int, int, int, int> compute_bounds(const Pane& pane) const {
+    for (Region region : {Region::NORTH, Region::EAST, Region::SOUTH, Region::WEST, Region::CENTER}) {
+      const RegionConfiguration& config = configurations_[as_int(region)];
+      if (config.pane == &pane) {
+        return compute_bounds(region);
+      }
+    }
+    return {0, 0, 0, 0};
+  }
 
  public:
-  void place(const Pane& pane, Region region) { configurations_[as_int(region)].pane = &pane; }
+  void place(Pane& pane, Region region) { configurations_[as_int(region)].pane = &pane; }
 
   void remove(const Pane& pane) {
     for (auto& config : configurations_) {
@@ -80,21 +89,14 @@ class CompassLayout final {
     configurations_[as_int(region)].size_unit = unit;
   }
 
-  void set_bounds(int origin_x, int origin_y, int width, int height);
+  void set_bounds(int origin_x, int origin_y, int width, int height) override;
 
+  void render() override;
+
+  // Visible for testing.
   std::tuple<int, int, int, int> compute_bounds(Region region) const {
     return {configurations_[as_int(region)].computed_origin_x, configurations_[as_int(region)].computed_origin_y,
             configurations_[as_int(region)].computed_width, configurations_[as_int(region)].computed_height};
-  }
-
-  std::tuple<int, int, int, int> compute_bounds(const Pane& pane) const {
-    for (Region region : {Region::NORTH, Region::EAST, Region::SOUTH, Region::WEST, Region::CENTER}) {
-      const RegionConfiguration& config = configurations_[as_int(region)];
-      if (config.pane == &pane) {
-        return compute_bounds(region);
-      }
-    }
-    return {0, 0, 0, 0};
   }
 };
 

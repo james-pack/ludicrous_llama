@@ -14,28 +14,19 @@ class Window final : public Service {
   GLFWwindow* window_;
   int width_;
   int height_;
-  CompassLayout layout_{};
 
-  std::vector<Pane*> panes_{};
+  Pane* pane_{nullptr};
 
  public:
   Window();
   ~Window();
 
-  void do_iteration();
+  void do_iteration() override;
   void render();
   void change_size(int width, int height);
   void close();
 
-  // TODO(james): Consider pushing ownership of the Panes to the Window.
-  void add_pane(Pane& pane, CompassLayout::Region region, float size = 1.f,
-                CompassLayout::Unit size_unit = CompassLayout::Unit::RELATIVE) {
-    panes_.push_back(&pane);
-    layout_.place(pane, region);
-    if (region != CompassLayout::Region::CENTER) {
-      layout_.configure(region, size, size_unit);
-    }
-  }
+  void set_pane(Pane& pane) { pane_ = &pane; }
 };
 
 }  // namespace pack::ui

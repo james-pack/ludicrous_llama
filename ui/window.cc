@@ -131,8 +131,8 @@ void Window::render() {
     // changed/dirty.
 
     // Draw components.
-    for (Pane* pane : panes_) {
-      pane->render();
+    if (pane_ != nullptr) {
+      pane_->render();
     }
   }
 
@@ -149,11 +149,8 @@ void Window::close() {
 void Window::change_size(int width, int height) {
   width_ = width;
   height_ = height;
-  layout_.set_bounds(0, 0, width_, height_);
-
-  for (Pane* pane : panes_) {
-    auto [origin_x, origin_y, pane_width, pane_height] = layout_.compute_bounds(*pane);
-    pane->set_bounds(origin_x, origin_y, pane_width, pane_height);
+  if (pane_ != nullptr) {
+    pane_->set_bounds(0, 0, width, height);
   }
 }
 
