@@ -15,7 +15,7 @@ void ComponentPane::set_bounds(int lower_left_x, int lower_left_y, int width, in
   GLfloat zfar = 50.f;
   GLfloat xmax = znear / 2.f;
 
-  glViewport(0, 0, width, height);
+  glViewport(lower_left_x, lower_left_y, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glFrustum(-xmax, xmax, -xmax * aspect, xmax * aspect, znear, zfar);

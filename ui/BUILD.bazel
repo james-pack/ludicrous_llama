@@ -5,6 +5,7 @@ cc_library(
     srcs = [
         "animator.cc",
         "application.cc",
+        "compass_layout.cc",
         "component_pane.cc",
         "demo_pane.cc",
         "imgui_framer.cc",
@@ -18,6 +19,7 @@ cc_library(
         "animator.h",
         "application.h",
         "camera.h",
+        "compass_layout.h",
         "component_pane.h",
         "demo_pane.h",
         "imgui_framer.h",
@@ -74,6 +76,17 @@ cc_test(
         ":ui",
         "//lighting",
         "//proto",
+        "//third_party/gtest",
+    ],
+)
+
+cc_test(
+    name = "compass_layout_test",
+    srcs = [
+        "compass_layout_test.cc",
+    ],
+    deps = [
+        ":ui",
         "//third_party/gtest",
     ],
 )

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui/application.h"
+#include "ui/compass_layout.h"
 #include "ui/component_pane.h"
 #include "ui/light_edit_pane.h"
 #include "ui/window.h"
@@ -14,8 +15,8 @@ class GearsUi final {
 
  public:
   void assemble(ui::Application& application) {
-    window_.add_pane(component_pane_);
-    window_.add_pane(gui_pane_);
+    window_.add_pane(gui_pane_, ui::CompassLayout::Region::EAST, 0.2f, ui::CompassLayout::Unit::RELATIVE);
+    window_.add_pane(component_pane_, ui::CompassLayout::Region::CENTER);
 
     application.add_service(window_);
   }
