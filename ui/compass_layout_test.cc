@@ -19,7 +19,7 @@ TEST(CompassLayoutTest, GivesZeroWidthHeightForEmptyRegions) {
 
   for (CompassLayout::Region region : ALL_REGIONS) {
     layout.set_bounds(0, 0, 100, 100);
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(0, width) << "Region: " << to_string(region);
     EXPECT_EQ(0, height) << "Region: " << to_string(region);
   }
@@ -35,7 +35,7 @@ TEST(CompassLayoutTest, SingleRegionRelativeSizeGetsFullWidthHeight) {
     layout.configure(place, 1.f, CompassLayout::Unit::RELATIVE);
     layout.set_bounds(0, 0, SIZE, SIZE);
     for (CompassLayout::Region region : ALL_REGIONS) {
-      const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+      const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
       if (region == place) {
         EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
         EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
@@ -58,7 +58,7 @@ TEST(CompassLayoutTest, SingleRegionPixelSizeGetsSpecifiedWidthHeight) {
     layout.configure(place, SPECIFIED_SIZE, CompassLayout::Unit::PIXEL);
     layout.set_bounds(0, 0, SIZE, SIZE);
     for (CompassLayout::Region region : ALL_REGIONS) {
-      const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+      const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
       if (region == place) {
         if (place == CompassLayout::Region::NORTH || place == CompassLayout::Region::SOUTH) {
           EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
@@ -94,14 +94,14 @@ TEST(CompassLayoutTest, EastWestTwoRegionPixelSizeGetsSpecifiedWidthHeight) {
 
   {
     CompassLayout::Region region{CompassLayout::Region::EAST};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SPECIFIED_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::WEST};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SPECIFIED_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
   }
@@ -124,14 +124,14 @@ TEST(CompassLayoutTest, NorthSouthTwoRegionPixelSizeGetsSpecifiedWidthHeight) {
 
   {
     CompassLayout::Region region{CompassLayout::Region::NORTH};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SPECIFIED_SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::SOUTH};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SPECIFIED_SIZE, height) << "Region: " << to_string(region);
   }
@@ -155,14 +155,14 @@ TEST(CompassLayoutTest, EastWestTwoRegionRelativeSizeGetsSpecifiedWidthHeight) {
 
   {
     CompassLayout::Region region{CompassLayout::Region::EAST};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(EXPECTED_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::WEST};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(EXPECTED_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
   }
@@ -186,14 +186,14 @@ TEST(CompassLayoutTest, NorthSouthTwoRegionRelativeSizeGetsSpecifiedWidthHeight)
 
   {
     CompassLayout::Region region{CompassLayout::Region::NORTH};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(EXPECTED_SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::SOUTH};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(EXPECTED_SIZE, height) << "Region: " << to_string(region);
   }
@@ -221,21 +221,21 @@ TEST(CompassLayoutTest, EastWestThreeRegionRelativeSizeGetsSpecifiedWidthHeight)
 
   {
     CompassLayout::Region region{CompassLayout::Region::EAST};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(EXPECTED_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::WEST};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(EXPECTED_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::CENTER};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(EXPECTED_CENTER_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
   }
@@ -263,21 +263,21 @@ TEST(CompassLayoutTest, NorthSouthThreeRegionRelativeSizeGetsSpecifiedWidthHeigh
 
   {
     CompassLayout::Region region{CompassLayout::Region::NORTH};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(EXPECTED_SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::SOUTH};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(EXPECTED_SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::CENTER};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(EXPECTED_CENTER_SIZE, height) << "Region: " << to_string(region);
   }
@@ -305,21 +305,21 @@ TEST(CompassLayoutTest, EastWestThreeRegionRelativeSizeGivesZeroWidthWhenNoSpace
 
   {
     CompassLayout::Region region{CompassLayout::Region::EAST};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(EXPECTED_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::WEST};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(EXPECTED_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::CENTER};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(EXPECTED_CENTER_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(EXPECTED_CENTER_SIZE, height) << "Region: " << to_string(region);
   }
@@ -347,21 +347,21 @@ TEST(CompassLayoutTest, NorthSouthThreeRegionRelativeSizeGivesZeroWidthWhenNoSpa
 
   {
     CompassLayout::Region region{CompassLayout::Region::NORTH};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(EXPECTED_SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::SOUTH};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(EXPECTED_SIZE, height) << "Region: " << to_string(region);
   }
 
   {
     CompassLayout::Region region{CompassLayout::Region::CENTER};
-    const auto [origin_x, origin_y, width, height] = layout.compute_bounds(region);
+    const auto [origin_x, origin_y, width, height] = layout.get_bounds(region);
     EXPECT_EQ(EXPECTED_CENTER_SIZE, width) << "Region: " << to_string(region);
     EXPECT_EQ(EXPECTED_CENTER_SIZE, height) << "Region: " << to_string(region);
   }

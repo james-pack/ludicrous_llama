@@ -84,7 +84,7 @@ class CompassLayout final : public Layout {
   void render() override;
 
   // Visible for testing.
-  std::tuple<int, int, int, int> compute_bounds(Region region) const {
+  std::tuple<int, int, int, int> get_bounds(Region region) const {
     return {configurations_[as_int(region)].computed_origin_x, configurations_[as_int(region)].computed_origin_y,
             configurations_[as_int(region)].computed_width, configurations_[as_int(region)].computed_height};
   }
