@@ -27,7 +27,6 @@ cc_library(
         "light_edit_pane.h",
         "pane.h",
         "render.h",
-        "signaller.h",
         "window.h",
     ],
     visibility = ["//visibility:public"],
