@@ -1,8 +1,6 @@
 light {
   position {
-    float_values {
-      x: 10
-    }
+    x: 10
   }
   diffuse {
     float_values {
@@ -17,9 +15,7 @@ light {
 light {
   light_num: 1
   position {
-    float_values {
-      y: 10
-    }
+    y: 10
   }
   diffuse {
     float_values {
@@ -34,9 +30,7 @@ light {
 light {
   light_num: 2
   position {
-    float_values {
-      z: 10
-    }
+    z: 10
   }
   diffuse {
     float_values {

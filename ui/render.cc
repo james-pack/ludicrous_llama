@@ -1,19 +1,21 @@
 #include "ui/render.h"
 
-#include "component/gear.pb.h"
-#include "component/position.pb.h"
+#include "glog/logging.h"
 #include "third_party/glfw/glfw.h"
+#include "ui/model/gear.h"
+#include "ui/model/position.h"
 
 namespace pack::ui {
 
 Render construct_draw_list_renderer(GLint draw_list_id) {
-  return [draw_list_id](const component::Gear& /*unused*/, const component::Position& position,
-                        const component::Orientation& orientation) {
+  return [draw_list_id](const ui::model::Gear& /*unused*/, const ui::model::Position& position,
+                        const ui::model::Orientation& orientation) {
+    DLOG(INFO) << "construct_draw_list_renderer() -- draw_list_id: " << draw_list_id;
     glPushMatrix();
-    glTranslatef(position.float_values().x(), position.float_values().y(), position.float_values().z());
-    glRotatef(orientation.rot_x(), 1.0, 0.0, 0.0);
-    glRotatef(orientation.rot_y(), 0.0, 1.0, 0.0);
-    glRotatef(orientation.rot_z(), 0.0, 0.0, 1.0);
+    glTranslatef(position.position[0], position.position[1], position.position[2]);
+    glRotatef(orientation.orientation[0], 1.0, 0.0, 0.0);
+    glRotatef(orientation.orientation[1], 0.0, 1.0, 0.0);
+    glRotatef(orientation.orientation[2], 0.0, 0.0, 1.0);
     glCallList(draw_list_id);
     glPopMatrix();
   };

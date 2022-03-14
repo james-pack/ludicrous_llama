@@ -1,0 +1,29 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+cc_library(
+    name = "model",
+    srcs = [
+        "color.cc",
+        "gear.cc",
+        "light.cc",
+        "material.cc",
+        "position.cc",
+    ],
+    hdrs = [
+        "animate.h",
+        "color.h",
+        "gear.h",
+        "light.h",
+        "material.h",
+        "position.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//color",
+        "//component",
+        "//lighting",
+        "//proto",
+        "//third_party/entt",
+        "//third_party/glog",
+    ],
+)

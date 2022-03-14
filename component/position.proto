@@ -10,19 +10,8 @@ message Orientation {
 }
 
 message Position {
-  message AsFloats {
-    float x = 1;
-    float y = 2;
-    float z = 3;
-    float w = 4;
-  }
-  message Packed {
-    // The position is packed as three 32-bit signed integers. The exact encoding is currently platform-dependent. This
-    // type matches the memory layout that OpenGL wants for its position in its glLightfv() -- float[4].
-    bytes bytes = 1;
-  }
-  oneof representation {
-    AsFloats float_values = 1;
-    Packed packed = 2;
-  }
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  float w = 4;
 }

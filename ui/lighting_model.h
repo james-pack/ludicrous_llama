@@ -8,11 +8,10 @@
 
 #include "color/color.pb.h"
 #include "color/colors.h"
-#include "component/position.pb.h"
-#include "component/positions.h"
 #include "lighting/light.pb.h"
 #include "lighting/lights.h"
 #include "third_party/glfw/glfw.h"
+#include "ui/model/position.h"
 #include "ui/signaller.h"
 
 namespace pack::ui {

@@ -126,14 +126,20 @@ void CompassLayout::set_bounds(int origin_x, int origin_y, int width, int height
       configurations_[as_int(region)].computed_width = 0;
     }
   }
+
+  for (Region region : {Region::NORTH, Region::EAST, Region::SOUTH, Region::WEST, Region::CENTER}) {
+    RegionConfiguration& config = configurations_[as_int(region)];
+    if (config.pane != nullptr) {
+      config.pane->set_bounds(config.computed_origin_x, config.computed_origin_y, config.computed_width,
+                              config.computed_height);
+    }
+  }
 }
 
 void CompassLayout::render() {
   for (Region region : {Region::NORTH, Region::EAST, Region::SOUTH, Region::WEST, Region::CENTER}) {
     RegionConfiguration& config = configurations_[as_int(region)];
     if (config.pane != nullptr) {
-      config.pane->set_bounds(config.computed_origin_x, config.computed_origin_y, config.computed_width,
-                              config.computed_height);
       config.pane->render();
     }
   }

@@ -3,6 +3,7 @@
 #include "ui/application.h"
 #include "ui/compass_layout.h"
 #include "ui/component_pane.h"
+#include "ui/demo_pane.h"
 #include "ui/gear_edit_pane.h"
 #include "ui/light_edit_pane.h"
 #include "ui/window.h"
@@ -12,7 +13,9 @@ namespace pack::demo {
 class ApplicationPane final : public ui::Pane {
   ui::CompassLayout layout_{};
   ui::ComponentPane component_pane_{};
-  ui::GearEditPane gui_pane_{};
+  // ui::GearEditPane gui_pane_{};
+  ui::LightEditPane gui_pane_{};
+  // ui::DemoPane gui_pane_{};
 
  public:
   ApplicationPane() {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entt/entity/registry.hpp"
+#include "glog/logging.h"
 #include "ui/application.h"
 #include "ui/layout.h"
 
@@ -18,7 +19,8 @@ class Pane {
   entt::registry& registry() {
     if (registry_ == nullptr) {
       registry_ = &Application::current().registry();
-    }
+       DLOG(INFO) << "Pane::registry() -- Binding to registry instance " << registry_;
+   }
     return *registry_;
   }
 

@@ -2,9 +2,6 @@
 
 #include <stdexcept>
 
-#include "component/gear.h"
-#include "component/gear.pb.h"
-#include "component/position.pb.h"
 #include "glog/logging.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -14,15 +11,13 @@
 #include "third_party/imgui/imgui.h"
 #include "ui/camera.h"
 #include "ui/imgui_framer.h"
-#include "ui/lighting_im_render.h"
-#include "ui/lighting_model.h"
+#include "ui/model/position.h"
 #include "ui/pane.h"
 #include "ui/render.h"
 
 namespace pack::ui {
 
-using namespace pack::component;
-using namespace pack::proto;
+using namespace pack::ui::model;
 
 void reshape(GLFWwindow* gl_window, int width, int height) {
   Window& window = *static_cast<Window*>(glfwGetWindowUserPointer(gl_window));
@@ -42,22 +37,22 @@ void handle_key(GLFWwindow* window, int k, int s, int action, int mods) {
     cameras.each([k, mods](Camera& camera, Position& position, Orientation& orientation) {
       switch (k) {
         case GLFW_KEY_UP:
-          orientation.set_rot_x(orientation.rot_x() + 5.0);
+          orientation.orientation[0] += 5.0;
           break;
         case GLFW_KEY_DOWN:
-          orientation.set_rot_x(orientation.rot_x() - 5.0);
+          orientation.orientation[0] -= 5.0;
           break;
         case GLFW_KEY_LEFT:
-          orientation.set_rot_y(orientation.rot_y() + 5.0);
+          orientation.orientation[1] += 5.0;
           break;
         case GLFW_KEY_RIGHT:
-          orientation.set_rot_y(orientation.rot_y() - 5.0);
+          orientation.orientation[1] -= 5.0;
           break;
         case GLFW_KEY_Z:
           if (mods & GLFW_MOD_SHIFT) {
-            orientation.set_rot_z(orientation.rot_z() - 5.0);
+            orientation.orientation[2] -= 5.0;
           } else {
-            orientation.set_rot_z(orientation.rot_z() + 5.0);
+            orientation.orientation[2] += 5.0;
           }
           break;
         default:

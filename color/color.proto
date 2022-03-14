@@ -24,17 +24,9 @@ message Rgba {
     fixed32 blue = 3;
     fixed32 alpha = 4;
   }
-  message Packed {
-    // The color is packed as four 32-bit signed integers. The exact encoding is currently platform-dependent. This type
-    // matches the memory layout that OpenGL wants for its colors in its glMaterialiv() -- int32[4]. That function, and
-    // other material creation functions, only take colors by reference; this message layout is designed to own the
-    // memory for the color in order to make it easier to create materials.
-    bytes bytes = 1;
-  }
   oneof color_representation {
     AsFloats float_values = 1;
     AsInts int_values = 2;
     AsUint32s uint32_values = 3;
-    Packed packed = 4;
   }
 }

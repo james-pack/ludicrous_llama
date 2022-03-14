@@ -5,10 +5,11 @@ import "color/color.proto";
 package pack.color;
 
 message Material {
-  Rgba ambient = 1;
-  Rgba diffuse = 2;
-  Rgba specular = 3;
+  string id = 1;
+  Rgba ambient = 2;
+  Rgba diffuse = 3;
+  Rgba specular = 4;
 
   // For compatibility with OpenGL, shininess is on [0, 128].
-  float shininess = 4;
+  float shininess = 5;
 }

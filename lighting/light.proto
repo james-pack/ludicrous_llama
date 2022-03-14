@@ -8,6 +8,7 @@ package pack.lighting;
 message Light {
   int32 light_num = 1;
   pack.component.Position position = 2;
+  pack.component.Orientation orientation = 7;
   pack.color.Rgba ambient = 3;
   pack.color.Rgba diffuse = 4;
   pack.color.Rgba specular = 5;

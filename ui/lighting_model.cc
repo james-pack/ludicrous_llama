@@ -8,8 +8,6 @@
 
 #include "color/color.pb.h"
 #include "color/colors.h"
-#include "component/position.pb.h"
-#include "component/positions.h"
 #include "glog/logging.h"
 #include "lighting/light.pb.h"
 #include "lighting/lights.h"
@@ -75,11 +73,10 @@ void LightingModel::load(const lighting::LightingConfiguration& lighting) {
     // later configuration overrides the earlier one.
     reset_light(&light);
     light.light_num = config.light_num();
-    const component::Position position = component::Positions::as_floats(config.position());
-    light.position[0] = config.position().float_values().x();
-    light.position[1] = config.position().float_values().y();
-    light.position[2] = config.position().float_values().z();
-    light.position[3] = config.position().float_values().w();
+    light.position[0] = config.position().x();
+    light.position[1] = config.position().y();
+    light.position[2] = config.position().z();
+    light.position[3] = config.position().w();
     color::Rgba color = color::Colors::as_floats(config.ambient());
     light.ambient[0] = color.float_values().red();
     light.ambient[1] = color.float_values().green();
@@ -109,10 +106,10 @@ void LightingModel::save(lighting::LightingConfiguration* lighting) const {
   for (const auto& light : lights_) {
     auto* config = lighting->add_light();
     config->set_light_num(light.light_num);
-    config->mutable_position()->mutable_float_values()->set_x(light.position[0]);
-    config->mutable_position()->mutable_float_values()->set_y(light.position[1]);
-    config->mutable_position()->mutable_float_values()->set_z(light.position[2]);
-    config->mutable_position()->mutable_float_values()->set_w(light.position[3]);
+    config->mutable_position()->set_x(light.position[0]);
+    config->mutable_position()->set_y(light.position[1]);
+    config->mutable_position()->set_z(light.position[2]);
+    config->mutable_position()->set_w(light.position[3]);
 
     config->mutable_ambient()->mutable_float_values()->set_red(light.ambient[0]);
     config->mutable_ambient()->mutable_float_values()->set_green(light.ambient[1]);

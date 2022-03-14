@@ -25,18 +25,9 @@ GLint build_gear(const Gear& gear) {
 
   DLOG(INFO) << "Add materials to draw list";
   const color::Material& material = gear.material();
-  if (!material.ambient().has_packed()) {
-    throw std::logic_error("Material color data must be packed.");
-  }
-  if (!material.diffuse().has_packed()) {
-    throw std::logic_error("Material color data must be packed.");
-  }
-  if (!material.specular().has_packed()) {
-    throw std::logic_error("Material color data must be packed.");
-  }
-  glMaterialiv(GL_FRONT, GL_AMBIENT, reinterpret_cast<const int32_t*>(material.ambient().packed().bytes().data()));
-  glMaterialiv(GL_FRONT, GL_DIFFUSE, reinterpret_cast<const int32_t*>(material.diffuse().packed().bytes().data()));
-  glMaterialiv(GL_FRONT, GL_SPECULAR, reinterpret_cast<const int32_t*>(material.specular().packed().bytes().data()));
+  // glMaterialiv(GL_FRONT, GL_AMBIENT, reinterpret_cast<const int32_t*>(material.ambient().packed().bytes().data()));
+  // glMaterialiv(GL_FRONT, GL_DIFFUSE, reinterpret_cast<const int32_t*>(material.diffuse().packed().bytes().data()));
+  // glMaterialiv(GL_FRONT, GL_SPECULAR, reinterpret_cast<const int32_t*>(material.specular().packed().bytes().data()));
   glMaterialf(GL_FRONT, GL_SHININESS, material.shininess());
 
   DLOG(INFO) << "Add vertices to draw list";
@@ -156,13 +147,6 @@ GLint build_gear(const Gear& gear) {
   glEndList();
 
   return id;
-}
-
-Animate construct_gear_animator(const Gear& /* ignored */) {
-  return [](double seconds, Gear& component, Position& /* ignored */, Orientation& orientation) {
-    orientation.set_rot_z(2.f * 1000.f * seconds / component.teeth() * component.angle_coefficient() +
-                          component.phase());
-  };
 }
 
 }  // namespace pack::component

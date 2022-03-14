@@ -11,8 +11,6 @@ cc_library(
         "gear_edit_pane.cc",
         "imgui_framer.cc",
         "light_edit_pane.cc",
-        "lighting_im_render.cc",
-        "lighting_model.cc",
         "render.cc",
         "window.cc",
     ],
@@ -27,8 +25,6 @@ cc_library(
         "imgui_framer.h",
         "layout.h",
         "light_edit_pane.h",
-        "lighting_im_render.h",
-        "lighting_model.h",
         "pane.h",
         "render.h",
         "signaller.h",
@@ -36,9 +32,6 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//color",
-        "//component",
-        "//lighting",
         "//proto",
         "//third_party/entt",
         "//third_party/gflags",
@@ -47,40 +40,13 @@ cc_library(
         "//third_party/glog",
         "//third_party/imgui",
         "//third_party/xorg",
+        "//ui/model",
     ],
 )
 
 filegroup(
     name = "test_lighting_configurations",
     srcs = glob(["testing/*.pb.txt"]),
-)
-
-cc_test(
-    name = "signaller_test",
-    srcs = [
-        "signaller_test.cc",
-    ],
-    deps = [
-        ":ui",
-        "//lighting",
-        "//third_party/gtest",
-    ],
-)
-
-cc_test(
-    name = "lighting_model_test",
-    srcs = [
-        "lighting_model_test.cc",
-    ],
-    data = [
-        ":test_lighting_configurations",
-    ],
-    deps = [
-        ":ui",
-        "//lighting",
-        "//proto",
-        "//third_party/gtest",
-    ],
 )
 
 cc_test(

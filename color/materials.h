@@ -1,7 +1,7 @@
 #pragma once
 
-#include "color/material.pb.h"
 #include "color/colors.h"
+#include "color/material.pb.h"
 
 namespace pack::color {
 
@@ -53,18 +53,6 @@ class Materials final {
     *result.mutable_ambient() = result.diffuse();
 
     return result;
-  }
-
-  static void pack_colors(Material* material) {
-    *material->mutable_ambient() = Colors::as_packed(material->ambient());
-    *material->mutable_diffuse() = Colors::as_packed(material->diffuse());
-    *material->mutable_specular() = Colors::as_packed(material->specular());
-  }
-
-  static void unpack_colors(Material* material) {
-    *material->mutable_ambient() = Colors::as_floats(material->ambient());
-    *material->mutable_diffuse() = Colors::as_floats(material->diffuse());
-    *material->mutable_specular() = Colors::as_floats(material->specular());
   }
 };
 

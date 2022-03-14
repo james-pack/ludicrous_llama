@@ -2,15 +2,15 @@
 
 #include <chrono>
 
-#include "component/animate.h"
-#include "component/gear.pb.h"
-#include "component/position.pb.h"
 #include "entt/entity/registry.hpp"
+#include "ui/model/animate.h"
+#include "ui/model/gear.h"
+#include "ui/model/position.h"
 
 namespace pack::ui {
 
 void Animator::animate() {
-  using namespace pack::component;
+  using namespace ui::model;
 
   // Build a duration type that will count seconds but at double precision.
   using DoubleSeconds = std::chrono::duration<double, std::chrono::seconds::period>;

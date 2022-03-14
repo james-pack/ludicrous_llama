@@ -8,10 +8,12 @@ namespace pack::color {
 
 class Colors final {
  public:
-  static Rgba as_packed(const Rgba& color);
   static Rgba as_floats(const Rgba& color);
   static Rgba as_ints(const Rgba& color);
   static Rgba as_uint32s(const Rgba& color);
+
+  static void to_array(const Rgba& color, float* color_array);
+  static void from_array(const float* color_array, Rgba* color);
 
   static Rgba create(float red, float green, float blue, float alpha = 1.f) {
     Rgba result{};

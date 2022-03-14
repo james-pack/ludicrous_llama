@@ -2,14 +2,14 @@
 
 #include <functional>
 
-#include "component/gear.pb.h"
-#include "component/position.pb.h"
 #include "third_party/glfw/glfw.h"
+#include "ui/model/gear.h"
+#include "ui/model/position.h"
 
 namespace pack::ui {
 
-using Render = std::function<void(const component::Gear& component, const component::Position& position,
-                                  const component::Orientation& orientation)>;
+using Render = std::function<void(const ui::model::Gear& component, const ui::model::Position& position,
+                                  const ui::model::Orientation& orientation)>;
 
 Render construct_draw_list_renderer(GLint draw_list_id);
 

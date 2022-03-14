@@ -1,24 +1,63 @@
 #include "color/materials.h"
-#include "component/gear.h"
 #include "component/gear.pb.h"
-#include "component/position.pb.h"
 #include "demo/gears_ui.h"
+#include "entt/entity/registry.hpp"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 #include "proto/proto_utils.h"
 #include "ui/animator.h"
 #include "ui/application.h"
 #include "ui/camera.h"
-#include "ui/lighting_im_render.h"
-#include "ui/lighting_model.h"
+#include "ui/model/gear.h"
+#include "ui/model/light.h"
+#include "ui/model/position.h"
 #include "ui/render.h"
+
+void load_registry(entt::registry& registry, pack::ui::model::Gear gear, pack::ui::model::Position position,
+                   pack::ui::model::Orientation orientation) {
+  using namespace pack::ui;
+  using namespace pack::ui::model;
+
+  int draw_list_id = build_gear(gear);
+
+  const auto gear_id = registry.create();
+  DLOG(INFO) << "Building the draw list for gear '" << gear.name << "'";
+  registry.emplace<Render>(gear_id, construct_draw_list_renderer(draw_list_id));
+  registry.emplace<Animate>(gear_id, construct_gear_animator());
+  registry.emplace<Gear>(gear_id, std::move(gear));
+  registry.emplace<Position>(gear_id, std::move(position));
+  registry.emplace<Orientation>(gear_id, std::move(orientation));
+}
+
+void load_registry(entt::registry& registry, pack::ui::model::Light light, pack::ui::model::Position position,
+                   pack::ui::model::Orientation orientation) {
+  using namespace pack::ui::model;
+
+  const auto id = registry.create();
+  DLOG(INFO) << "load_registry(light) -- light: " << to_string(light) << ", position: " << to_string(position)
+             << ", orientation: " << to_string(orientation);
+  registry.emplace<Light>(id, std::move(light));
+  registry.emplace<Position>(id, std::move(position));
+  registry.emplace<Orientation>(id, std::move(orientation));
+}
+
+void load_registry(entt::registry& registry, pack::ui::Camera camera, pack::ui::model::Position position,
+                   pack::ui::model::Orientation orientation) {
+  using namespace pack::ui;
+  using namespace pack::ui::model;
+
+  const auto id = registry.create();
+  registry.emplace<Camera>(id, std::move(camera));
+  registry.emplace<Position>(id, std::move(position));
+  registry.emplace<Orientation>(id, std::move(orientation));
+}
 
 int main(int argc, char* argv[]) {
   using namespace pack::color;
-  using namespace pack::component;
   using namespace pack::demo;
   using namespace pack::proto;
   using namespace pack::ui;
+  using namespace pack::ui::model;
 
   // Default logging configuration.
   FLAGS_logtostderr = true;
@@ -29,52 +68,32 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   Application application{};
+  DLOG(INFO) << "Application's registry instance: " << &application.registry();
   GearsUi ui{};
   ui.assemble(application);
 
-  pack::ui::Animator animator{};
+  Animator animator{};
   application.add_service(animator);
 
-  {
-    const auto camera = application.registry().create();
-    application.registry().emplace<Camera>(camera, Camera{});
-    application.registry().emplace<Position>(camera, Position{});
-    application.registry().emplace<Orientation>(camera, Orientation{});
-  }
+  load_registry(application.registry(), Camera{}, Position{}, Orientation{});
 
   {
-    Gears gears = load_text_proto<Gears>("demo/trivial_demo_gears.pb.txt");
-    DLOG(INFO) << "Gears loaded:\n" << gears.DebugString();
-
-    for (Gear gear : gears.gear()) {
-      Material* material = gear.mutable_material();
-      DLOG(INFO) << "Packing material colors";
-      Materials::pack_colors(material);
-      const auto gear_id = application.registry().create();
-      DLOG(INFO) << "Building the draw list for the gear";
-      int draw_list_id = build_gear(gear);
-      application.registry().emplace<Render>(gear_id, construct_draw_list_renderer(draw_list_id));
-      application.registry().emplace<Animate>(gear_id, construct_gear_animator(gear));
-      application.registry().emplace<Gear>(gear_id, std::move(gear));
-      Position position{};
-      position.mutable_float_values()->set_x(-3.1f);
-      position.mutable_float_values()->set_y(4.2f);
-      application.registry().emplace<Position>(gear_id, position);
-      application.registry().emplace<Orientation>(gear_id, Orientation{});
+    pack::component::Gears gears = load_text_proto<pack::component::Gears>("demo/trivial_demo_gears.pb.txt");
+    for (pack::component::Gear gear : gears.gear()) {
+      load_registry(application.registry(), Gear::from_proto(gear), Position{-3.1f, 4.2f, 0.f}, Orientation{});
     }
   }
 
-  DLOG(INFO) << "Creating UI models";
-  const auto ui_models = application.registry().create();
   {
-    application.registry().emplace<LightingModel>(ui_models, LightingModel{});
-    LightingModel& model = application.registry().get<LightingModel>(ui_models);
-    model.connect(LightingModelSignal::POSITION_UPDATE, lighting_im_signal_render);
-    model.connect(LightingModelSignal::COLOR_UPDATE, lighting_im_signal_render);
-    model.connect(LightingModelSignal::ENABLED_UPDATE, lighting_im_signal_render);
-    model.connect(LightingModelSignal::RESET_UPDATE, lighting_im_signal_render);
-    model.set_lighting_configuration_path("demo/lighting_configuration.pb.txt");
-    model.load();
+    pack::lighting::LightingConfiguration lights =
+        load_text_proto<pack::lighting::LightingConfiguration>("demo/lighting_configuration.pb.txt");
+    for (const auto& proto : lights.light()) {
+      Light light{};
+      Position position{};
+      Orientation orientation{};
+      Light::from_proto(proto, &light, &position, &orientation);
+      load_registry(application.registry(), light, position, orientation);
+    }
   }
 
   application.execute();
