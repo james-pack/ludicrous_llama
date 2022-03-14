@@ -63,18 +63,14 @@ Animate construct_gear_animator() {
 }
 
 GLint build_gear(const Gear& gear) {
-  DLOG(INFO) << "Construct draw list identifier";
   const unsigned int id = glGenLists(1);
-  DLOG(INFO) << "Instantiate draw list";
   glNewList(id, GL_COMPILE);
 
-  DLOG(INFO) << "Add materials to draw list";
   glMaterialfv(GL_FRONT, GL_AMBIENT, gear.material.ambient.values);
   glMaterialfv(GL_FRONT, GL_DIFFUSE, gear.material.diffuse.values);
   glMaterialfv(GL_FRONT, GL_SPECULAR, gear.material.specular.values);
   glMaterialf(GL_FRONT, GL_SHININESS, gear.material.shininess);
 
-  DLOG(INFO) << "Add vertices to draw list";
   GLint i;
   GLfloat r0, r1, r2;
   GLfloat angle, da;

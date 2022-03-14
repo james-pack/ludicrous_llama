@@ -9,6 +9,7 @@
 #include "proto/proto_utils.h"
 #include "third_party/glfw/glfw.h"
 #include "third_party/imgui/imgui.h"
+#include "ui/animator.h"
 #include "ui/camera.h"
 #include "ui/imgui_framer.h"
 #include "ui/model/position.h"
@@ -29,7 +30,10 @@ void handle_key(GLFWwindow* window, int k, int s, int action, int mods) {
   if (action != GLFW_PRESS) return;
 
   if (k == GLFW_KEY_SPACE) {
-    // application.animator.toggle_pause();
+    Animator* animator = Application::current().animator();
+    if (animator != nullptr) {
+      animator->toggle_pause();
+    }
   } else if (k == GLFW_KEY_ESCAPE) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
   } else {

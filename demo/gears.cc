@@ -21,7 +21,6 @@ void load_registry(entt::registry& registry, pack::ui::model::Gear gear, pack::u
   int draw_list_id = build_gear(gear);
 
   const auto gear_id = registry.create();
-  DLOG(INFO) << "Building the draw list for gear '" << gear.name << "'";
   registry.emplace<Render>(gear_id, construct_draw_list_renderer(draw_list_id));
   registry.emplace<Animate>(gear_id, construct_gear_animator());
   registry.emplace<Gear>(gear_id, std::move(gear));
@@ -34,8 +33,6 @@ void load_registry(entt::registry& registry, pack::ui::model::Light light, pack:
   using namespace pack::ui::model;
 
   const auto id = registry.create();
-  DLOG(INFO) << "load_registry(light) -- light: " << to_string(light) << ", position: " << to_string(position)
-             << ", orientation: " << to_string(orientation);
   registry.emplace<Light>(id, std::move(light));
   registry.emplace<Position>(id, std::move(position));
   registry.emplace<Orientation>(id, std::move(orientation));
@@ -68,11 +65,11 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   Application application{};
-  DLOG(INFO) << "Application's registry instance: " << &application.registry();
   GearsUi ui{};
   ui.assemble(application);
 
   Animator animator{};
+  application.set_animator(animator);
   application.add_service(animator);
 
   load_registry(application.registry(), Camera{}, Position{}, Orientation{});

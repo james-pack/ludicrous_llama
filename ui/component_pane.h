@@ -12,6 +12,11 @@ class ComponentPane final : public Pane {
   entt::observer lighting_observer_;
   bool requires_redraw_{false};
 
+  int lower_left_x_{};
+  int lower_left_y_{};
+  int width_{};
+  int height_{};
+
  public:
   ComponentPane();
 

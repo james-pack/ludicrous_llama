@@ -19,8 +19,7 @@ class Pane {
   entt::registry& registry() {
     if (registry_ == nullptr) {
       registry_ = &Application::current().registry();
-       DLOG(INFO) << "Pane::registry() -- Binding to registry instance " << registry_;
-   }
+    }
     return *registry_;
   }
 

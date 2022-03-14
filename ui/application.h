@@ -7,7 +7,9 @@
 
 namespace pack::ui {
 
+class Animator;
 class Service;
+class Window;
 
 class Application final {
  private:
@@ -17,6 +19,9 @@ class Application final {
   std::vector<Service*> services_{};
   entt::registry registry_{};
   bool should_stop_{false};
+
+  Animator* animator_{nullptr};
+  Window* window_{nullptr};
 
  public:
   Application();
@@ -36,6 +41,12 @@ class Application final {
   // directly, but are called via the execute() method.
   void distribute_events();
   void iterate_services();
+
+  Animator* animator() const { return animator_; }
+  void set_animator(Animator& animator) { animator_ = &animator; }
+
+  Window* window() const { return window_; }
+  void set_window(Window& window) { window_ = &window; }
 
   static Application& current();
 };

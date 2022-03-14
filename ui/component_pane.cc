@@ -18,7 +18,6 @@ void render_camera(const Camera& camera, const ui::model::Position& position,
                    const ui::model::Orientation& orientation) {
   using std::to_string;
 
-  DLOG(INFO) << "Rendering camera -- orientation: " << to_string(orientation) << ", position: " << to_string(position);
   glRotatef(orientation.orientation[0], 1.0, 0.0, 0.0);
   glRotatef(orientation.orientation[1], 0.0, 1.0, 0.0);
   glRotatef(orientation.orientation[2], 0.0, 0.0, 1.0);
@@ -30,10 +29,6 @@ void render_light(const ui::model::Light& light, const ui::model::Position& posi
   using std::to_string;
 
   if (light.enabled) {
-    DLOG(INFO) << "Rendering light (enabled) -- light_num: " << light.light_num
-               << ", orientation: " << to_string(orientation) << ", position: " << to_string(position)
-               << ", ambient: " << to_string(light.ambient) << ", diffuse: " << to_string(light.diffuse)
-               << ", specular: " << to_string(light.specular);
     glEnable(GL_LIGHT0 + light.light_num);
     glLightfv(GL_LIGHT0 + light.light_num, GL_POSITION, position.position);
     glLightfv(GL_LIGHT0 + light.light_num, GL_AMBIENT, light.ambient.values);
@@ -64,23 +59,28 @@ ComponentPane::ComponentPane()
                              .update<ui::model::Orientation>()) {}
 
 void ComponentPane::set_bounds(int lower_left_x, int lower_left_y, int width, int height) {
-  DLOG(INFO) << "ComponentPane::set_bounds() -- lower_left_x: " << lower_left_x << ", lower_left_y: " << lower_left_y
-             << ", width: " << width << ", height: " << height;
-  // TODO(james): Modify to manage a component pane(s) separately from UI panes.
-  GLfloat aspect = (GLfloat)height / (GLfloat)width;
-  GLfloat znear = 2.f;
-  GLfloat zfar = 50.f;
-  GLfloat xmax = znear / 2.f;
+  if ((lower_left_x != lower_left_x_) || (lower_left_y != lower_left_y_) || (width != width_) || (height != height_)) {
+    lower_left_x_ = lower_left_x;
+    lower_left_y_ = lower_left_y;
+    width_ = width;
+    height_ = height;
 
-  glViewport(lower_left_x, lower_left_y, width, height);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glFrustum(-xmax, xmax, -xmax * aspect, xmax * aspect, znear, zfar);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glTranslatef(0.0, 0.0, (znear - zfar) / 2.f);
+    // TODO(james): Modify to manage a component pane(s) separately from UI panes.
+    GLfloat aspect = (GLfloat)height / (GLfloat)width;
+    GLfloat znear = 2.f;
+    GLfloat zfar = 50.f;
+    GLfloat xmax = znear / 2.f;
 
-  requires_redraw_ = true;
+    glViewport(lower_left_x, lower_left_y, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-xmax, xmax, -xmax * aspect, xmax * aspect, znear, zfar);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(0.0, 0.0, (znear - zfar) / 2.f);
+
+    requires_redraw_ = true;
+  }
 }
 
 void ComponentPane::render() {
@@ -90,6 +90,7 @@ void ComponentPane::render() {
   const entt::registry& reg{registry()};
 
   if (requires_redraw_) {
+    // DLOG(INFO) << "ComponentPane::render() -- full redraw was triggered.";
     glPushMatrix();
 
     reg.view<Camera, ui::model::Position, ui::model::Orientation>().each(
@@ -101,10 +102,7 @@ void ComponentPane::render() {
 
     reg.view<Render, ui::model::Gear, ui::model::Position, ui::model::Orientation>().each(
         [&reg](const Render& render, const ui::model::Gear& component, const ui::model::Position& position,
-               const ui::model::Orientation& orientation) {
-          DLOG(INFO) << "Rendering component '" << component.name << "'";
-          render(component, position, orientation);
-        });
+               const ui::model::Orientation& orientation) { render(component, position, orientation); });
     component_observer_.clear();
 
     glPopMatrix();
@@ -113,7 +111,10 @@ void ComponentPane::render() {
         [&reg](const ui::model::Light& light, const ui::model::Position& position,
                const ui::model::Orientation& orientation) { render_light(light, position, orientation); });
     lighting_observer_.clear();
+
+    // requires_redraw_ = false;
   } else {
+    DLOG(INFO) << "ComponentPane::render() -- Redrawing changes only.";
     glPushMatrix();
 
     camera_observer_.each([&reg](const auto entity) {
@@ -125,7 +126,6 @@ void ComponentPane::render() {
     component_observer_.each([&reg](const auto entity) {
       const auto& [render, component, position, orientation] =
           reg.get<Render, ui::model::Gear, ui::model::Position, ui::model::Orientation>(entity);
-      DLOG(INFO) << "Rendering component '" << component.name << "'";
       render(component, position, orientation);
     });
 

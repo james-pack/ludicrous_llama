@@ -13,8 +13,8 @@ namespace pack::demo {
 class ApplicationPane final : public ui::Pane {
   ui::CompassLayout layout_{};
   ui::ComponentPane component_pane_{};
-  // ui::GearEditPane gui_pane_{};
-  ui::LightEditPane gui_pane_{};
+  ui::GearEditPane gui_pane_{};
+  // ui::LightEditPane gui_pane_{};
   // ui::DemoPane gui_pane_{};
 
  public:
@@ -34,6 +34,7 @@ class GearsUi final {
   void assemble(ui::Application& application) {
     window_.set_pane(pane_);
 
+    application.set_window(window_);
     application.add_service(window_);
   }
 };

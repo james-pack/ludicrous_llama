@@ -33,9 +33,7 @@ void GearEditPane::render() {
       bool position_was_changed{false};
       ImGui::PushID(gear.id.c_str());
       if (ImGui::TreeNodeEx(gear.id.c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Bullet)) {
-        // position_was_changed = ImGui::SliderFloat3(
-        //     "Position", reinterpret_cast<float*>(position.mutable_packed()->mutable_bytes()->data()), 0.f, 50.f,
-        //     "%.2f");
+        position_was_changed = ImGui::SliderFloat3("Position", position.position, -50.f, 50.f, "%.2f");
         ImGui::TreePop();
       }
       ImGui::PopID();
