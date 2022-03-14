@@ -20,35 +20,34 @@ void LightEditPane::render() {
   ImGui::SetNextWindowSize(ImVec2(width_, height_), true);
 
   bool is_open{true};
+  // Early out if the window is collapsed, as an optimization.
   if (!ImGui::Begin("Edit lighting", &is_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar)) {
-    // Early out if the window is collapsed, as an optimization.
-    ImGui::End();
-    return;
+    entt::registry& registry{Application::current().registry()};
+    auto models = registry.view<LightingModel>();
+    models.each([](const auto entity, LightingModel& model) {
+      bool was_changed{false};
+      for (int light_num = 0; light_num <= model.max_light_num(); ++light_num) {
+        ImGui::PushID(model.name(light_num)->c_str());
+        if (ImGui::TreeNodeEx(model.name(light_num)->c_str(),
+                              ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Bullet)) {
+          was_changed =
+              ImGui::SliderFloat3("Position", static_cast<float*>(model.position(light_num)), 0.f, 50.f, "%.2f") ||
+              was_changed;
+          was_changed = ImGui::ColorEdit4("Ambient", static_cast<float*>(model.ambient(light_num))) || was_changed;
+          was_changed = ImGui::ColorEdit4("Diffuse", static_cast<float*>(model.diffuse(light_num))) || was_changed;
+          was_changed = ImGui::ColorEdit4("Specular", static_cast<float*>(model.specular(light_num))) || was_changed;
+          was_changed = ImGui::Checkbox("Enabled", reinterpret_cast<bool*>(model.enabled(light_num))) || was_changed;
+          ImGui::TreePop();
+        }
+        ImGui::PopID();
+      }
+      if (was_changed) {
+        model.signal(LightingModelSignal::COLOR_UPDATE, model);
+      }
+    });
   }
 
-  entt::registry& registry{Application::current().registry()};
-  auto models = registry.view<LightingModel>();
-  models.each([](const auto entity, LightingModel& model) {
-    bool was_changed{false};
-    for (int light_num = 0; light_num <= model.max_light_num(); ++light_num) {
-      ImGui::PushID(model.name(light_num)->c_str());
-      if (ImGui::TreeNodeEx(model.name(light_num)->c_str(),
-                            ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Bullet)) {
-        was_changed =
-            ImGui::SliderFloat3("Position", static_cast<float*>(model.position(light_num)), 0.f, 50.f, "%.2f") ||
-            was_changed;
-        was_changed = ImGui::ColorEdit4("Ambient", static_cast<float*>(model.ambient(light_num))) || was_changed;
-        was_changed = ImGui::ColorEdit4("Diffuse", static_cast<float*>(model.diffuse(light_num))) || was_changed;
-        was_changed = ImGui::ColorEdit4("Specular", static_cast<float*>(model.specular(light_num))) || was_changed;
-        was_changed = ImGui::Checkbox("Enabled", reinterpret_cast<bool*>(model.enabled(light_num))) || was_changed;
-        ImGui::TreePop();
-      }
-      ImGui::PopID();
-    }
-    if (was_changed) {
-      model.signal(LightingModelSignal::COLOR_UPDATE, model);
-    }
-  });
+  ImGui::End();
 }
 
 }  // namespace pack::ui
