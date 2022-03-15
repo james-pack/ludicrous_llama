@@ -1,0 +1,25 @@
+licenses(["notice"])
+
+cc_library(
+    name = "ortools",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_google_ortools//ortools/linear_solver",
+        "@com_google_ortools//ortools/constraint_solver:cp",
+        "@com_google_ortools//ortools/sat:cp_model",
+        "@com_google_ortools//ortools/sat:cp_model_solver",
+    ],
+)
+
+cc_test(
+    name = "ortools_test",
+    srcs = [
+        "ortools_test.cc",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":ortools",
+        "//third_party/glog",
+        "//third_party/gtest",
+    ],
+)

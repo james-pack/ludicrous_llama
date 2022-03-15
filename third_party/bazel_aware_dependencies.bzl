@@ -1,6 +1,19 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository", "new_git_repository")
 
 def load_bazel_dependencies():
+    if not native.existing_rule("com_google_ortools"):
+        native.local_repository(
+            name = "com_google_ortools",
+            path = "/home/james/git/or-tools",
+        )
+        # http_archive(
+        #     name = "com_google_ortools",
+        #     sha256 = "5337935ea1fa010bb62cf0fc8bedd6de07dda77bff3db7a0f6a36c84c7bd58db",
+        #     strip_prefix = "or-tools-9.2",
+        #     urls = ["https://github.com/google/or-tools/archive/v9.2.tar.gz"],
+        # )
+
     if not native.existing_rule("com_google_googletest"):
         http_archive(
             name = "com_google_googletest",
@@ -37,11 +50,10 @@ def load_bazel_dependencies():
         )
 
     if not native.existing_rule("com_google_absl"):
-        http_archive(
+        git_repository(
             name = "com_google_absl",
-            sha256 = "d468586a90059921b9e1eeee81fd88283a47dc3c699b01b9763e58c87d5a2401",
-            strip_prefix = "abseil-cpp-c86347d4cec43074e64e225a8753728f4bfc5ed6",
-            urls = ["https://github.com/abseil/abseil-cpp/archive/c86347d4cec43074e64e225a8753728f4bfc5ed6.zip"],
+            commit = "2151058", # release 20211102.0
+            remote = "https://github.com/abseil/abseil-cpp.git",
         )
 
     if not native.existing_rule("org_libpng_libpng"):
@@ -70,4 +82,23 @@ def load_bazel_dependencies():
             urls = [
                 "https://github.com/ocornut/imgui/archive/v1.87.tar.gz",
             ],
+        )
+
+    if not native.existing_rule("scip"):
+        new_git_repository(
+            name = "scip",
+            build_file = "@com_google_ortools//bazel:scip.BUILD",
+            patches = ["@com_google_ortools//bazel:scip.patch"],
+            commit = "6acb7222e1b871041445bee75fc05bd1bcaed089", # master from Jul 19, 2021
+            remote = "https://github.com/scipopt/scip.git",
+        )
+
+    if not native.existing_rule("bliss"):
+        http_archive(
+            name = "bliss",
+            build_file = "@com_google_ortools//bazel:bliss.BUILD",
+            patches = ["@com_google_ortools//bazel:bliss-0.73.patch"],
+            sha256 = "f57bf32804140cad58b1240b804e0dbd68f7e6bf67eba8e0c0fa3a62fd7f0f84",
+            url = "https://github.com/google/or-tools/releases/download/v9.0/bliss-0.73.zip",
+            #url = "http://www.tcs.hut.fi/Software/bliss/bliss-0.73.zip",
         )
