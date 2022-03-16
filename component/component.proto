@@ -1,0 +1,196 @@
+syntax = "proto3";
+
+import "component/position.proto";
+
+package pack.component;
+
+message Type {
+  enum Types {
+    UNTYPED = 0;  // Exists to force a type to be explicitly chosen, since this is the default value.
+    FLOAT = 1;
+    INTEGER = 2;
+    STRING = 3;
+    ID = 4;
+    SET = 5;
+    SET_MEMBER = 8;  // TODO(james): Decide if this type is redundant.
+    POINT = 6;
+    DIRECTION = 9;  // TODO(james): Decide if this type is redundant.
+    LINE = 7;
+  }
+
+  Types type = 1;
+}
+
+message Set {
+  string id = 1;
+  string name = 2;
+
+  repeated string members = 3;
+}
+
+message SetMember {
+  string member_id = 1;
+  string set_id = 2;
+}
+
+message Point {
+  // TODO(james): Determine if there is value to introduce the notion of a point in spherical coordinates or other
+  // coordinate system.
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message Direction {
+  // TODO(james): Determine if there is value to introduce the notion of a direction in spherical coordinates or other
+  // coordinate system.
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message Line {
+  Point from = 1;
+  Point to = 2;
+}
+
+message Value {
+  oneof value {
+    float float_value = 1;
+    int64 int_value = 2;
+    string string_value = 3;
+    string id = 4;
+    Set set_id = 5;
+    SetMember set_member_id = 8;
+    Point point = 6;
+    Direction direction = 9;
+    Line line = 7;
+  }
+}
+
+message Expression {
+  oneof expr {
+    string expression = 1;
+    // Fully type-safe literal value. Note that the string expression above may also contain a literal value, but that
+    // literal would not include explicit type information.
+    Value literal = 2;
+  }
+}
+
+message Precision {
+  // There are many ways of determining precision. For now, we focus on the simplest form, number of decimal places, but
+  // should expand this to handle different concepts as they arise.
+  uint32 num_decimal_places = 1;
+}
+
+message ValueDomain {
+  Type type = 1;
+
+  // Use when the domain is best modelled as a min value, max value and a precision. Note that none of the three are
+  // required and reasonable defaults should be used when interpreting this message. The type, values and precision
+  // should agree.
+  Value min_value = 2;
+  Value max_value = 3;
+  Precision precision = 4;
+}
+
+// A Parameter is a value provided to a primitive, component, process, etc. that allows for variable behavior. It is
+// similar to a parameter to a function.
+message Parameter {
+  string name = 1;
+
+  ValueDomain domain = 2;
+  Value default_value = 3;
+}
+
+// An expression that generates a value to be passed to a parameter.
+message ParameterBinding {
+  string parameter_name = 1;
+
+  Expression value = 2;
+}
+
+// A Property is any expression. It contains an expression to evaluate to a concrete value to
+// apply to a component, process, primitive, etc.
+message Property {
+  string name = 1;
+
+  Expression value = 2;
+}
+
+// The Primitive message is actually a wrapper of an internal function implementing the primitive in code. This design
+// is inspired by Unix libc and similar.
+message Primitive {
+  string name = 1;
+
+  repeated ParameterBinding parameters = 2;
+}
+
+// The Process message is actually a wrapper of an internal function implementing the process in code. This design
+// is inspired by Unix libc and similar.
+// TODO(james): A process and a primitive are very similar. There may be value in reusing the same message type for both
+// concepts so that processes would themselves be primitives and could be acted on by other processes. Not sure what
+// that would mean, though. The inspiration for that approach is to treat processes as first-class citizens and allow
+// them to be the "operand" as well as the "operator".
+message Process {
+  string name = 1;
+
+  repeated ParameterBinding parameters = 2;
+}
+
+message ProcessedPrimitive {
+  string id = 1;
+  string name = 2;
+
+  Primitive primitive = 3;
+  repeated Process processing_steps = 4;
+}
+
+message Subcomponent {
+  string child_id = 1;
+
+  // Position and orientation are expressed wrt the parent's coordinate frame.
+  Position position = 2;
+  Orientation orientation = 3;
+
+  repeated ParameterBinding parameters = 4;
+}
+
+message Constraint {
+  // A boolean expression that can be used to determine if the given system of components is valid or restrict property
+  // values in that system.
+  string expression = 1;
+
+  // TODO(james): Expand to include fallback behavior. There are any number of possible behaviors that could be
+  // implemented if the constraint is not satisfied.
+}
+
+message Component {
+  // Identifier for this component.
+  string id = 1;
+  // Human-readable name for this component.
+  string name = 2;
+
+  // Child components, if any. Note that this structure is designed to make it easy to reuse and compose
+  // components; children don't have any dependency on their parent(s).
+  repeated Subcomponent children = 3;
+
+  // Primitives and an ordered list of processes used to construct this component.
+  repeated ProcessedPrimitive primitives = 4;
+
+  // All parameters of a component and its children must either be bound as properties or exposed as parameters of this
+  // component.
+
+  // Value bindings for the parameters of the child component, primitives, or this component.
+  repeated Property properties = 5;
+
+  // Parameters intrinsic to this component that must be bound by parents using this component.
+  repeated Parameter parameters = 6;
+
+  // Constraints on the values of the parameters.
+  repeated Constraint constraints = 7;
+}
+
+message Components {
+  repeated Component components = 1;
+}

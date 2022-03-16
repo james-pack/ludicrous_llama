@@ -1,0 +1,298 @@
+components {
+  children {
+    child_id: "TODO(james): Add GUID id"
+  }
+  children {
+    child_id: "TODO(james): Add GUID id"
+  }
+  children {
+    child_id: "TODO(james): Add GUID id"
+  }
+  children {
+    child_id: "TODO(james): Add GUID id"
+  }
+  children {
+    child_id: "TODO(james): Add GUID id"
+  }
+  children {
+    child_id: "TODO(james): Add GUID id"
+  }
+  parameters {
+    name: "width"
+    domain {
+      type {
+        type: FLOAT
+      }
+      min_value {
+        float_value: 1
+      }
+      max_value {
+        float_value: 2435
+      }
+    }
+  }
+  parameters {
+    name: "height"
+    domain {
+      type {
+        type: FLOAT
+      }
+      min_value {
+        float_value: 1
+      }
+      max_value {
+        float_value: 2435
+      }
+    }
+  }
+  parameters {
+    name: "depth"
+    domain {
+      type {
+        type: FLOAT
+      }
+      min_value {
+        float_value: 1
+      }
+      max_value {
+        float_value: 2435
+      }
+    }
+  }
+  parameters {
+    name: "material_thickness"
+    domain {
+      type {
+        type: FLOAT
+      }
+      min_value {
+        float_value: 1
+      }
+      max_value {
+        float_value: 2435
+      }
+    }
+  }
+}
+components {
+  children {
+    parameters {
+      parameter_name: "width"
+      value {
+        expression: "../width"
+      }
+    }
+    parameters {
+      parameter_name: "height"
+      value {
+        expression: "../height"
+      }
+    }
+    parameters {
+      parameter_name: "depth"
+      value {
+        expression: "../depth"
+      }
+    }
+    parameters {
+      parameter_name: "material_thickness"
+      value {
+        expression: "../material_thickness"
+      }
+    }
+  }
+  properties {
+    name: "width"
+    value {
+      literal {
+        float_value: 1390
+      }
+    }
+  }
+  properties {
+    name: "height"
+    value {
+      literal {
+        float_value: 450
+      }
+    }
+  }
+  properties {
+    name: "depth"
+    value {
+      literal {
+        float_value: 400
+      }
+    }
+  }
+  properties {
+    name: "material_thickness"
+    value {
+      literal {
+        float_value: 18
+      }
+    }
+  }
+}
+components {
+  id: "TODO(james): Add GUID id"
+  name: "top"
+  primitives {
+    primitive {
+      name: "box"
+      parameters {
+        parameter_name: "width"
+        value {
+          expression: "../../width"
+        }
+      }
+      parameters {
+        parameter_name: "height"
+        value {
+          expression: "../../material_thickness"
+        }
+      }
+      parameters {
+        parameter_name: "depth"
+        value {
+          expression: "../../depth"
+        }
+      }
+    }
+  }
+}
+components {
+  id: "TODO(james): Add GUID id"
+  name: "top"
+  primitives {
+    primitive {
+      name: "box"
+      parameters {
+        parameter_name: "width"
+        value {
+          expression: "../../width"
+        }
+      }
+      parameters {
+        parameter_name: "height"
+        value {
+          expression: "../../material_thickness"
+        }
+      }
+      parameters {
+        parameter_name: "depth"
+        value {
+          expression: "../../depth"
+        }
+      }
+    }
+  }
+}
+components {
+  id: "TODO(james): Add GUID id"
+  name: "left"
+  primitives {
+    primitive {
+      name: "box"
+      parameters {
+        parameter_name: "width"
+        value {
+          expression: "../../height"
+        }
+      }
+      parameters {
+        parameter_name: "height"
+        value {
+          expression: "../../material_thickness"
+        }
+      }
+      parameters {
+        parameter_name: "depth"
+        value {
+          expression: "../../depth"
+        }
+      }
+    }
+  }
+}
+components {
+  id: "TODO(james): Add GUID id"
+  name: "right"
+  primitives {
+    primitive {
+      name: "box"
+      parameters {
+        parameter_name: "width"
+        value {
+          expression: "../../height"
+        }
+      }
+      parameters {
+        parameter_name: "height"
+        value {
+          expression: "../../material_thickness"
+        }
+      }
+      parameters {
+        parameter_name: "depth"
+        value {
+          expression: "../../depth"
+        }
+      }
+    }
+  }
+}
+components {
+  id: "TODO(james): Add GUID id"
+  name: "front"
+  primitives {
+    primitive {
+      name: "box"
+      parameters {
+        parameter_name: "width"
+        value {
+          expression: "../../width"
+        }
+      }
+      parameters {
+        parameter_name: "height"
+        value {
+          expression: "../../material_thickness"
+        }
+      }
+      parameters {
+        parameter_name: "depth"
+        value {
+          expression: "../../height"
+        }
+      }
+    }
+  }
+}
+components {
+  id: "TODO(james): Add GUID id"
+  name: "back"
+  primitives {
+    primitive {
+      name: "box"
+      parameters {
+        parameter_name: "width"
+        value {
+          expression: "../../width"
+        }
+      }
+      parameters {
+        parameter_name: "height"
+        value {
+          expression: "../../material_thickness"
+        }
+      }
+      parameters {
+        parameter_name: "depth"
+        value {
+          expression: "../../height"
+        }
+      }
+    }
+  }
+}
