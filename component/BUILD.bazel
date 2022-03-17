@@ -67,8 +67,8 @@ filegroup(
 )
 
 cc_test(
-    name = "component_proto_test",
-    srcs = ["component_proto_test.cc"],
+    name = "component_api_test",
+    srcs = ["component_api_test.cc"],
     data = [
         ":sample_component_configurations",
     ],

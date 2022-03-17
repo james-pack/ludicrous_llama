@@ -20,13 +20,6 @@ fs::path create_path(const std::string_view& filename, bool persist_after_test =
   }
 }
 
-TEST(ProtoValidity, CanCompileProto) {
-  Component component{};
-  component.set_id("id1");
-
-  EXPECT_EQ("id1", component.id());
-}
-
 TEST(ApiTest, CanConstructTrivialComponentFromPrimitive) {
   Component shelf{};
   shelf.set_id("id");
