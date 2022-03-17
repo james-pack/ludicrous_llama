@@ -2,8 +2,15 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 
 cc_library(
     name = "component",
+    srcs = [
+        "components.cc",
+    ],
+    hdrs = [
+        "components.h",
+    ],
     visibility = ["//visibility:public"],
     deps = [
+        ":component_cc_proto",
         ":gear_cc_proto",
         ":position_cc_proto",
         "//color",
@@ -11,6 +18,32 @@ cc_library(
         "//third_party/glad",
         "//third_party/glfw",
         "//third_party/glog",
+    ],
+)
+
+cc_proto_library(
+    name = "component_cc_proto",
+    deps = [":component_proto"],
+)
+
+proto_library(
+    name = "component_proto",
+    srcs = ["component.proto"],
+    deps = [
+        ":position_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "gear_cc_proto",
+    deps = [":gear_proto"],
+)
+
+proto_library(
+    name = "gear_proto",
+    srcs = ["gear.proto"],
+    deps = [
+        "//color:material_proto",
     ],
 )
 
@@ -25,15 +58,24 @@ proto_library(
     visibility = ["//visibility:public"],
 )
 
-cc_proto_library(
-    name = "gear_cc_proto",
-    deps = [":gear_proto"],
+filegroup(
+    name = "sample_component_configurations",
+    srcs = [
+        "nested_boxes.pb.txt",
+        "simple_box.pb.txt",
+    ],
 )
 
-proto_library(
-    name = "gear_proto",
-    srcs = ["gear.proto"],
+cc_test(
+    name = "component_proto_test",
+    srcs = ["component_proto_test.cc"],
+    data = [
+        ":sample_component_configurations",
+    ],
     deps = [
-        "//color:material_proto",
+        ":component",
+        "//proto",
+        "//testing",
+        "//third_party/gtest",
     ],
 )
