@@ -1,0 +1,75 @@
+PLATFORM_DEPS = select(
+    {
+        "@platforms//os:linux": [
+            ":guid_linux",
+        ],
+        "@platforms//os:macos": [
+            ":guid_macos",
+        ],
+        "@platforms//os:windows": [
+            ":guid_windows",
+        ],
+        "//conditions:default": [],
+    },
+)
+
+cc_library(
+    name = "guid",
+    srcs = [
+        "guid.cc",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [":guid_header"] + PLATFORM_DEPS,
+)
+
+cc_library(
+    name = "guid_header",
+    hdrs = [
+        "guid.h",
+    ],
+)
+
+cc_library(
+    name = "guid_linux",
+    srcs = [
+        "guid_linux.cc",
+    ],
+    linkopts = ["-luuid"],
+    target_compatible_with = ["@platforms//os:linux"],
+    deps = [
+        ":guid_header",
+    ],
+)
+
+cc_library(
+    name = "guid_macos",
+    srcs = [
+        "guid_macos.cc",
+    ],
+    target_compatible_with = ["@platforms//os:macos"],
+    deps = [
+        ":guid_header",
+    ],
+)
+
+cc_library(
+    name = "guid_windows",
+    srcs = [
+        "guid_windows.cc",
+    ],
+    target_compatible_with = ["@platforms//os:windows"],
+    deps = [
+        ":guid_header",
+    ],
+)
+
+cc_test(
+    name = "guid_test",
+    srcs = [
+        "guid_test.cc",
+    ],
+    deps = [
+        ":guid",
+        "//third_party/gtest",
+    ],
+)

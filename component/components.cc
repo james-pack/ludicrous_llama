@@ -4,12 +4,13 @@
 #include <string_view>
 
 #include "component/component.pb.h"
+#include "guid/guid.h"
 
 namespace pack::component {
 
 std::string create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
                              Component* component) {
-  std::string id{"TODO(james): Add GUID id"};
+  std::string id{guid::Guid()};
   component->set_id(id);
   component->set_name(std::move(name));
   ProcessedPrimitive* processed = component->add_primitives();
@@ -23,7 +24,7 @@ std::string create_component(std::string name, std::string primitive_name, std::
 
 std::string create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
                              std::string parameter2, float value2, Component* component) {
-  std::string id{"TODO(james): Add GUID id"};
+  std::string id{guid::Guid()};
   component->set_id(id);
   component->set_name(std::move(name));
   ProcessedPrimitive* processed = component->add_primitives();
@@ -45,7 +46,7 @@ std::string create_component(std::string name, std::string primitive_name, std::
 std::string create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
                              std::string parameter2, float value2, std::string parameter3, float value3,
                              Component* component) {
-  std::string id{"TODO(james): Add GUID id"};
+  std::string id{guid::Guid()};
   component->set_id(id);
   component->set_name(std::move(name));
   ProcessedPrimitive* processed = component->add_primitives();
@@ -71,7 +72,7 @@ std::string create_component(std::string name, std::string primitive_name, std::
 
 std::string create_component(std::string name, std::string primitive_name, std::string parameter1,
                              std::string expression1, Component* component) {
-  std::string id{"TODO(james): Add GUID id"};
+  std::string id{guid::Guid()};
   component->set_id(id);
   component->set_name(std::move(name));
   ProcessedPrimitive* processed = component->add_primitives();
@@ -86,7 +87,7 @@ std::string create_component(std::string name, std::string primitive_name, std::
 std::string create_component(std::string name, std::string primitive_name, std::string parameter1,
                              std::string expression1, std::string parameter2, std::string expression2,
                              Component* component) {
-  std::string id{"TODO(james): Add GUID id"};
+  std::string id{guid::Guid()};
   component->set_id(id);
   component->set_name(std::move(name));
   ProcessedPrimitive* processed = component->add_primitives();
@@ -108,7 +109,7 @@ std::string create_component(std::string name, std::string primitive_name, std::
 std::string create_component(std::string name, std::string primitive_name, std::string parameter1,
                              std::string expression1, std::string parameter2, std::string expression2,
                              std::string parameter3, std::string expression3, Component* component) {
-  std::string id{"TODO(james): Add GUID id"};
+  std::string id{guid::Guid()};
   component->set_id(id);
   component->set_name(std::move(name));
   ProcessedPrimitive* processed = component->add_primitives();

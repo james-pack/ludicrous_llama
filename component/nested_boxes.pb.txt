@@ -1,21 +1,21 @@
 components {
   children {
-    child_id: "TODO(james): Add GUID id"
+    child_id: "710dece5-79a2-4a53-9518-56b60be41dfe"
   }
   children {
-    child_id: "TODO(james): Add GUID id"
+    child_id: "9c3de19f-fbef-45e3-b38c-938f1cd308c9"
   }
   children {
-    child_id: "TODO(james): Add GUID id"
+    child_id: "3785d4e9-9373-45fe-a7f1-61c076accc63"
   }
   children {
-    child_id: "TODO(james): Add GUID id"
+    child_id: "90351855-9f87-429c-9669-220ae7420d10"
   }
   children {
-    child_id: "TODO(james): Add GUID id"
+    child_id: "a24ba22c-dfe3-4ce2-8120-f4f3fb378012"
   }
   children {
-    child_id: "TODO(james): Add GUID id"
+    child_id: "7618d1a1-dc40-4bf0-a265-b8b32a00fafe"
   }
   parameters {
     name: "width"
@@ -75,7 +75,7 @@ components {
   }
 }
 components {
-  id: "TODO(james): Add GUID id"
+  id: "710dece5-79a2-4a53-9518-56b60be41dfe"
   name: "top"
   primitives {
     primitive {
@@ -102,7 +102,7 @@ components {
   }
 }
 components {
-  id: "TODO(james): Add GUID id"
+  id: "9c3de19f-fbef-45e3-b38c-938f1cd308c9"
   name: "top"
   primitives {
     primitive {
@@ -129,7 +129,7 @@ components {
   }
 }
 components {
-  id: "TODO(james): Add GUID id"
+  id: "3785d4e9-9373-45fe-a7f1-61c076accc63"
   name: "left"
   primitives {
     primitive {
@@ -156,7 +156,7 @@ components {
   }
 }
 components {
-  id: "TODO(james): Add GUID id"
+  id: "90351855-9f87-429c-9669-220ae7420d10"
   name: "right"
   primitives {
     primitive {
@@ -183,7 +183,7 @@ components {
   }
 }
 components {
-  id: "TODO(james): Add GUID id"
+  id: "a24ba22c-dfe3-4ce2-8120-f4f3fb378012"
   name: "front"
   primitives {
     primitive {
@@ -210,7 +210,7 @@ components {
   }
 }
 components {
-  id: "TODO(james): Add GUID id"
+  id: "7618d1a1-dc40-4bf0-a265-b8b32a00fafe"
   name: "back"
   primitives {
     primitive {

@@ -268,6 +268,8 @@ TEST(ApiTest, CanConstructSimpleBoxWithParametersBoundInASpecificBox) {
   // The box_components contains all of the components of the box, plus 1 for the generic box, plus 1 for the specific
   // box itself.
   EXPECT_EQ(box_components.components_size(), box->children_size() + 2);
+
+  proto::save_text_proto(create_path("simple_box.pb.txt", true), box_components);
 }
 
 TEST(ApiTest, CanConstructNestingBoxes) {
@@ -423,6 +425,8 @@ TEST(ApiTest, CanConstructNestingBoxes) {
   // The box_components contains all of the components of the box, plus 1 for the template box itself, plus 1 for each
   // box instance.
   EXPECT_EQ(box_components.components_size(), template_box->children_size() + 1 + num_boxes);
+
+  proto::save_text_proto(create_path("nested_boxes.pb.txt", true), box_components);
 }
 
 }  // namespace pack::component
