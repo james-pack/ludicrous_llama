@@ -1,0 +1,19 @@
+licenses(["notice"])
+
+cc_library(
+    name = "taocpp-pegtl",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@conancenter_taocpp-pegtl//:taocpp-pegtl",
+    ],
+)
+
+cc_binary(
+    name = "calculator",
+    srcs = [
+        "calculator.cc",
+    ],
+    deps = [
+        ":taocpp-pegtl",
+    ],
+)
