@@ -3,22 +3,26 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <strstream>
 
 #include "tao/pegtl/contrib/parse_tree.hpp"
-#include "tao/pegtl/contrib/parse_tree_to_dot.hpp"
 
 namespace pack::language {
 
-// Forward declaration of parsed types that are part of the API.
-struct integer_value;
-struct float_value;
+// Forward declaration of parsed types that are part of the API. These declarations should include all literal types and
+// all operators as well as any named functions and identifiers.
+struct integer_literal;
+struct float_literal;
 
-std::string to_string(const tao::pegtl::parse_tree::node& node) {
-  std::strstream ss{};
-  tao::pegtl::parse_tree::print_dot(ss, node);
-  return ss.str();
-}
+struct function_call;
+struct function_name;
+
+struct power;
+struct multiply;
+struct divide;
+struct add;
+struct subtract;
+
+std::string to_string(const tao::pegtl::parse_tree::node& node);
 
 class ExpressionLanguage final {
  public:

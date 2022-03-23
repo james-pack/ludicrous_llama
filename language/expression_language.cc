@@ -1,15 +1,25 @@
 #include "language/expression_language.h"
 
 #include <memory>
+#include <string>
 #include <string_view>
+#include <strstream>
 
 #include "tao/pegtl.hpp"
 #include "tao/pegtl/contrib/analyze.hpp"
 #include "tao/pegtl/contrib/parse_tree.hpp"
+#include "tao/pegtl/contrib/parse_tree_to_dot.hpp"
 
 namespace pack::language {
 
 using namespace tao::pegtl;
+
+std::string to_string(const parse_tree::node& node) {
+  std::ostrstream stream{};
+  parse_tree::print_dot(stream, node);
+  stream << std::ends;
+  return stream.str();
+}
 
 struct plus_minus : opt<one<'+', '-'>> {};
 struct dot : one<'.'> {};
@@ -36,9 +46,34 @@ struct integer_decimal : seq<integer_number<digit>, opt<decimal_exponent_suffix,
 struct integer_hexadecimal
     : seq<one<'0'>, one<'x', 'X'>, integer_number<xdigit>, opt<hexadecimal_exponent_suffix, exponent>> {};
 
-struct integer_value : seq<plus_minus, sor<integer_hexadecimal, integer_decimal>> {};
-struct float_value : seq<plus_minus, sor<float_hexadecimal, float_decimal, inf, nan>> {};
-struct grammar : sor<float_value, integer_value> {};
+struct integer_literal : seq<plus_minus, sor<integer_hexadecimal, integer_decimal>> {};
+struct float_literal : seq<plus_minus, sor<float_hexadecimal, float_decimal, inf, nan>> {};
+
+struct power : two<'*'> {};
+struct add : one<'+'> {};
+struct subtract : one<'-'> {};
+struct multiply : one<'*'> {};
+struct divide : one<'/'> {};
+
+struct open_bracket : seq<one<'('>, star<space>> {};
+struct close_bracket : seq<star<space>, one<')'>> {};
+
+struct function_name : identifier {};
+
+struct expression;
+
+struct comma_expression : pad<seq<one<','>, expression>, space> {};
+struct function_arguments : seq<expression, star<comma_expression>> {};
+struct function_call : seq<function_name, star<space>, open_bracket, opt<function_arguments>, close_bracket> {};
+
+struct bracketed : seq<open_bracket, expression, close_bracket> {};
+
+struct value : sor<float_literal, integer_literal, function_call, bracketed> {};
+struct exponential : list<value, pad<sor<power>, space>> {};
+struct product : list<exponential, pad<sor<multiply, divide>, space>> {};
+struct expression : list<product, pad<sor<add, subtract>, space>> {};
+
+struct grammar : pad<expression, space> {};
 
 // Using must_if<> we define a control class which is used for
 // the parsing run instead of the default control class.
@@ -108,8 +143,10 @@ struct rearrange : parse_tree::apply<rearrange>  // allows bulk selection, see s
 
 template <typename Rule>
 using selector = parse_tree::selector<Rule,  //
-                                      parse_tree::store_content::on<integer_value, float_value>,
-				      parse_tree::fold_one::on<grammar>>;
+                                      parse_tree::store_content::on<integer_literal, float_literal, function_name,
+                                                                    power, multiply, divide, add, subtract>,  //
+                                      parse_tree::remove_content::on<function_call>,                          //
+                                      rearrange::on<expression, product>>;
 
 std::unique_ptr<parse_tree::node> ExpressionLanguage::parse(std::string_view str) {
   memory_input in(str.data(), str.size(), str);
