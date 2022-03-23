@@ -2,11 +2,9 @@ cc_library(
     name = "language",
     srcs = [
         "expression_language.cc",
-        "parse_tree.cc",
     ],
     hdrs = [
         "expression_language.h",
-        "parse_tree.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -22,6 +20,7 @@ cc_test(
     ],
     deps = [
         ":language",
+        "//third_party/glog",
         "//third_party/gtest",
         "//third_party/taocpp-pegtl",
     ],

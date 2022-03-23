@@ -1,52 +1,28 @@
 #include "language/expression_language.h"
 
-#include <string>
+#include <iostream>
 
+#include "glog/logging.h"
 #include "gtest/gtest.h"
-#include "language/parse_tree.h"
 
 namespace pack::language {
 
 TEST(ParserTest, CanParseInteger) {
-  ParseStack result{};
-  bool success{ExpressionLanguage::parse("42", result)};
-  EXPECT_TRUE(success);
-  EXPECT_FLOAT_EQ(42, result.finish());
+  constexpr std::string_view expression{"42"};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_TRUE(root);
+  ASSERT_EQ(1, root->children.size());
+  EXPECT_TRUE(root->children[0]->is_type<integer_value>());
+  LOG(INFO) << to_string(*root);
 }
 
-TEST(ParserTest, CanParseDecimalFloat) {
-  ParseStack result{};
-  bool success{ExpressionLanguage::parse("42.001", result)};
-  EXPECT_TRUE(success);
-  EXPECT_FLOAT_EQ(42.001, result.finish());
-}
-
-TEST(ParserTest, DISABLED_CanParseIdBasedIdentifier) {
-  ParseStack result{};
-  bool success{ExpressionLanguage::parse("#some_id", result)};
-  EXPECT_TRUE(success);
-  EXPECT_FLOAT_EQ(42.001, result.finish());
-}
-
-TEST(ParserTest, CanParseSimpleIntegerAddition) {
-  ParseStack result{};
-  bool success{ExpressionLanguage::parse("22 + 20", result)};
-  EXPECT_TRUE(success);
-  EXPECT_FLOAT_EQ(42, result.finish());
-}
-
-TEST(ParserTest, CanParseSimpleFloatAddition) {
-  ParseStack result{};
-  bool success{ExpressionLanguage::parse("22.1 + 19.9", result)};
-  EXPECT_TRUE(success);
-  EXPECT_FLOAT_EQ(42., result.finish());
-}
-
-TEST(ParserTest, CanParseFloatIntegerAddition) {
-  ParseStack result{};
-  bool success{ExpressionLanguage::parse("22 + 19.9", result)};
-  EXPECT_TRUE(success);
-  EXPECT_FLOAT_EQ(41.9, result.finish());
+TEST(ParserTest, CanParseDouble) {
+  constexpr std::string_view expression{"42.001"};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_TRUE(root);
+  ASSERT_EQ(1, root->children.size());
+  EXPECT_TRUE(root->children[0]->is_type<float_value>());
+  LOG(INFO) << to_string(*root);
 }
 
 }  // namespace pack::language
