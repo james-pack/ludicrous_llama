@@ -16,6 +16,8 @@ struct float_literal;
 struct function_call;
 struct function_name;
 
+struct component_reference;
+
 struct power;
 struct multiply;
 struct divide;

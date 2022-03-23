@@ -7,6 +7,28 @@
 
 namespace pack::language {
 
+// Disallowing empty strings, and whitespace-only strings, allows us to fall back to a default behavior when the
+// expression is empty without traversing the parse tree. We expect this situation will happen often as the UI will
+// provide textboxes for entering expressions, but the user won't fill them in every time, relying on that default
+// behavior.
+TEST(ParserTest, EmptyStringDoesNotMatchGrammar) {
+  constexpr std::string_view expression{""};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_FALSE(root);
+}
+
+TEST(ParserTest, SingleSpaceStringDoesNotMatchGrammar) {
+  constexpr std::string_view expression{" "};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_FALSE(root);
+}
+
+TEST(ParserTest, WhitespaceStringDoesNotMatchGrammar) {
+  constexpr std::string_view expression{" \t\n\r"};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_FALSE(root);
+}
+
 TEST(ParserTest, CanParseInteger) {
   constexpr std::string_view expression{"42"};
   auto root{ExpressionLanguage::parse(expression)};
@@ -190,7 +212,8 @@ TEST(ParserTest, CanParseOneArgumentFunctionCall) {
 }
 
 TEST(ParserTest, CanParseOneArgumentFunctionCallWithSpaces) {
-  constexpr std::array<std::string_view, 5> expressions{" func(42)", "func(42) ", "func( 42)", "func (42)", "func( 42 )"};
+  constexpr std::array<std::string_view, 5> expressions{" func(42)", "func(42) ", "func( 42)", "func (42)",
+                                                        "func( 42 )"};
   for (const auto expression : expressions) {
     auto root{ExpressionLanguage::parse(expression)};
     ASSERT_TRUE(root) << expression;
@@ -201,6 +224,57 @@ TEST(ParserTest, CanParseOneArgumentFunctionCallWithSpaces) {
     EXPECT_TRUE(root->children[0]->children[0]->is_type<function_name>()) << expression;
     EXPECT_TRUE(root->children[0]->children[1]->is_type<integer_literal>()) << expression;
   }
+}
+
+TEST(ParserTest, CanParseDirectPropertyReference) {
+  constexpr std::string_view expression{"width"};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_TRUE(root) << expression;
+  DLOG(INFO) << to_string(*root);
+  ASSERT_EQ(1, root->children.size());
+  EXPECT_TRUE(root->children[0]->is_type<component_reference>());
+}
+
+TEST(ParserTest, CanParseSelfPropertyReference) {
+  constexpr std::string_view expression{"./width"};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_TRUE(root) << expression;
+  DLOG(INFO) << to_string(*root);
+  ASSERT_EQ(1, root->children.size());
+  EXPECT_TRUE(root->children[0]->is_type<component_reference>());
+}
+
+TEST(ParserTest, CanParseComponentIdPropertyReference) {
+  constexpr std::string_view expression{"#component/width"};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_TRUE(root) << expression;
+  DLOG(INFO) << to_string(*root);
+  ASSERT_EQ(1, root->children.size());
+  EXPECT_TRUE(root->children[0]->is_type<component_reference>());
+}
+
+TEST(ParserTest, ComponentIdWithoutPropertyReferenceDoesNotParse) {
+  constexpr std::string_view expression{"#component"};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_FALSE(root) << expression;
+}
+
+TEST(ParserTest, CanParseParentComponentPropertyReference) {
+  constexpr std::string_view expression{"../width"};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_TRUE(root) << expression;
+  DLOG(INFO) << to_string(*root);
+  ASSERT_EQ(1, root->children.size());
+  EXPECT_TRUE(root->children[0]->is_type<component_reference>());
+}
+
+TEST(ParserTest, CanParseGrandparentComponentPropertyReference) {
+  constexpr std::string_view expression{"../../width"};
+  auto root{ExpressionLanguage::parse(expression)};
+  ASSERT_TRUE(root) << expression;
+  DLOG(INFO) << to_string(*root);
+  ASSERT_EQ(1, root->children.size());
+  EXPECT_TRUE(root->children[0]->is_type<component_reference>());
 }
 
 TEST(ParserTest, CanParseMultiOperatorExpression) {

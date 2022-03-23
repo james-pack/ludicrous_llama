@@ -24,8 +24,9 @@ std::string to_string(const parse_tree::node& node) {
 struct plus_minus : opt<one<'+', '-'>> {};
 struct dot : one<'.'> {};
 
+// inf and nan may not be useful in this context. They are included for completeness but could be removed if they cause
+// other parse issues.
 struct inf : seq<istring<'i', 'n', 'f'>, opt<istring<'i', 'n', 'i', 't', 'y'>>> {};
-
 struct nan : seq<istring<'n', 'a', 'n'>, opt<one<'('>, plus<alnum>, one<')'>>> {};
 
 template <typename D>
@@ -54,6 +55,8 @@ struct add : one<'+'> {};
 struct subtract : one<'-'> {};
 struct multiply : one<'*'> {};
 struct divide : one<'/'> {};
+// This rule determines the operator priority.
+struct binary_operator : sor<power, multiply, divide, add, subtract> {};
 
 struct open_bracket : seq<one<'('>, star<space>> {};
 struct close_bracket : seq<star<space>, one<')'>> {};
@@ -62,18 +65,25 @@ struct function_name : identifier {};
 
 struct expression;
 
-struct comma_expression : pad<seq<one<','>, expression>, space> {};
-struct function_arguments : seq<expression, star<comma_expression>> {};
+struct function_arguments : list_must<expression, one<','>, space> {};
 struct function_call : seq<function_name, star<space>, open_bracket, opt<function_arguments>, close_bracket> {};
+
+struct double_dot : two<'.'> {};
+struct single_dot : one<'.'> {};
+
+struct component_name : identifier {};
+struct dots_or_name : sor<double_dot, single_dot, component_name> {};
+struct component_path : list_must<dots_or_name, one<'/'>> {};
+struct component_id : seq<one<'#'>, component_name> {};
+struct component_id_path : seq<component_id, one<'/'>, component_path> {};
+struct component_reference : sor<component_id_path, component_path> {};
 
 struct bracketed : seq<open_bracket, expression, close_bracket> {};
 
-struct value : sor<float_literal, integer_literal, function_call, bracketed> {};
-struct exponential : list<value, pad<sor<power>, space>> {};
-struct product : list<exponential, pad<sor<multiply, divide>, space>> {};
-struct expression : list<product, pad<sor<add, subtract>, space>> {};
+struct value : sor<float_literal, integer_literal, function_call, component_reference, bracketed> {};
+struct expression : list_must<value, binary_operator, space> {};
 
-struct grammar : pad<expression, space> {};
+struct grammar : seq<star<space>, expression, star<space>> {};
 
 // Using must_if<> we define a control class which is used for
 // the parsing run instead of the default control class.
@@ -94,6 +104,9 @@ struct error {
 
 template <typename Rule>
 using control = must_if<error>::control<Rule>;
+
+// Note: This rearrange class and associated comments were copied from PEGTL example code in
+// src/example/pegtl/parse_tree.cpp
 
 // Since we are going to generate a parse tree, we define a
 // selector that decides which rules will be included in our
@@ -121,36 +134,35 @@ struct rearrange : parse_tree::apply<rearrange>  // allows bulk selection, see s
   // otherwise, perform the above transformation, then apply it recursively until LHS...
   // becomes a single child, which then replaces the parent node and the recursion ends.
   template <typename Node, typename... States>
-  static void transform(std::unique_ptr<Node>& n, States&&... st) {
-    if (n->children.size() == 1) {
-      n = std::move(n->children.back());
+  static void transform(std::unique_ptr<Node>& node, States&&... states) {
+    if (node->children.size() == 1) {
+      node = std::move(node->children.back());
     } else {
-      n->remove_content();
-      auto& c = n->children;
-      auto r = std::move(c.back());
-      c.pop_back();
-      auto o = std::move(c.back());
-      c.pop_back();
-      o->children.emplace_back(std::move(n));
-      o->children.emplace_back(std::move(r));
-      n = std::move(o);
-      transform(n->children.front(), st...);
+      node->remove_content();
+      auto& children = node->children;
+      auto rhs = std::move(children.back());
+      children.pop_back();
+      auto op = std::move(children.back());
+      children.pop_back();
+      op->children.emplace_back(std::move(node));
+      op->children.emplace_back(std::move(rhs));
+      node = std::move(op);
+      transform(node->children.front(), states...);
     }
   }
 };
 
-// select which rules in the grammar will produce parse tree nodes:
-
 template <typename Rule>
-using selector = parse_tree::selector<Rule,  //
-                                      parse_tree::store_content::on<integer_literal, float_literal, function_name,
-                                                                    power, multiply, divide, add, subtract>,  //
-                                      parse_tree::remove_content::on<function_call>,                          //
-                                      rearrange::on<expression, product>>;
+using selector = parse_tree::selector<
+    Rule,  //
+    parse_tree::store_content::on<integer_literal, float_literal, function_name, component_reference, component_name,
+                                  double_dot, power, multiply, divide, add, subtract>,  //
+    parse_tree::remove_content::on<function_call, component_id>,                        //
+    rearrange::on<expression>>;
 
 std::unique_ptr<parse_tree::node> ExpressionLanguage::parse(std::string_view str) {
   memory_input in(str.data(), str.size(), str);
-  return tao::pegtl::parse_tree::parse<grammar, selector, nothing, control>(in);
+  return tao::pegtl::parse_tree::parse<grammar, selector>(in);
 }
 
 }  // namespace pack::language
