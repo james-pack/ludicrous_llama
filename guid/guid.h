@@ -4,6 +4,8 @@
 #include <string>
 #include <string_view>
 
+#include "hash/hash_combine.h"
+
 namespace pack::guid {
 
 class Guid final {
@@ -33,8 +35,11 @@ class Guid final {
   bool operator==(const Guid &rhs) const { return bytes_ == rhs.bytes_; }
   bool operator!=(const Guid &rhs) const { return bytes_ != rhs.bytes_; }
 
+  bool operator==(std::string_view rhs) const { return as_string() == rhs; }
+
   std::string as_string() const;
   operator std::string() const { return as_string(); }
+
   const std::array<unsigned char, 16> &bytes() const { return bytes_; }
 
   bool is_valid() const {
@@ -44,6 +49,17 @@ class Guid final {
       }
     }
     return false;
+  }
+};
+
+bool operator==(std::string_view lhs, const Guid &rhs) { return rhs == lhs; }
+
+struct GuidHash {
+  size_t operator()(const pack::guid::Guid &guid) const {
+    static_assert(sizeof(uint64_t) == 8, "Reimplement this function if this assumption is incorrect");
+    const uint64_t *group1 = reinterpret_cast<const uint64_t *>(&guid.bytes()[0]);
+    const uint64_t *group2 = reinterpret_cast<const uint64_t *>(&guid.bytes()[8]);
+    return hash::hash_combine(0, *group1, *group2);
   }
 };
 

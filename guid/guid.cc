@@ -1,8 +1,11 @@
 #include "guid/guid.h"
 
 #include <cstring>
+#include <stdexcept>
 #include <string>
 #include <string_view>
+
+#include "glog/logging.h"
 
 namespace pack::guid {
 
@@ -78,9 +81,9 @@ unsigned char create_byte(char digit1, char digit2) {
 }
 
 Guid::Guid(std::string_view value) {
-  if (value.length() != 16) {
-    zero();
-    return;
+  if (value.length() != 36) {
+    LOG(ERROR) << "Cannot parse value '" << value << "' as GUID.";
+    throw std::invalid_argument("Cannot parse value '" + std::string(value) + "' as GUID.");
   }
 
   char digit1{'\0'};
@@ -91,8 +94,9 @@ Guid::Guid(std::string_view value) {
     if (c == '-') continue;
 
     if (!is_valid_hex_digit(c)) {
-      zero();
-      return;
+      LOG(ERROR) << "Cannot parse value '" << value << "' as GUID. '" << c << "' is not a valid hex digit.";
+      throw std::invalid_argument("Cannot parse value '" + std::string(value) + "' as GUID. '" + c +
+                                  "' is not a valid hex digit.");
     }
 
     if (need_first_digit) {
