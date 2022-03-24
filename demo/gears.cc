@@ -4,8 +4,8 @@
 #include "entt/entity/registry.hpp"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
+#include "lighting/proto/light.pb.h"
 #include "proto/proto_utils.h"
-#include "serialization/light.pb.h"
 #include "ui/animator.h"
 #include "ui/application.h"
 #include "ui/camera.h"
@@ -83,8 +83,8 @@ int main(int argc, char* argv[]) {
   }
 
   {
-    pack::serialization::LightingConfiguration lights =
-        load_text_proto<pack::serialization::LightingConfiguration>("demo/lighting_configuration.pb.txt");
+    pack::lighting::proto::LightingConfiguration lights =
+        load_text_proto<pack::lighting::proto::LightingConfiguration>("demo/lighting_configuration.pb.txt");
     for (const auto& proto : lights.light()) {
       Light light{};
       Position position{};

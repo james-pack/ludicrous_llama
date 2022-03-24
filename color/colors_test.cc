@@ -7,7 +7,7 @@
 
 namespace pack::color {
 
-using pack::serialization::Rgba;
+using namespace pack::color::proto;
 
 ::testing::AssertionResult has_matching_float_color_data(Rgba expected, Rgba actual, int bits_accuracy = 32) {
   if (bits_accuracy == 0) {

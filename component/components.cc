@@ -3,12 +3,12 @@
 #include <string>
 #include <string_view>
 
+#include "component/proto/component.pb.h"
 #include "guid/guid.h"
-#include "serialization/component.pb.h"
 
 namespace pack::component {
 
-using namespace pack::serialization;
+using namespace pack::component::proto;
 
 std::string create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
                              Component* component) {

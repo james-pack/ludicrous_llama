@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "serialization/material.pb.h"
+#include "color/proto/material.pb.h"
 #include "ui/model/color.h"
 
 namespace pack::ui::model {
@@ -16,10 +16,10 @@ struct Material final {
   // For compatibility with OpenGL, shininess is on [0, 128].
   float shininess{0.f};
 
-  static void from_proto(const serialization::Material& proto, Material* material);
-  static Material from_proto(const serialization::Material& proto);
-  static void to_proto(const Material& material, serialization::Material* proto);
-  static serialization::Material to_proto(const Material& material);
+  static void from_proto(const color::proto::Material& proto, Material* material);
+  static Material from_proto(const color::proto::Material& proto);
+  static void to_proto(const Material& material, color::proto::Material* proto);
+  static color::proto::Material to_proto(const Material& material);
 };
 
 }  // namespace pack::ui::model

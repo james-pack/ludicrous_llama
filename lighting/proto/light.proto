@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "color/proto/color.proto";
+import "component/proto/position.proto";
+
+package pack.lighting.proto;
+
+message Light {
+  int32 light_num = 1;
+  component.proto.Position position = 2;
+  component.proto.Orientation orientation = 7;
+  color.proto.Rgba ambient = 3;
+  color.proto.Rgba diffuse = 4;
+  color.proto.Rgba specular = 5;
+  bool enabled = 6;
+}
+
+message LightingConfiguration {
+  string name = 1;
+  repeated Light light = 2;
+}

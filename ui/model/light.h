@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "serialization/light.pb.h"
+#include "lighting/proto/light.pb.h"
 #include "ui/model/color.h"
 #include "ui/model/position.h"
 
@@ -17,10 +17,11 @@ struct Light final {
   Color specular{{1.f, 1.f, 1.f, 1.f}};
   bool enabled{};
 
-  static void from_proto(const serialization::Light& proto, Light* light, Position* position, Orientation* orientation);
+  static void from_proto(const lighting::proto::Light& proto, Light* light, Position* position,
+                         Orientation* orientation);
   static void to_proto(const Light& light, const Position& position, const Orientation& orientation,
-                       serialization::Light* proto);
-  static serialization::Light to_proto(const Light& light, const Position& position, const Orientation& orientation);
+                       lighting::proto::Light* proto);
+  static lighting::proto::Light to_proto(const Light& light, const Position& position, const Orientation& orientation);
 };
 
 std::string to_string(const Light& light);

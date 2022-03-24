@@ -1,0 +1,35 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+cc_library(
+    name = "proto",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":component_cc_proto",
+        ":position_cc_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "component_cc_proto",
+    deps = [":component_proto"],
+)
+
+proto_library(
+    name = "component_proto",
+    srcs = ["component.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":position_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "position_cc_proto",
+    deps = [":position_proto"],
+)
+
+proto_library(
+    name = "position_proto",
+    srcs = ["position.proto"],
+    visibility = ["//visibility:public"],
+)

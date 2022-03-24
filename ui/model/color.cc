@@ -3,24 +3,22 @@
 #include <string>
 
 #include "color/colors.h"
-#include "serialization/color.pb.h"
+#include "color/proto/color.pb.h"
 
 namespace pack::ui::model {
 
-void Color::from_proto(const serialization::Rgba& proto, Color* color) {
-  color::Colors::to_array(proto, color->values);
-}
+void Color::from_proto(const color::proto::Rgba& proto, Color* color) { color::Colors::to_array(proto, color->values); }
 
-Color Color::from_proto(const serialization::Rgba& proto) {
+Color Color::from_proto(const color::proto::Rgba& proto) {
   Color result{};
   from_proto(proto, &result);
   return result;
 }
 
-void Color::to_proto(const Color& color, serialization::Rgba* proto) { color::Colors::from_array(color.values, proto); }
+void Color::to_proto(const Color& color, color::proto::Rgba* proto) { color::Colors::from_array(color.values, proto); }
 
-serialization::Rgba Color::to_proto(const Color& color) {
-  serialization::Rgba proto{};
+color::proto::Rgba Color::to_proto(const Color& color) {
+  color::proto::Rgba proto{};
   to_proto(color, &proto);
   return proto;
 }
