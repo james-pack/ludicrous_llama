@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package pack.component;
+package pack.serialization;
 
 message Orientation {
   // TODO(james): Original form from GLFW example code. Consider restructuring as quaternions.

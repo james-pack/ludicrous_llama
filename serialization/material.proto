@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-import "color/color.proto";
+import "serialization/color.proto";
 
-package pack.color;
+package pack.serialization;
 
 message Material {
   string id = 1;

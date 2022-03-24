@@ -2,13 +2,13 @@
 
 #include <string>
 
-#include "lighting/light.pb.h"
+#include "serialization/light.pb.h"
 #include "ui/model/color.h"
 #include "ui/model/position.h"
 
 namespace pack::ui::model {
 
-void Light::from_proto(const lighting::Light& proto, Light* light, Position* position, Orientation* orientation) {
+void Light::from_proto(const serialization::Light& proto, Light* light, Position* position, Orientation* orientation) {
   using std::to_string;
 
   light->light_num = proto.light_num();
@@ -24,7 +24,7 @@ void Light::from_proto(const lighting::Light& proto, Light* light, Position* pos
 }
 
 void Light::to_proto(const Light& light, const Position& position, const Orientation& orientation,
-                     lighting::Light* proto) {
+                     serialization::Light* proto) {
   proto->set_light_num(light.light_num);
   Position::to_proto(position, proto->mutable_position());
   Orientation::to_proto(orientation, proto->mutable_orientation());
@@ -34,8 +34,8 @@ void Light::to_proto(const Light& light, const Position& position, const Orienta
   proto->set_enabled(light.enabled);
 }
 
-lighting::Light Light::to_proto(const Light& light, const Position& position, const Orientation& orientation) {
-  lighting::Light proto{};
+serialization::Light Light::to_proto(const Light& light, const Position& position, const Orientation& orientation) {
+  serialization::Light proto{};
   to_proto(light, position, orientation, &proto);
   return proto;
 }

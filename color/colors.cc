@@ -4,21 +4,21 @@
 #include <stdexcept>
 #include <string>
 
-#include "color/color.pb.h"
+#include "serialization/color.pb.h"
 
 namespace pack::color {
 
-void Colors::to_array(const Rgba& color, float* values) {
+void Colors::to_array(const serialization::Rgba& color, float* values) {
   constexpr double MAX_VALUE{1.};
   switch (color.color_representation_case()) {
-    case Rgba::ColorRepresentationCase::kFloatValues: {
+    case serialization::Rgba::ColorRepresentationCase::kFloatValues: {
       values[0] = color.float_values().red();
       values[1] = color.float_values().green();
       values[2] = color.float_values().blue();
       values[3] = color.float_values().alpha();
       break;
     }
-    case Rgba::ColorRepresentationCase::kIntValues: {
+    case serialization::Rgba::ColorRepresentationCase::kIntValues: {
       constexpr double scale = MAX_VALUE / 255;
       values[0] = color.int_values().red() * scale;
       values[1] = color.int_values().green() * scale;
@@ -26,7 +26,7 @@ void Colors::to_array(const Rgba& color, float* values) {
       values[3] = color.int_values().alpha() * scale;
       break;
     }
-    case Rgba::ColorRepresentationCase::kUint32Values: {
+    case serialization::Rgba::ColorRepresentationCase::kUint32Values: {
       constexpr double scale = MAX_VALUE / std::numeric_limits<uint32_t>::max();
       values[0] = color.uint32_values().red() * scale;
       values[1] = color.uint32_values().green() * scale;
@@ -42,21 +42,21 @@ void Colors::to_array(const Rgba& color, float* values) {
   }
 }
 
-void Colors::from_array(const float* values, Rgba* color) {
+void Colors::from_array(const float* values, serialization::Rgba* color) {
   color->mutable_float_values()->set_red(values[0]);
   color->mutable_float_values()->set_green(values[1]);
   color->mutable_float_values()->set_blue(values[2]);
   color->mutable_float_values()->set_alpha(values[3]);
 }
 
-Rgba Colors::as_floats(const Rgba& color) {
+serialization::Rgba Colors::as_floats(const serialization::Rgba& color) {
   if (color.has_float_values()) {
     return color;
   }
 
-  Rgba result{};
+  serialization::Rgba result{};
   switch (color.color_representation_case()) {
-    case Rgba::ColorRepresentationCase::kIntValues: {
+    case serialization::Rgba::ColorRepresentationCase::kIntValues: {
       constexpr double scale = 1. / 255;
       result.mutable_float_values()->set_red(color.int_values().red() * scale);
       result.mutable_float_values()->set_green(color.int_values().green() * scale);
@@ -64,7 +64,7 @@ Rgba Colors::as_floats(const Rgba& color) {
       result.mutable_float_values()->set_alpha(color.int_values().alpha() * scale);
       break;
     }
-    case Rgba::ColorRepresentationCase::kUint32Values: {
+    case serialization::Rgba::ColorRepresentationCase::kUint32Values: {
       constexpr double scale = 1. / std::numeric_limits<uint32_t>::max();
       result.mutable_float_values()->set_red(color.uint32_values().red() * scale);
       result.mutable_float_values()->set_green(color.uint32_values().green() * scale);
@@ -82,14 +82,14 @@ Rgba Colors::as_floats(const Rgba& color) {
   return result;
 }
 
-Rgba Colors::as_ints(const Rgba& color) {
+serialization::Rgba Colors::as_ints(const serialization::Rgba& color) {
   if (color.has_int_values()) {
     return color;
   }
 
-  Rgba result{};
+  serialization::Rgba result{};
   switch (color.color_representation_case()) {
-    case Rgba::ColorRepresentationCase::kFloatValues: {
+    case serialization::Rgba::ColorRepresentationCase::kFloatValues: {
       constexpr double scale = 256.;
       result.mutable_int_values()->set_red(color.float_values().red() * scale);
       result.mutable_int_values()->set_green(color.float_values().green() * scale);
@@ -97,7 +97,7 @@ Rgba Colors::as_ints(const Rgba& color) {
       result.mutable_int_values()->set_alpha(color.float_values().alpha() * scale);
       break;
     }
-    case Rgba::ColorRepresentationCase::kUint32Values: {
+    case serialization::Rgba::ColorRepresentationCase::kUint32Values: {
       constexpr double scale = 256. / std::numeric_limits<uint32_t>::max();
       result.mutable_int_values()->set_red(color.uint32_values().red() * scale);
       result.mutable_int_values()->set_green(color.uint32_values().green() * scale);
@@ -129,14 +129,14 @@ Rgba Colors::as_ints(const Rgba& color) {
   return result;
 }
 
-Rgba Colors::as_uint32s(const Rgba& color) {
+serialization::Rgba Colors::as_uint32s(const serialization::Rgba& color) {
   if (color.has_uint32_values()) {
     return color;
   }
 
-  Rgba result{};
+  serialization::Rgba result{};
   switch (color.color_representation_case()) {
-    case Rgba::ColorRepresentationCase::kFloatValues: {
+    case serialization::Rgba::ColorRepresentationCase::kFloatValues: {
       constexpr double scale = std::numeric_limits<uint32_t>::max();
       result.mutable_uint32_values()->set_red(color.float_values().red() * scale);
       result.mutable_uint32_values()->set_green(color.float_values().green() * scale);
@@ -144,7 +144,7 @@ Rgba Colors::as_uint32s(const Rgba& color) {
       result.mutable_uint32_values()->set_alpha(color.float_values().alpha() * scale);
       break;
     }
-    case Rgba::ColorRepresentationCase::kIntValues: {
+    case serialization::Rgba::ColorRepresentationCase::kIntValues: {
       constexpr double scale = std::numeric_limits<uint32_t>::max() / 255.;
       result.mutable_uint32_values()->set_red(color.int_values().red() * scale);
       result.mutable_uint32_values()->set_green(color.int_values().green() * scale);

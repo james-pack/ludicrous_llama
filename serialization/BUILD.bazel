@@ -1,0 +1,74 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+cc_library(
+    name = "serialization",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":color_cc_proto",
+        ":component_cc_proto",
+        ":light_cc_proto",
+        ":material_cc_proto",
+        ":position_cc_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "color_cc_proto",
+    deps = [":color_proto"],
+)
+
+proto_library(
+    name = "color_proto",
+    srcs = ["color.proto"],
+)
+
+cc_proto_library(
+    name = "component_cc_proto",
+    deps = [":component_proto"],
+)
+
+proto_library(
+    name = "component_proto",
+    srcs = ["component.proto"],
+    deps = [
+        ":position_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "light_cc_proto",
+    deps = [":light_proto"],
+)
+
+proto_library(
+    name = "light_proto",
+    srcs = ["light.proto"],
+    deps = [
+        ":color_proto",
+        ":position_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "material_cc_proto",
+    deps = [":material_proto"],
+)
+
+proto_library(
+    name = "material_proto",
+    srcs = ["material.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":color_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "position_cc_proto",
+    deps = [":position_proto"],
+)
+
+proto_library(
+    name = "position_proto",
+    srcs = ["position.proto"],
+)

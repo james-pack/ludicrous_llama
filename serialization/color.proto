@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package pack.color;
+package pack.serialization;
 
 message Rgba {
   message AsFloats {

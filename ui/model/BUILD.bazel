@@ -23,6 +23,7 @@ cc_library(
         "//component",
         "//lighting",
         "//proto",
+        "//serialization",
         "//third_party/entt",
         "//third_party/glog",
     ],

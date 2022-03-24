@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-import "component/position.proto";
+import "serialization/position.proto";
 
-package pack.component;
+package pack.serialization;
 
 message Type {
   enum Types {

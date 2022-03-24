@@ -10,28 +10,14 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":component_cc_proto",
         ":gear_cc_proto",
-        ":position_cc_proto",
         "//color",
         "//guid",
+        "//serialization",
         "//third_party/entt",
         "//third_party/glad",
         "//third_party/glfw",
         "//third_party/glog",
-    ],
-)
-
-cc_proto_library(
-    name = "component_cc_proto",
-    deps = [":component_proto"],
-)
-
-proto_library(
-    name = "component_proto",
-    srcs = ["component.proto"],
-    deps = [
-        ":position_proto",
     ],
 )
 
@@ -44,19 +30,8 @@ proto_library(
     name = "gear_proto",
     srcs = ["gear.proto"],
     deps = [
-        "//color:material_proto",
+        "//serialization:material_proto",
     ],
-)
-
-cc_proto_library(
-    name = "position_cc_proto",
-    deps = [":position_proto"],
-)
-
-proto_library(
-    name = "position_proto",
-    srcs = ["position.proto"],
-    visibility = ["//visibility:public"],
 )
 
 filegroup(

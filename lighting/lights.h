@@ -1,12 +1,12 @@
 #pragma once
 
-#include "lighting/light.pb.h"
+#include "serialization/light.pb.h"
 
 namespace pack::lighting {
 
 class Lights final {
  public:
-  static Light as_packed(const Light& light);
+  static serialization::Light as_packed(const serialization::Light& light);
 };
 
 }  // namespace pack::lighting

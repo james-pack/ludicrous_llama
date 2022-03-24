@@ -7,6 +7,8 @@
 
 namespace pack::color {
 
+using pack::serialization::Rgba;
+
 ::testing::AssertionResult has_matching_float_color_data(Rgba expected, Rgba actual, int bits_accuracy = 32) {
   if (bits_accuracy == 0) {
     throw std::logic_error("Required accuracy is zero bits?!?");

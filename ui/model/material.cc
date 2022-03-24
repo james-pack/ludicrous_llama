@@ -1,11 +1,11 @@
 #include "ui/model/material.h"
 
-#include "color/material.pb.h"
+#include "serialization/material.pb.h"
 #include "ui/model/color.h"
 
 namespace pack::ui::model {
 
-void Material::from_proto(const color::Material& proto, Material* material) {
+void Material::from_proto(const serialization::Material& proto, Material* material) {
   material->id = proto.id();
   Color::from_proto(proto.ambient(), &material->ambient);
   Color::from_proto(proto.diffuse(), &material->diffuse);
@@ -13,13 +13,13 @@ void Material::from_proto(const color::Material& proto, Material* material) {
   material->shininess = proto.shininess();
 }
 
-Material Material::from_proto(const color::Material& proto) {
+Material Material::from_proto(const serialization::Material& proto) {
   Material material{};
   from_proto(proto, &material);
   return material;
 }
 
-void Material::to_proto(const Material& material, color::Material* proto) {
+void Material::to_proto(const Material& material, serialization::Material* proto) {
   proto->set_id(material.id);
   Color::to_proto(material.ambient, proto->mutable_ambient());
   Color::to_proto(material.diffuse, proto->mutable_diffuse());
@@ -27,8 +27,8 @@ void Material::to_proto(const Material& material, color::Material* proto) {
   proto->set_shininess(material.shininess);
 }
 
-color::Material Material::to_proto(const Material& material) {
-  color::Material proto{};
+serialization::Material Material::to_proto(const Material& material) {
+  serialization::Material proto{};
   to_proto(material, &proto);
   return proto;
 }

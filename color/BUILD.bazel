@@ -11,33 +11,7 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":color_cc_proto",
-        ":material_cc_proto",
-    ],
-)
-
-cc_proto_library(
-    name = "color_cc_proto",
-    deps = [":color_proto"],
-)
-
-proto_library(
-    name = "color_proto",
-    srcs = ["color.proto"],
-    visibility = ["//visibility:public"],
-)
-
-cc_proto_library(
-    name = "material_cc_proto",
-    deps = [":material_proto"],
-)
-
-proto_library(
-    name = "material_proto",
-    srcs = ["material.proto"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":color_proto",
+        "//serialization",
     ],
 )
 

@@ -1,15 +1,17 @@
 #include <filesystem>
 #include <string_view>
 
-#include "component/component.pb.h"
 #include "component/components.h"
 #include "gtest/gtest.h"
 #include "proto/proto_utils.h"
+#include "serialization/component.pb.h"
 #include "testing/test_temp_directory.h"
 
 namespace pack::component {
 
 namespace fs = std::filesystem;
+
+using namespace pack::serialization;
 
 fs::path create_path(const std::string_view& filename, bool persist_after_test = false) {
   if (persist_after_test) {
