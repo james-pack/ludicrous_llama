@@ -11,47 +11,10 @@ message Type {
     INTEGER = 2;
     STRING = 3;
     ID = 4;
-    SET = 5;
-    SET_MEMBER = 8;  // TODO(james): Decide if this type is redundant.
-    POINT = 6;
-    DIRECTION = 9;  // TODO(james): Decide if this type is redundant.
-    LINE = 7;
+    // Additional types to consider adding: SET, SET_MEMBER, POINT, DIRECTION, and LINE.
   }
 
   Types type = 1;
-}
-
-message Set {
-  string id = 1;
-  string name = 2;
-
-  repeated string members = 3;
-}
-
-message SetMember {
-  string member_id = 1;
-  string set_id = 2;
-}
-
-message Point {
-  // TODO(james): Determine if there is value to introduce the notion of a point in spherical coordinates or other
-  // coordinate system.
-  float x = 1;
-  float y = 2;
-  float z = 3;
-}
-
-message Direction {
-  // TODO(james): Determine if there is value to introduce the notion of a direction in spherical coordinates or other
-  // coordinate system.
-  float x = 1;
-  float y = 2;
-  float z = 3;
-}
-
-message Line {
-  Point from = 1;
-  Point to = 2;
 }
 
 message Value {
@@ -60,11 +23,6 @@ message Value {
     int64 int_value = 2;
     string string_value = 3;
     string id = 4;
-    Set set_id = 5;
-    SetMember set_member_id = 8;
-    Point point = 6;
-    Direction direction = 9;
-    Line line = 7;
   }
 }
 
@@ -80,7 +38,7 @@ message Expression {
 message Precision {
   // There are many ways of determining precision. For now, we focus on the simplest form, number of decimal places, but
   // should expand this to handle different concepts as they arise.
-  uint32 num_decimal_places = 1;
+  int32 num_decimal_places = 1;
 }
 
 message ValueDomain {
@@ -118,9 +76,9 @@ message Property {
   Expression value = 2;
 }
 
-// The Primitive message is actually a wrapper of an internal function implementing the primitive in code. This design
-// is inspired by Unix libc and similar.
-message Primitive {
+// The PrimitiveCall message is actually a wrapper of an internal function call to implement the primitive in code. This
+// design is inspired by Unix libc and similar.
+message PrimitiveCall {
   string name = 1;
 
   repeated ParameterBinding parameters = 2;
@@ -142,7 +100,7 @@ message ProcessedPrimitive {
   string id = 1;
   string name = 2;
 
-  Primitive primitive = 3;
+  PrimitiveCall primitive = 3;
   repeated Process processing_steps = 4;
 }
 
