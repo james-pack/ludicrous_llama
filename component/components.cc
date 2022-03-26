@@ -3,147 +3,84 @@
 #include <string>
 #include <string_view>
 
-#include "component/proto/component.pb.h"
+#include "component/primitive.h"
+#include "component/types.h"
 #include "guid/guid.h"
 
 namespace pack::component {
 
-using namespace pack::component::proto;
+guid::Guid create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
+                            Component* component) {
+  component->name = std::move(name);
+  component->primitive = Primitive::by_name(primitive_name);
 
-std::string create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
-                             Component* component) {
-  std::string id{guid::Guid()};
-  component->set_id(id);
-  component->set_name(std::move(name));
-  ProcessedPrimitive* processed = component->add_primitives();
-  Primitive* primitive = processed->mutable_primitive();
-  primitive->set_name(std::move(primitive_name));
-  ParameterBinding* binding = primitive->add_parameters();
-  binding->set_parameter_name(std::move(parameter1));
-  binding->mutable_value()->mutable_literal()->set_float_value(value1);
-  return id;
+  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{value1}});
+  return component->id;
 }
 
-std::string create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
-                             std::string parameter2, float value2, Component* component) {
-  std::string id{guid::Guid()};
-  component->set_id(id);
-  component->set_name(std::move(name));
-  ProcessedPrimitive* processed = component->add_primitives();
-  Primitive* primitive = processed->mutable_primitive();
-  primitive->set_name(std::move(primitive_name));
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter1));
-    binding->mutable_value()->mutable_literal()->set_float_value(value1);
-  }
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter2));
-    binding->mutable_value()->mutable_literal()->set_float_value(value2);
-  }
-  return id;
+guid::Guid create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
+                            std::string parameter2, float value2, Component* component) {
+  component->name = std::move(name);
+  component->primitive = Primitive::by_name(primitive_name);
+
+  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{value1}});
+  component->bindings.insert(ParameterBinding{std::move(parameter2), Expression{value2}});
+  return component->id;
 }
 
-std::string create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
-                             std::string parameter2, float value2, std::string parameter3, float value3,
-                             Component* component) {
-  std::string id{guid::Guid()};
-  component->set_id(id);
-  component->set_name(std::move(name));
-  ProcessedPrimitive* processed = component->add_primitives();
-  Primitive* primitive = processed->mutable_primitive();
-  primitive->set_name(std::move(primitive_name));
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter1));
-    binding->mutable_value()->mutable_literal()->set_float_value(value1);
-  }
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter2));
-    binding->mutable_value()->mutable_literal()->set_float_value(value2);
-  }
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter3));
-    binding->mutable_value()->mutable_literal()->set_float_value(value3);
-  }
-  return id;
+guid::Guid create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
+                            std::string parameter2, float value2, std::string parameter3, float value3,
+                            Component* component) {
+  component->name = std::move(name);
+  component->primitive = Primitive::by_name(primitive_name);
+
+  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{value1}});
+  component->bindings.insert(ParameterBinding{std::move(parameter2), Expression{value2}});
+  component->bindings.insert(ParameterBinding{std::move(parameter3), Expression{value3}});
+  return component->id;
 }
 
-std::string create_component(std::string name, std::string primitive_name, std::string parameter1,
-                             std::string expression1, Component* component) {
-  std::string id{guid::Guid()};
-  component->set_id(id);
-  component->set_name(std::move(name));
-  ProcessedPrimitive* processed = component->add_primitives();
-  Primitive* primitive = processed->mutable_primitive();
-  primitive->set_name(std::move(primitive_name));
-  ParameterBinding* binding = primitive->add_parameters();
-  binding->set_parameter_name(std::move(parameter1));
-  binding->mutable_value()->set_expression(std::move(expression1));
-  return id;
+guid::Guid create_component(std::string name, std::string primitive_name, std::string parameter1,
+                            std::string expression1, Component* component) {
+  component->name = std::move(name);
+  component->primitive = Primitive::by_name(primitive_name);
+
+  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{std::move(expression1)}});
+  return component->id;
 }
 
-std::string create_component(std::string name, std::string primitive_name, std::string parameter1,
-                             std::string expression1, std::string parameter2, std::string expression2,
-                             Component* component) {
-  std::string id{guid::Guid()};
-  component->set_id(id);
-  component->set_name(std::move(name));
-  ProcessedPrimitive* processed = component->add_primitives();
-  Primitive* primitive = processed->mutable_primitive();
-  primitive->set_name(std::move(primitive_name));
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter1));
-    binding->mutable_value()->set_expression(std::move(expression1));
-  }
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter2));
-    binding->mutable_value()->set_expression(std::move(expression2));
-  }
-  return id;
+guid::Guid create_component(std::string name, std::string primitive_name, std::string parameter1,
+                            std::string expression1, std::string parameter2, std::string expression2,
+                            Component* component) {
+  component->name = std::move(name);
+  component->primitive = Primitive::by_name(primitive_name);
+
+  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{std::move(expression1)}});
+  component->bindings.insert(ParameterBinding{std::move(parameter2), Expression{std::move(expression2)}});
+  return component->id;
 }
 
-std::string create_component(std::string name, std::string primitive_name, std::string parameter1,
-                             std::string expression1, std::string parameter2, std::string expression2,
-                             std::string parameter3, std::string expression3, Component* component) {
-  std::string id{guid::Guid()};
-  component->set_id(id);
-  component->set_name(std::move(name));
-  ProcessedPrimitive* processed = component->add_primitives();
-  Primitive* primitive = processed->mutable_primitive();
-  primitive->set_name(std::move(primitive_name));
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter1));
-    binding->mutable_value()->set_expression(std::move(expression1));
-  }
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter2));
-    binding->mutable_value()->set_expression(std::move(expression2));
-  }
-  {
-    ParameterBinding* binding = primitive->add_parameters();
-    binding->set_parameter_name(std::move(parameter3));
-    binding->mutable_value()->set_expression(std::move(expression3));
-  }
-  return id;
+guid::Guid create_component(std::string name, std::string primitive_name, std::string parameter1,
+                            std::string expression1, std::string parameter2, std::string expression2,
+                            std::string parameter3, std::string expression3, Component* component) {
+  component->name = std::move(name);
+  component->primitive = Primitive::by_name(primitive_name);
+
+  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{std::move(expression1)}});
+  component->bindings.insert(ParameterBinding{std::move(parameter2), Expression{std::move(expression2)}});
+  component->bindings.insert(ParameterBinding{std::move(parameter3), Expression{std::move(expression3)}});
+  return component->id;
 }
 
 Component create_component(std::string name, std::string primitive_name, std::string parameter1, float value1) {
-  Component result;
+  Component result{};
   create_component(std::move(name), std::move(primitive_name), std::move(parameter1), value1, &result);
   return result;
 }
 
 Component create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
                            std::string parameter2, float value2) {
-  Component result;
+  Component result{};
   create_component(std::move(name), std::move(primitive_name), std::move(parameter1), value1, std::move(parameter2),
                    value2, &result);
   return result;
@@ -151,7 +88,7 @@ Component create_component(std::string name, std::string primitive_name, std::st
 
 Component create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
                            std::string parameter2, float value2, std::string parameter3, float value3) {
-  Component result;
+  Component result{};
   create_component(std::move(name), std::move(primitive_name), std::move(parameter1), value1, std::move(parameter2),
                    value2, std::move(parameter3), value3, &result);
   return result;
@@ -159,14 +96,14 @@ Component create_component(std::string name, std::string primitive_name, std::st
 
 Component create_component(std::string name, std::string primitive_name, std::string parameter1,
                            std::string expression1) {
-  Component result;
+  Component result{};
   create_component(std::move(name), std::move(primitive_name), std::move(parameter1), std::move(expression1), &result);
   return result;
 }
 
 Component create_component(std::string name, std::string primitive_name, std::string parameter1,
                            std::string expression1, std::string parameter2, std::string expression2) {
-  Component result;
+  Component result{};
   create_component(std::move(name), std::move(primitive_name), std::move(parameter1), std::move(expression1),
                    std::move(parameter2), std::move(expression2), &result);
   return result;
@@ -175,7 +112,7 @@ Component create_component(std::string name, std::string primitive_name, std::st
 Component create_component(std::string name, std::string primitive_name, std::string parameter1,
                            std::string expression1, std::string parameter2, std::string expression2,
                            std::string parameter3, std::string expression3) {
-  Component result;
+  Component result{};
   create_component(std::move(name), std::move(primitive_name), std::move(parameter1), std::move(expression1),
                    std::move(parameter2), std::move(expression2), std::move(parameter3), std::move(expression3),
                    &result);
@@ -183,19 +120,27 @@ Component create_component(std::string name, std::string primitive_name, std::st
 }
 
 const Component* find_by_id(const Components& components, std::string_view id) {
-  for (const auto& component : components.components()) {
-    if (component.id() == id) {
-      return &component;
-    }
+#if defined(__cpp_lib_generic_unordered_lookup)
+  const auto iter = components.find(id);
+#else
+  const Component for_comparison{guid::Guid{id}};
+  const auto iter = components.find(for_comparison);
+#endif
+  if (iter != components.end()) {
+    return &(*iter);
   }
   return nullptr;
 }
 
 Component* find_by_id(Components& components, std::string_view id) {
-  for (auto& component : *components.mutable_components()) {
-    if (component.id() == id) {
-      return &component;
-    }
+#if defined(__cpp_lib_generic_unordered_lookup)
+  const auto iter = components.find(id);
+#else
+  const Component for_comparison{guid::Guid{id}};
+  const auto iter = components.find(for_comparison);
+#endif
+  if (iter != components.end()) {
+    return const_cast<Component*>(&(*iter));
   }
   return nullptr;
 }

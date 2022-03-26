@@ -2,13 +2,16 @@
 #include <string_view>
 
 #include "component/components.h"
-#include "component/proto/component.pb.h"
+#include "component/primitive.h"
+#include "component/types.h"
 #include "gtest/gtest.h"
+#include "guid/guid.h"
 #include "proto/proto_utils.h"
 #include "testing/test_temp_directory.h"
 
 namespace pack::component {
 
+/*
 namespace fs = std::filesystem;
 
 fs::path create_path(const std::string_view& filename, bool persist_after_test = false) {
@@ -19,414 +22,295 @@ fs::path create_path(const std::string_view& filename, bool persist_after_test =
     return tmp_dir / filename;
   }
 }
+*/
 
 TEST(ApiTest, CanConstructTrivialComponentFromPrimitive) {
-  proto::Component shelf{};
-  shelf.set_id("id");
-  shelf.set_name("shelf");
+  Component shelf{};
+  shelf.name = "shelf";
 
-  proto::ProcessedPrimitive* processed = shelf.add_primitives();
-  proto::Primitive* primitive = processed->mutable_primitive();
-  primitive->set_name("box");
-  proto::ParameterBinding* width = primitive->add_parameters();
-  width->set_parameter_name("width");
-  width->mutable_value()->mutable_literal()->set_float_value(1390.f);
-  proto::ParameterBinding* height = primitive->add_parameters();
-  height->set_parameter_name("height");
-  height->mutable_value()->mutable_literal()->set_float_value(18.f);
-  proto::ParameterBinding* depth = primitive->add_parameters();
-  depth->set_parameter_name("depth");
-  depth->mutable_value()->mutable_literal()->set_float_value(400.f);
+  shelf.primitive = Primitive::by_name("box");
+
+  {
+    ParameterBinding binding{"width"};
+    binding.value = Expression{Value{1390.f}};
+    shelf.bindings.insert(std::move(binding));
+  }
+  {
+    ParameterBinding binding{"height"};
+    binding.value = Expression{Value{18.f}};
+    shelf.bindings.insert(std::move(binding));
+  }
+  {
+    ParameterBinding binding{"depth"};
+    binding.value = Expression{Value{400.f}};
+    shelf.bindings.insert(std::move(binding));
+  }
 }
 
-TEST(ApiTest, CanConstructCompoonentsForSimpleBox) {
-  proto::Components box_components{};
-  proto::Component* box = box_components.add_components();
-  std::string id{};
+TEST(ApiTest, CanConstructComponentsForSimpleBox) {
+  Components box_components{};
+  Component box{};
 
-  proto::Component* component{nullptr};
-  component = box_components.add_components();
-  id = create_component("top", "box", "width", 1390.f, "height", 18.f, "depth", 400.f, component);
-  box->add_children()->set_child_id(id);
+  {
+    Component component{create_component("top", "box", "width", 1390.f, "height", 18.f, "depth", 400.f)};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
 
-  component = box_components.add_components();
-  id = create_component("bottom", "box", "width", 1390.f, "height", 18.f, "depth", 400.f, component);
-  box->add_children()->set_child_id(id);
+  {
+    Component component{create_component("top", "box", "width", 1390.f, "height", 18.f, "depth", 400.f)};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
 
-  component = box_components.add_components();
-  id = create_component("front", "box", "width", 1390.f, "height", 18.f, "depth", 400.f, component);
-  box->add_children()->set_child_id(id);
+  {
+    Component component{create_component("top", "box", "width", 1390.f, "height", 18.f, "depth", 400.f)};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
 
-  component = box_components.add_components();
-  id = create_component("back", "box", "width", 1390.f, "height", 18.f, "depth", 400.f, component);
-  box->add_children()->set_child_id(id);
+  {
+    Component component{create_component("top", "box", "width", 1390.f, "height", 18.f, "depth", 400.f)};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
 
-  component = box_components.add_components();
-  id = create_component("left", "box", "width", 1390.f, "height", 18.f, "depth", 400.f, component);
-  box->add_children()->set_child_id(id);
+  {
+    Component component{create_component("top", "box", "width", 1390.f, "height", 18.f, "depth", 400.f)};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
 
-  component = box_components.add_components();
-  id = create_component("right", "box", "width", 1390.f, "height", 18.f, "depth", 400.f, component);
-  box->add_children()->set_child_id(id);
+  {
+    Component component{create_component("top", "box", "width", 1390.f, "height", 18.f, "depth", 400.f)};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
 
-  EXPECT_EQ(6, box->children_size());
+  box_components.insert(box);
+
+  EXPECT_EQ(6, box.children.size());
   // The box_components contains all of the components of the box, plus 1 for the box itself.
-  EXPECT_EQ(box_components.components_size(), box->children_size() + 1);
+  EXPECT_EQ(box_components.size(), box.children.size() + 1);
 }
 
 TEST(ApiTest, CanConstructSimpleBoxWithProperties) {
-  proto::Components box_components{};
-  proto::Component* box = box_components.add_components();
+  Components box_components{};
+  Component box{};
   {
-    proto::Property* property = box->add_properties();
-    property->set_name("width");
-    property->mutable_value()->mutable_literal()->set_float_value(1390.f);
+    Property property{"width"};
+    as_float(as_literal(property.value)) = 1390.f;
+    box.properties.insert(std::move(property));
   }
   {
-    proto::Property* property = box->add_properties();
-    property->set_name("height");
-    property->mutable_value()->mutable_literal()->set_float_value(450.f);
+    Property property{"height"};
+    as_float(as_literal(property.value)) = 450.f;
+    box.properties.insert(std::move(property));
   }
   {
-    proto::Property* property = box->add_properties();
-    property->set_name("depth");
-    property->mutable_value()->mutable_literal()->set_float_value(400.f);
+    Property property{"depth"};
+    as_float(as_literal(property.value)) = 400.f;
+    box.properties.insert(std::move(property));
   }
   {
-    proto::Property* property = box->add_properties();
-    property->set_name("material_thickness");
-    property->mutable_value()->mutable_literal()->set_float_value(18.f);
+    Property property{"material_thickness"};
+    as_float(as_literal(property.value)) = 18.f;
+    box.properties.insert(std::move(property));
   }
 
-  proto::Component* component{nullptr};
-  proto::Subcomponent* child{nullptr};
-  std::string id{};
+  {
+    Component component{
+        create_component("top", "box", "width", "../width", "height", "../material_thickness", "depth", "../depth")};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
 
-  component = box_components.add_components();
-  id = create_component("top", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = box->add_children();
-  child->set_child_id(id);
+  {
+    Component component{
+        create_component("bottom", "box", "width", "../width", "height", "../material_thickness", "depth", "../depth")};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
+  {
+    Component component{
+        create_component("left", "box", "width", "../height", "height", "../material_thickness", "depth", "../depth")};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
+  {
+    Component component{
+        create_component("right", "box", "width", "../height", "height", "../material_thickness", "depth", "../depth")};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
+  {
+    Component component{
+        create_component("front", "box", "width", "../width", "height", "../material_thickness", "depth", "../height")};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
+  {
+    Component component{
+        create_component("back", "box", "width", "../width", "height", "../material_thickness", "depth", "../height")};
+    box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
 
-  component = box_components.add_components();
-  id = create_component("top", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = box->add_children();
-  child->set_child_id(id);
+  box_components.insert(box);
 
-  component = box_components.add_components();
-  id = create_component("left", "box", "width", "../../height", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("right", "box", "width", "../../height", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("front", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../height", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("back", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../height", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  EXPECT_EQ(6, box->children_size());
+  EXPECT_EQ(6, box.children.size());
   // The box_components contains all of the components of the box, plus 1 for the box itself.
-  EXPECT_EQ(box_components.components_size(), box->children_size() + 1);
-}
-
-TEST(ApiTest, CanConstructSimpleBoxWithParametersBoundInASpecificBox) {
-  proto::Components box_components{};
-  proto::Component* box = box_components.add_components();
-  {
-    proto::Parameter* parameter = box->add_parameters();
-    parameter->set_name("width");
-    proto::ValueDomain* domain = parameter->mutable_domain();
-    domain->mutable_type()->set_type(proto::Type::FLOAT);
-    domain->mutable_min_value()->set_float_value(1.f);
-    domain->mutable_max_value()->set_float_value(2435.f);
-  }
-  {
-    proto::Parameter* parameter = box->add_parameters();
-    parameter->set_name("height");
-    proto::ValueDomain* domain = parameter->mutable_domain();
-    domain->mutable_type()->set_type(proto::Type::FLOAT);
-    domain->mutable_min_value()->set_float_value(1.f);
-    domain->mutable_max_value()->set_float_value(2435.f);
-  }
-  {
-    proto::Parameter* parameter = box->add_parameters();
-    parameter->set_name("depth");
-    proto::ValueDomain* domain = parameter->mutable_domain();
-    domain->mutable_type()->set_type(proto::Type::FLOAT);
-    domain->mutable_min_value()->set_float_value(1.f);
-    domain->mutable_max_value()->set_float_value(2435.f);
-  }
-  {
-    proto::Parameter* parameter = box->add_parameters();
-    parameter->set_name("material_thickness");
-    proto::ValueDomain* domain = parameter->mutable_domain();
-    domain->mutable_type()->set_type(proto::Type::FLOAT);
-    domain->mutable_min_value()->set_float_value(1.f);
-    domain->mutable_max_value()->set_float_value(2435.f);
-  }
-
-  proto::Component* specific_box = box_components.add_components();
-  {
-    proto::Property* property = specific_box->add_properties();
-    property->set_name("width");
-    property->mutable_value()->mutable_literal()->set_float_value(1390.f);
-  }
-  {
-    proto::Property* property = specific_box->add_properties();
-    property->set_name("height");
-    property->mutable_value()->mutable_literal()->set_float_value(450.f);
-  }
-  {
-    proto::Property* property = specific_box->add_properties();
-    property->set_name("depth");
-    property->mutable_value()->mutable_literal()->set_float_value(400.f);
-  }
-  {
-    proto::Property* property = specific_box->add_properties();
-    property->set_name("material_thickness");
-    property->mutable_value()->mutable_literal()->set_float_value(18.f);
-  }
-
-  proto::Subcomponent* child{nullptr};
-  child = specific_box->add_children();
-  child->set_child_id(box->id());
-  {
-    proto::ParameterBinding* binding = child->add_parameters();
-    binding->set_parameter_name("width");
-    binding->mutable_value()->set_expression("../width");
-  }
-  {
-    proto::ParameterBinding* binding = child->add_parameters();
-    binding->set_parameter_name("height");
-    binding->mutable_value()->set_expression("../height");
-  }
-  {
-    proto::ParameterBinding* binding = child->add_parameters();
-    binding->set_parameter_name("depth");
-    binding->mutable_value()->set_expression("../depth");
-  }
-  {
-    proto::ParameterBinding* binding = child->add_parameters();
-    binding->set_parameter_name("material_thickness");
-    binding->mutable_value()->set_expression("../material_thickness");
-  }
-
-  proto::Component* component{nullptr};
-  std::string id{};
-
-  component = box_components.add_components();
-  id = create_component("top", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("top", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("left", "box", "width", "../../height", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("right", "box", "width", "../../height", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("front", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../height", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("back", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../height", component);
-  child = box->add_children();
-  child->set_child_id(id);
-
-  EXPECT_EQ(6, box->children_size());
-  // The box_components contains all of the components of the box, plus 1 for the generic box, plus 1 for the specific
-  // box itself.
-  EXPECT_EQ(box_components.components_size(), box->children_size() + 2);
-
-  pack::proto::save_text_proto(create_path("simple_box.pb.txt", true), box_components);
+  EXPECT_EQ(box_components.size(), box.children.size() + 1);
 }
 
 TEST(ApiTest, CanConstructNestingBoxes) {
-  proto::Components box_components{};
-  proto::Component* template_box = box_components.add_components();
+  Components box_components{};
+  Component template_box{};
   {
-    proto::Parameter* parameter = template_box->add_parameters();
-    parameter->set_name("width");
-    proto::ValueDomain* domain = parameter->mutable_domain();
-    domain->mutable_type()->set_type(proto::Type::FLOAT);
-    domain->mutable_min_value()->set_float_value(1.f);
-    domain->mutable_max_value()->set_float_value(2435.f);
+    Parameter parameter{"width"};
+    parameter.domain.type = Type::FLOAT;
+    as_float(parameter.domain.min_value) = 1.f;
+    as_float(parameter.domain.max_value) = 2435.f;
+    template_box.parameters.insert(std::move(parameter));
   }
   {
-    proto::Parameter* parameter = template_box->add_parameters();
-    parameter->set_name("height");
-    proto::ValueDomain* domain = parameter->mutable_domain();
-    domain->mutable_type()->set_type(proto::Type::FLOAT);
-    domain->mutable_min_value()->set_float_value(1.f);
-    domain->mutable_max_value()->set_float_value(2435.f);
+    Parameter parameter{"height"};
+    parameter.domain.type = Type::FLOAT;
+    as_float(parameter.domain.min_value) = 1.f;
+    as_float(parameter.domain.max_value) = 2435.f;
+    template_box.parameters.insert(std::move(parameter));
   }
   {
-    proto::Parameter* parameter = template_box->add_parameters();
-    parameter->set_name("depth");
-    proto::ValueDomain* domain = parameter->mutable_domain();
-    domain->mutable_type()->set_type(proto::Type::FLOAT);
-    domain->mutable_min_value()->set_float_value(1.f);
-    domain->mutable_max_value()->set_float_value(2435.f);
+    Parameter parameter{"depth"};
+    parameter.domain.type = Type::FLOAT;
+    as_float(parameter.domain.min_value) = 1.f;
+    as_float(parameter.domain.max_value) = 2435.f;
+    template_box.parameters.insert(std::move(parameter));
   }
   {
-    proto::Parameter* parameter = template_box->add_parameters();
-    parameter->set_name("material_thickness");
-    proto::ValueDomain* domain = parameter->mutable_domain();
-    domain->mutable_type()->set_type(proto::Type::FLOAT);
-    domain->mutable_min_value()->set_float_value(1.f);
-    domain->mutable_max_value()->set_float_value(2435.f);
+    Parameter parameter{"material_thickness"};
+    parameter.domain.type = Type::FLOAT;
+    as_float(parameter.domain.min_value) = 1.f;
+    as_float(parameter.domain.max_value) = 25.4f;
+    template_box.parameters.insert(std::move(parameter));
+  }
+  ASSERT_EQ(4, template_box.parameters.size());
+  {
+    Component component{
+        create_component("top", "box", "width", "../width", "height", "../material_thickness", "depth", "../depth")};
+    template_box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
   }
 
-  proto::Subcomponent* child{nullptr};
-  proto::Component* component{nullptr};
-  std::string id{};
+  {
+    Component component{
+        create_component("bottom", "box", "width", "../width", "height", "../material_thickness", "depth", "../depth")};
+    template_box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
+  {
+    Component component{
+        create_component("left", "box", "width", "../height", "height", "../material_thickness", "depth", "../depth")};
+    template_box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
+  {
+    Component component{
+        create_component("right", "box", "width", "../height", "height", "../material_thickness", "depth", "../depth")};
+    template_box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
+  {
+    Component component{
+        create_component("front", "box", "width", "../width", "height", "../material_thickness", "depth", "../height")};
+    template_box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
+  {
+    Component component{
+        create_component("back", "box", "width", "../width", "height", "../material_thickness", "depth", "../height")};
+    template_box.children.insert(Subcomponent{component.id});
+    box_components.insert(std::move(component));
+  }
 
-  component = box_components.add_components();
-  id = create_component("top", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = template_box->add_children();
-  child->set_child_id(id);
+  constexpr int NUM_BOXES{5};
 
-  component = box_components.add_components();
-  id = create_component("top", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = template_box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("left", "box", "width", "../../height", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = template_box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("right", "box", "width", "../../height", "height", "../../material_thickness", "depth",
-                        "../../depth", component);
-  child = template_box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("front", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../height", component);
-  child = template_box->add_children();
-  child->set_child_id(id);
-
-  component = box_components.add_components();
-  id = create_component("back", "box", "width", "../../width", "height", "../../material_thickness", "depth",
-                        "../../height", component);
-  child = template_box->add_children();
-  child->set_child_id(id);
-
-  constexpr int num_boxes = 5;
-
-  for (int box_number = 0; box_number < num_boxes; ++box_number) {
-    proto::Component* nested_box = box_components.add_components();
+  for (int box_number = 0; box_number < NUM_BOXES; ++box_number) {
+    Component nested_box{};
     if (box_number == 0) {
-      nested_box->set_name("outermost_box");
+      nested_box.name = "outermost_box";
     }
     {
-      proto::Property* property = nested_box->add_properties();
-      property->set_name("box_number");
-      property->mutable_value()->mutable_literal()->set_int_value(box_number);
+      Property property{"box_number"};
+      as_integer(as_literal(property.value)) = box_number;
+      nested_box.properties.insert(std::move(property));
     }
     {
-      proto::Property* property = nested_box->add_properties();
-      property->set_name("width");
+      Property property{"width"};
       if (box_number == 0) {
-        property->mutable_value()->mutable_literal()->set_float_value(1390.f);
+        as_float(as_literal(property.value)) = 1390.f;
       } else {
-        property->mutable_value()->set_expression(
-            "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)");
+        as_expression(property.value) =
+            "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)";
       }
+      nested_box.properties.insert(std::move(property));
     }
     {
-      proto::Property* property = nested_box->add_properties();
-      property->set_name("height");
+      Property property{"height"};
       if (box_number == 0) {
-        property->mutable_value()->mutable_literal()->set_float_value(450.f);
+        as_float(as_literal(property.value)) = 450.f;
       } else {
-        property->mutable_value()->set_expression(
-            "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)");
+        as_expression(property.value) =
+            "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)";
       }
+      nested_box.properties.insert(std::move(property));
     }
     {
-      proto::Property* property = nested_box->add_properties();
-      property->set_name("depth");
+      Property property{"depth"};
       if (box_number == 0) {
-        property->mutable_value()->mutable_literal()->set_float_value(400.f);
+        as_float(as_literal(property.value)) = 400.f;
       } else {
-        property->mutable_value()->set_expression(
-            "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)");
+        as_expression(property.value) =
+            "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)";
       }
+      nested_box.properties.insert(std::move(property));
     }
     {
-      proto::Property* property = nested_box->add_properties();
-      property->set_name("material_thickness");
-      if (box_number == 0) {
-        property->mutable_value()->mutable_literal()->set_float_value(18.f);
-      }
+      Property property{"material_thickness"};
+      as_float(as_literal(property.value)) = 18.f;
+      nested_box.properties.insert(std::move(property));
     }
-    child = nested_box->add_children();
-    child->set_child_id(template_box->id());
-    {
-      proto::ParameterBinding* binding = child->add_parameters();
-      binding->set_parameter_name("width");
-      binding->mutable_value()->set_expression("../width");
-    }
-    {
-      proto::ParameterBinding* binding = child->add_parameters();
-      binding->set_parameter_name("height");
-      binding->mutable_value()->set_expression("../height");
-    }
-    {
-      proto::ParameterBinding* binding = child->add_parameters();
-      binding->set_parameter_name("depth");
-      binding->mutable_value()->set_expression("../depth");
-    }
-    {
-      proto::ParameterBinding* binding = child->add_parameters();
-      binding->set_parameter_name("material_thickness");
-      binding->mutable_value()->set_expression("../material_thickness");
-    }
-  }
 
-  EXPECT_EQ(6, template_box->children_size());
+    Subcomponent child{template_box.id};
+    {
+      ParameterBinding binding{"width"};
+      as_expression(binding.value) = "../width";
+      child.bindings.insert(std::move(binding));
+    }
+    {
+      ParameterBinding binding{"height"};
+      as_expression(binding.value) = "../height";
+      child.bindings.insert(std::move(binding));
+    }
+    {
+      ParameterBinding binding{"depth"};
+      as_expression(binding.value) = "../depth";
+      child.bindings.insert(std::move(binding));
+    }
+    {
+      ParameterBinding binding{"material_thickness"};
+      as_expression(binding.value) = "../material_thickness";
+      child.bindings.insert(std::move(binding));
+    }
+    nested_box.children.insert(std::move(child));
+    box_components.insert(std::move(nested_box));
+  }
+  box_components.insert(template_box);
+
+  EXPECT_EQ(6, template_box.children.size());
   // The box_components contains all of the components of the box, plus 1 for the template box itself, plus 1 for each
   // box instance.
-  EXPECT_EQ(box_components.components_size(), template_box->children_size() + 1 + num_boxes);
-
-  pack::proto::save_text_proto(create_path("nested_boxes.pb.txt", true), box_components);
+  EXPECT_EQ(box_components.size(), template_box.children.size() + 1 + NUM_BOXES);
 }
 
 }  // namespace pack::component
