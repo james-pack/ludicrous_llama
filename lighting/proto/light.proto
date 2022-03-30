@@ -1,14 +1,14 @@
 syntax = "proto3";
 
-import "component/proto/position.proto";
 import "material/proto/color.proto";
+import "position/proto/position.proto";
 
 package pack.lighting.proto;
 
 message Light {
   int32 light_num = 1;
-  component.proto.Position position = 2;
-  component.proto.Orientation orientation = 7;
+  position.proto.Position position = 2;
+  position.proto.Orientation orientation = 7;
   material.proto.Rgba ambient = 3;
   material.proto.Rgba diffuse = 4;
   material.proto.Rgba specular = 5;

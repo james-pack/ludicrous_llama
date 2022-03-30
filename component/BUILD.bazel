@@ -4,7 +4,6 @@ cc_library(
     name = "component",
     srcs = [
         "components.cc",
-        "position.cc",
         "primitive.cc",
     ],
     hdrs = [
@@ -13,7 +12,6 @@ cc_library(
         "expression.h",
         "ordering.h",
         "parameter.h",
-        "position.h",
         "primitive.h",
         "property.h",
         "serialize.h",
@@ -25,6 +23,7 @@ cc_library(
         "//component/proto",
         "//guid",
         "//material",
+        "//position",
         "//third_party/entt",
         "//third_party/glad",
         "//third_party/glfw",

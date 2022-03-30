@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include "component/proto/position.pb.h"
-#include "component/serialize.h"
+#include "position/proto/position.pb.h"
+#include "position/serialize.h"
 
-namespace pack::component {
+namespace pack::position {
 
 struct Orientation final {
   // Orientation in 3D space as Euler angles in the order of [rot_x, rot_y, rot_z].
@@ -64,4 +64,4 @@ inline void from_proto(const proto::Position& proto, Position* position) {
 
 std::string to_string(const Position& position);
 
-}  // namespace pack::component
+}  // namespace pack::position

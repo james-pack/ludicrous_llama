@@ -18,7 +18,7 @@ proto_library(
     srcs = ["light.proto"],
     visibility = ["//visibility:public"],
     deps = [
-        "//component/proto:position_proto",
         "//material/proto:color_proto",
+        "//position/proto:position_proto",
     ],
 )

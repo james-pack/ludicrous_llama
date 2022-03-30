@@ -1,0 +1,27 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+cc_library(
+    name = "position",
+    srcs = [
+        "position.cc",
+    ],
+    hdrs = [
+        "position.h",
+        "serialize.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//position/proto",
+        "//third_party/glog",
+    ],
+)
+
+cc_test(
+    name = "serialization_test",
+    srcs = ["serialization_test.cc"],
+    deps = [
+        ":position",
+        "//position/proto",
+        "//third_party/gtest",
+    ],
+)

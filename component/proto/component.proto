@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "component/proto/position.proto";
+import "position/proto/position.proto";
 
 package pack.component.proto;
 
@@ -110,8 +110,8 @@ message Subcomponent {
   string child_id = 1;
 
   // Position and orientation are expressed wrt the parent's coordinate frame.
-  Position position = 2;
-  Orientation orientation = 3;
+  position.proto.Position position = 2;
+  position.proto.Orientation orientation = 3;
 
   repeated ParameterBinding bindings = 4;
 }

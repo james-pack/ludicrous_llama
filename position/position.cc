@@ -1,8 +1,8 @@
-#include "component/position.h"
+#include "position/position.h"
 
 #include <string>
 
-namespace pack::component {
+namespace pack::position {
 
 std::string to_string(const Orientation& orientation) {
   using std::to_string;
@@ -16,4 +16,4 @@ std::string to_string(const Position& position) {
          to_string(position.position[2]) + ", " + to_string(position.position[3]) + "]";
 }
 
-}  // namespace pack::component
+}  // namespace pack::position

@@ -1,6 +1,3 @@
-#include <filesystem>
-#include <string_view>
-
 #include "component/component.h"
 #include "component/components.h"
 #include "component/expression.h"
@@ -14,33 +11,6 @@
 #include "testing/test_temp_directory.h"
 
 namespace pack::component {
-
-namespace fs = std::filesystem;
-using pack::proto::load_text_proto;
-using pack::proto::save_text_proto;
-
-fs::path create_path(const std::string_view& filename, bool persist_after_test = false) {
-  if (persist_after_test) {
-    return filename;
-  } else {
-    fs::path tmp_dir = testing::TestTempDirectory::getInstance()->createTestSubdirectory();
-    return tmp_dir / filename;
-  }
-}
-
-TEST(ProtoTest, CanRoundTripEmptyPosition) {
-  Position original{};
-  proto::Position proto = to_proto<Position, proto::Position>(original);
-  Position cycled{from_proto<Position, proto::Position>(proto)};
-  EXPECT_EQ(original, cycled);
-}
-
-TEST(ProtoTest, CanRoundTripEmptyOrientation) {
-  Orientation original{};
-  proto::Orientation proto = to_proto<Orientation, proto::Orientation>(original);
-  Orientation cycled{from_proto<Orientation, proto::Orientation>(proto)};
-  EXPECT_EQ(original, cycled);
-}
 
 TEST(ProtoTest, CanRoundTripEmptyValue) {
   Value original{};

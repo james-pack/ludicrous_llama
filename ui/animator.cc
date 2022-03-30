@@ -2,8 +2,8 @@
 
 #include <chrono>
 
-#include "component/position.h"
 #include "entt/entity/registry.hpp"
+#include "position/position.h"
 #include "ui/model/animate.h"
 #include "ui/model/gear.h"
 
@@ -16,13 +16,13 @@ void Animator::animate() {
   using DoubleSeconds = std::chrono::duration<double, std::chrono::seconds::period>;
 
   if (!is_paused_) {
-    auto animations = registry().view<Animate, Gear, component::Position, component::Orientation>();
+    auto animations = registry().view<Animate, Gear, position::Position, position::Orientation>();
 
     // We want the animations all to render as if it were the exact same time, so lock in the time once.
     double seconds = DoubleSeconds(std::chrono::steady_clock::now().time_since_epoch()).count();
 
-    animations.each([seconds](Animate animate, Gear& component, component::Position& position,
-                              component::Orientation& orientation) {  //
+    animations.each([seconds](Animate animate, Gear& component, position::Position& position,
+                              position::Orientation& orientation) {  //
       animate(seconds, component, position, orientation);
     });
   }

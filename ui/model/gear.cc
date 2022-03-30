@@ -10,8 +10,8 @@
 #include <string>
 
 #include "component/gear.pb.h"
-#include "component/position.h"
 #include "glog/logging.h"
+#include "position/position.h"
 #include "third_party/glfw/glfw.h"
 #include "ui/model/animate.h"
 #include "ui/model/material.h"
@@ -57,7 +57,7 @@ component::Gear Gear::to_proto(const Gear& gear) {
 }
 
 Animate construct_gear_animator() {
-  return [](double seconds, Gear& component, component::Position& /* ignored */, component::Orientation& orientation) {
+  return [](double seconds, Gear& component, position::Position& /* ignored */, position::Orientation& orientation) {
     orientation.orientation[2] =
         2.f * 1000.f * seconds / component.teeth * component.angle_coefficient + component.phase;
   };

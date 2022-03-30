@@ -1,10 +1,10 @@
 #include "ui/light_edit_pane.h"
 
-#include "component/position.h"
 #include "glog/logging.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "position/position.h"
 #include "ui/model/light.h"
 
 namespace pack::ui {
@@ -28,9 +28,9 @@ void LightEditPane::render() {
   // Early out if the window is collapsed, as an optimization.
   if (ImGui::Begin("Edit lighting", &is_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar)) {
     entt::registry& reg{registry()};
-    auto models = reg.view<Light, component::Position, component::Orientation>();
+    auto models = reg.view<Light, position::Position, position::Orientation>();
     models.each(
-        [&reg](const auto entity, Light& light, component::Position& position, component::Orientation& orientation) {
+        [&reg](const auto entity, Light& light, position::Position& position, position::Orientation& orientation) {
           bool light_was_changed{false};
           bool position_was_changed{false};
           bool orientation_was_changed{false};
@@ -51,10 +51,10 @@ void LightEditPane::render() {
             reg.replace<Light>(entity, light);
           }
           if (position_was_changed) {
-            reg.replace<component::Position>(entity, position);
+            reg.replace<position::Position>(entity, position);
           }
           if (orientation_was_changed) {
-            reg.replace<component::Orientation>(entity, orientation);
+            reg.replace<position::Orientation>(entity, orientation);
           }
         });
   }
