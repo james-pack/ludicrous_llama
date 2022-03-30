@@ -6,6 +6,7 @@
 
 #include "component/ordering.h"
 #include "component/parameter.h"
+#include "component/position.h"
 #include "component/primitive.h"
 #include "component/property.h"
 #include "component/proto/component.pb.h"
@@ -26,12 +27,16 @@ struct Subcomponent final {
   // Id of the child component.
   guid::Guid id{};
 
-  // TODO(james): Add position and orientation.
+  // Position and orientation wrt parent's reference frame.
+  Position position{};
+  Orientation orientation{};
 
   ParameterBinding::Set bindings{};
 
   bool operator==(const Subcomponent& rhs) const {
-    return id == rhs.id &&  //
+    return id == rhs.id &&                    //
+           position == rhs.position &&        //
+           orientation == rhs.orientation &&  //
            bindings == rhs.bindings;
   }
 };
@@ -39,6 +44,9 @@ struct Subcomponent final {
 template <>
 void to_proto(const Subcomponent& subcomponent, proto::Subcomponent* proto) {
   proto->set_child_id(subcomponent.id.as_string());
+
+  to_proto(subcomponent.position, proto->mutable_position());
+  to_proto(subcomponent.orientation, proto->mutable_orientation());
 
   for (const auto& binding : subcomponent.bindings) {
     to_proto(binding, proto->add_bindings());
@@ -48,6 +56,9 @@ void to_proto(const Subcomponent& subcomponent, proto::Subcomponent* proto) {
 template <>
 inline void from_proto(const proto::Subcomponent& proto, Subcomponent* subcomponent) {
   subcomponent->id = guid::Guid(proto.child_id());
+
+  from_proto(proto.position(), &subcomponent->position);
+  from_proto(proto.orientation(), &subcomponent->orientation);
 
   for (const auto& binding : proto.bindings()) {
     subcomponent->bindings.insert(from_proto<ParameterBinding, proto::ParameterBinding>(binding));

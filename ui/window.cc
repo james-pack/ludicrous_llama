@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+#include "component/position.h"
 #include "glog/logging.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -12,7 +13,6 @@
 #include "ui/animator.h"
 #include "ui/camera.h"
 #include "ui/imgui_framer.h"
-#include "ui/model/position.h"
 #include "ui/pane.h"
 #include "ui/render.h"
 
@@ -37,8 +37,8 @@ void handle_key(GLFWwindow* window, int k, int s, int action, int mods) {
   } else if (k == GLFW_KEY_ESCAPE) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
   } else {
-    auto cameras = Application::current().registry().view<Camera, Position, Orientation>();
-    cameras.each([k, mods](Camera& camera, Position& position, Orientation& orientation) {
+    auto cameras = Application::current().registry().view<Camera, component::Position, component::Orientation>();
+    cameras.each([k, mods](Camera& camera, component::Position& position, component::Orientation& orientation) {
       switch (k) {
         case GLFW_KEY_UP:
           orientation.orientation[0] += 5.0;

@@ -28,6 +28,20 @@ fs::path create_path(const std::string_view& filename, bool persist_after_test =
   }
 }
 
+TEST(ProtoTest, CanRoundTripEmptyPosition) {
+  Position original{};
+  proto::Position proto = to_proto<Position, proto::Position>(original);
+  Position cycled{from_proto<Position, proto::Position>(proto)};
+  EXPECT_EQ(original, cycled);
+}
+
+TEST(ProtoTest, CanRoundTripEmptyOrientation) {
+  Orientation original{};
+  proto::Orientation proto = to_proto<Orientation, proto::Orientation>(original);
+  Orientation cycled{from_proto<Orientation, proto::Orientation>(proto)};
+  EXPECT_EQ(original, cycled);
+}
+
 TEST(ProtoTest, CanRoundTripEmptyValue) {
   Value original{};
   proto::Value proto = to_proto<Value, proto::Value>(original);

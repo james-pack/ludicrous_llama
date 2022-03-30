@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "component/position.h"
 #include "entt/entity/observer.hpp"
 #include "entt/entity/registry.hpp"
 #include "glog/logging.h"
@@ -9,13 +10,12 @@
 #include "ui/camera.h"
 #include "ui/model/gear.h"
 #include "ui/model/light.h"
-#include "ui/model/position.h"
 #include "ui/render.h"
 
 namespace pack::ui {
 
-void render_camera(const Camera& camera, const ui::model::Position& position,
-                   const ui::model::Orientation& orientation) {
+void render_camera(const Camera& camera, const component::Position& position,
+                   const component::Orientation& orientation) {
   using std::to_string;
 
   glRotatef(orientation.orientation[0], 1.0, 0.0, 0.0);
@@ -24,8 +24,8 @@ void render_camera(const Camera& camera, const ui::model::Position& position,
   glTranslatef(position.position[0], position.position[1], position.position[2]);
 }
 
-void render_light(const ui::model::Light& light, const ui::model::Position& position,
-                  const ui::model::Orientation& orientation) {
+void render_light(const ui::model::Light& light, const component::Position& position,
+                  const component::Orientation& orientation) {
   using std::to_string;
 
   if (light.enabled) {
@@ -42,21 +42,21 @@ void render_light(const ui::model::Light& light, const ui::model::Position& posi
 
 ComponentPane::ComponentPane()
     : camera_observer_(registry(),  //
-                       entt::collector.group<Camera, ui::model::Position, ui::model::Orientation>()
+                       entt::collector.group<Camera, component::Position, component::Orientation>()
                            .update<Camera>()
-                           .update<ui::model::Position>()
-                           .update<ui::model::Orientation>()),
+                           .update<component::Position>()
+                           .update<component::Orientation>()),
       component_observer_(registry(),  //
-                          entt::collector.group<Render, ui::model::Gear, ui::model::Position, ui::model::Orientation>()
+                          entt::collector.group<Render, ui::model::Gear, component::Position, component::Orientation>()
                               .update<Render>()
                               .update<ui::model::Gear>()
-                              .update<ui::model::Position>()
-                              .update<ui::model::Orientation>()),
+                              .update<component::Position>()
+                              .update<component::Orientation>()),
       lighting_observer_(registry(),  //
-                         entt::collector.group<ui::model::Light, ui::model::Position, ui::model::Orientation>()
+                         entt::collector.group<ui::model::Light, component::Position, component::Orientation>()
                              .update<ui::model::Light>()
-                             .update<ui::model::Position>()
-                             .update<ui::model::Orientation>()) {}
+                             .update<component::Position>()
+                             .update<component::Orientation>()) {}
 
 void ComponentPane::set_bounds(int lower_left_x, int lower_left_y, int width, int height) {
   if ((lower_left_x != lower_left_x_) || (lower_left_y != lower_left_y_) || (width != width_) || (height != height_)) {
@@ -93,23 +93,23 @@ void ComponentPane::render() {
     // DLOG(INFO) << "ComponentPane::render() -- full redraw was triggered.";
     glPushMatrix();
 
-    reg.view<Camera, ui::model::Position, ui::model::Orientation>().each(
-        [&reg](const auto entity, const Camera& camera, const ui::model::Position& position,
-               const ui::model::Orientation& orientation) {  //
+    reg.view<Camera, component::Position, component::Orientation>().each(
+        [&reg](const auto entity, const Camera& camera, const component::Position& position,
+               const component::Orientation& orientation) {  //
           render_camera(camera, position, orientation);
         });
     camera_observer_.clear();
 
-    reg.view<Render, ui::model::Gear, ui::model::Position, ui::model::Orientation>().each(
-        [&reg](const Render& render, const ui::model::Gear& component, const ui::model::Position& position,
-               const ui::model::Orientation& orientation) { render(component, position, orientation); });
+    reg.view<Render, ui::model::Gear, component::Position, component::Orientation>().each(
+        [&reg](const Render& render, const ui::model::Gear& component, const component::Position& position,
+               const component::Orientation& orientation) { render(component, position, orientation); });
     component_observer_.clear();
 
     glPopMatrix();
 
-    reg.view<ui::model::Light, ui::model::Position, ui::model::Orientation>().each(
-        [&reg](const ui::model::Light& light, const ui::model::Position& position,
-               const ui::model::Orientation& orientation) { render_light(light, position, orientation); });
+    reg.view<ui::model::Light, component::Position, component::Orientation>().each(
+        [&reg](const ui::model::Light& light, const component::Position& position,
+               const component::Orientation& orientation) { render_light(light, position, orientation); });
     lighting_observer_.clear();
 
     // requires_redraw_ = false;
@@ -119,13 +119,13 @@ void ComponentPane::render() {
 
     camera_observer_.each([&reg](const auto entity) {
       const auto& [camera, position, orientation] =
-          reg.get<Camera, ui::model::Position, ui::model::Orientation>(entity);
+          reg.get<Camera, component::Position, component::Orientation>(entity);
       render_camera(camera, position, orientation);
     });
 
     component_observer_.each([&reg](const auto entity) {
       const auto& [render, component, position, orientation] =
-          reg.get<Render, ui::model::Gear, ui::model::Position, ui::model::Orientation>(entity);
+          reg.get<Render, ui::model::Gear, component::Position, component::Orientation>(entity);
       render(component, position, orientation);
     });
 
@@ -133,7 +133,7 @@ void ComponentPane::render() {
 
     lighting_observer_.each([&reg](const auto entity) {
       const auto& [light, position, orientation] =
-          reg.get<ui::model::Light, ui::model::Position, ui::model::Orientation>(entity);
+          reg.get<ui::model::Light, component::Position, component::Orientation>(entity);
       render_light(light, position, orientation);
     });
   }

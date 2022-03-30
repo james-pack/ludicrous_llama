@@ -1,5 +1,6 @@
 #include "ui/gear_edit_pane.h"
 
+#include "component/position.h"
 #include "entt/entity/registry.hpp"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -7,7 +8,6 @@
 #include "ui/application.h"
 #include "ui/model/animate.h"
 #include "ui/model/gear.h"
-#include "ui/model/position.h"
 #include "ui/render.h"
 
 namespace pack::ui {
@@ -29,8 +29,9 @@ void GearEditPane::render() {
   // Early out if the window is collapsed, as an optimization.
   if (ImGui::Begin("Edit gears", &is_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar)) {
     entt::registry& registry{Application::current().registry()};
-    auto models = registry.view<Gear, Position, Orientation>();
-    models.each([&registry](const auto entity, Gear& gear, Position& position, Orientation& orientation) {
+    auto models = registry.view<Gear, component::Position, component::Orientation>();
+    models.each([&registry](const auto entity, Gear& gear, component::Position& position,
+                            component::Orientation& orientation) {
       bool position_was_changed{false};
       bool component_was_changed{false};
       ImGui::PushID(gear.id.c_str());
@@ -60,7 +61,7 @@ void GearEditPane::render() {
         registry.replace<Gear>(entity, gear);
       }
       if (position_was_changed) {
-        registry.replace<Position>(entity, position);
+        registry.replace<component::Position>(entity, position);
       }
     });
   }
