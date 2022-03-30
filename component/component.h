@@ -9,9 +9,9 @@
 #include "component/primitive.h"
 #include "component/property.h"
 #include "component/proto/component.pb.h"
-#include "component/serialize.h"
 #include "guid/guid.h"
 #include "position/position.h"
+#include "serialization/serialize.h"
 
 namespace pack::component {
 
@@ -41,30 +41,6 @@ struct Subcomponent final {
   }
 };
 
-template <>
-void to_proto(const Subcomponent& subcomponent, proto::Subcomponent* proto) {
-  proto->set_child_id(subcomponent.id.as_string());
-
-  position::to_proto(subcomponent.position, proto->mutable_position());
-  position::to_proto(subcomponent.orientation, proto->mutable_orientation());
-
-  for (const auto& binding : subcomponent.bindings) {
-    to_proto(binding, proto->add_bindings());
-  }
-}
-
-template <>
-inline void from_proto(const proto::Subcomponent& proto, Subcomponent* subcomponent) {
-  subcomponent->id = guid::Guid(proto.child_id());
-
-  position::from_proto(proto.position(), &subcomponent->position);
-  position::from_proto(proto.orientation(), &subcomponent->orientation);
-
-  for (const auto& binding : proto.bindings()) {
-    subcomponent->bindings.insert(from_proto<ParameterBinding, proto::ParameterBinding>(binding));
-  }
-}
-
 struct Component final {
   using Set = std::unordered_set<Component, HashByIdField<Component, guid::GuidHash>, CompareByIdField<Component>>;
 
@@ -91,8 +67,36 @@ struct Component final {
   }
 };
 
+}  // namespace pack::component
+
+namespace pack {
+
 template <>
-void to_proto(const Component& component, proto::Component* proto) {
+void to_proto(const component::Subcomponent& subcomponent, component::proto::Subcomponent* proto) {
+  proto->set_child_id(subcomponent.id.as_string());
+
+  to_proto(subcomponent.position, proto->mutable_position());
+  to_proto(subcomponent.orientation, proto->mutable_orientation());
+
+  for (const auto& binding : subcomponent.bindings) {
+    to_proto(binding, proto->add_bindings());
+  }
+}
+
+template <>
+inline void from_proto(const component::proto::Subcomponent& proto, component::Subcomponent* subcomponent) {
+  subcomponent->id = guid::Guid(proto.child_id());
+
+  from_proto(proto.position(), &subcomponent->position);
+  from_proto(proto.orientation(), &subcomponent->orientation);
+
+  for (const auto& binding : proto.bindings()) {
+    subcomponent->bindings.insert(from_proto<component::ParameterBinding, component::proto::ParameterBinding>(binding));
+  }
+}
+
+template <>
+void to_proto(const component::Component& component, component::proto::Component* proto) {
   proto->set_id(component.id.as_string());
   proto->set_name(component.name);
 
@@ -120,30 +124,30 @@ void to_proto(const Component& component, proto::Component* proto) {
 }
 
 template <>
-inline void from_proto(const proto::Component& proto, Component* component) {
+inline void from_proto(const component::proto::Component& proto, component::Component* component) {
   component->id = guid::Guid(proto.id());
   component->name = proto.name();
   if (!proto.primitive_name().empty()) {
-    component->primitive = Primitive::by_name(proto.primitive_name());
+    component->primitive = component::Primitive::by_name(proto.primitive_name());
   } else {
     component->primitive = nullptr;
   }
 
   for (const auto& binding : proto.bindings()) {
-    component->bindings.insert(from_proto<ParameterBinding, proto::ParameterBinding>(binding));
+    component->bindings.insert(from_proto<component::ParameterBinding, component::proto::ParameterBinding>(binding));
   }
 
   for (const auto& child : proto.children()) {
-    component->children.insert(from_proto<Subcomponent, proto::Subcomponent>(child));
+    component->children.insert(from_proto<component::Subcomponent, component::proto::Subcomponent>(child));
   }
 
   for (const auto& parameter : proto.parameters()) {
-    component->parameters.insert(from_proto<Parameter, proto::Parameter>(parameter));
+    component->parameters.insert(from_proto<component::Parameter, component::proto::Parameter>(parameter));
   }
 
   for (const auto& property : proto.properties()) {
-    component->properties.insert(from_proto<Property, proto::Property>(property));
+    component->properties.insert(from_proto<component::Property, component::proto::Property>(property));
   }
 }
 
-}  // namespace pack::component
+}  // namespace pack

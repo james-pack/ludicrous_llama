@@ -4,10 +4,10 @@
 #include "component/parameter.h"
 #include "component/property.h"
 #include "component/proto/component.pb.h"
-#include "component/serialize.h"
 #include "component/value.h"
 #include "gtest/gtest.h"
 #include "proto/proto_utils.h"
+#include "serialization/serialize.h"
 #include "testing/test_temp_directory.h"
 
 namespace pack::component {

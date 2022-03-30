@@ -17,8 +17,8 @@ void Light::from_proto(const lighting::proto::Light& proto, Light* light, positi
   light->name = light->id;
   light->enabled = proto.enabled();
 
-  position::from_proto(proto.position(), position);
-  position::from_proto(proto.orientation(), orientation);
+  pack::from_proto(proto.position(), position);
+  pack::from_proto(proto.orientation(), orientation);
   Color::from_proto(proto.ambient(), &light->ambient);
   Color::from_proto(proto.diffuse(), &light->diffuse);
   Color::from_proto(proto.specular(), &light->specular);
@@ -27,8 +27,8 @@ void Light::from_proto(const lighting::proto::Light& proto, Light* light, positi
 void Light::to_proto(const Light& light, const position::Position& position, const position::Orientation& orientation,
                      lighting::proto::Light* proto) {
   proto->set_light_num(light.light_num);
-  position::to_proto(position, proto->mutable_position());
-  position::to_proto(orientation, proto->mutable_orientation());
+  pack::to_proto(position, proto->mutable_position());
+  pack::to_proto(orientation, proto->mutable_orientation());
   Color::to_proto(light.ambient, proto->mutable_ambient());
   Color::to_proto(light.diffuse, proto->mutable_diffuse());
   Color::to_proto(light.specular, proto->mutable_specular());

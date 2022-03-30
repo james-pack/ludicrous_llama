@@ -7,6 +7,7 @@
 #include "component/ordering.h"
 #include "component/proto/component.pb.h"
 #include "component/value.h"
+#include "serialization/serialize.h"
 
 namespace pack::component {
 
@@ -17,14 +18,6 @@ struct Precision final {
 
   bool operator==(const Precision& rhs) const { return num_decimal_places == rhs.num_decimal_places; }
 };
-
-inline void to_proto(const Precision& value, proto::Precision* proto) {
-  proto->set_num_decimal_places(value.num_decimal_places);
-}
-
-inline void from_proto(const proto::Precision& proto, Precision* value) {
-  value->num_decimal_places = proto.num_decimal_places();
-}
 
 struct ValueDomain final {
   Type type{};
@@ -44,20 +37,6 @@ struct ValueDomain final {
   }
 };
 
-inline void to_proto(const ValueDomain& domain, proto::ValueDomain* proto) {
-  proto->mutable_type()->set_type(static_cast<proto::Type::Types>(domain.type));
-  to_proto(domain.min_value, proto->mutable_min_value());
-  to_proto(domain.max_value, proto->mutable_max_value());
-  to_proto(domain.precision, proto->mutable_precision());
-}
-
-inline void from_proto(const proto::ValueDomain& proto, ValueDomain* domain) {
-  domain->type = static_cast<Type>(proto.type().type());
-  from_proto(proto.min_value(), &domain->min_value);
-  from_proto(proto.max_value(), &domain->max_value);
-  from_proto(proto.precision(), &domain->precision);
-}
-
 // A Parameter is a value provided to a primitive, component, process, etc. that allows for variable behavior. It is
 // similar to a parameter to a function.
 struct Parameter final {
@@ -75,18 +54,6 @@ struct Parameter final {
   }
 };
 
-inline void to_proto(const Parameter& parameter, proto::Parameter* proto) {
-  proto->set_name(parameter.name);
-  to_proto(parameter.domain, proto->mutable_domain());
-  to_proto(parameter.default_value, proto->mutable_default_value());
-}
-
-inline void from_proto(const proto::Parameter& proto, Parameter* parameter) {
-  parameter->name = proto.name();
-  from_proto(proto.domain(), &parameter->domain);
-  from_proto(proto.default_value(), &parameter->default_value);
-}
-
 struct ParameterBinding final {
   using Set = std::set<ParameterBinding, OrderByNameField<ParameterBinding>>;
 
@@ -102,14 +69,60 @@ struct ParameterBinding final {
   }
 };
 
-inline void to_proto(const ParameterBinding& binding, proto::ParameterBinding* proto) {
+}  // namespace pack::component
+
+namespace pack {
+
+template <>
+inline void to_proto(const component::Precision& value, component::proto::Precision* proto) {
+  proto->set_num_decimal_places(value.num_decimal_places);
+}
+
+template <>
+inline void from_proto(const component::proto::Precision& proto, component::Precision* value) {
+  value->num_decimal_places = proto.num_decimal_places();
+}
+
+template <>
+inline void to_proto(const component::ValueDomain& domain, component::proto::ValueDomain* proto) {
+  proto->mutable_type()->set_type(static_cast<component::proto::Type::Types>(domain.type));
+  to_proto(domain.min_value, proto->mutable_min_value());
+  to_proto(domain.max_value, proto->mutable_max_value());
+  to_proto(domain.precision, proto->mutable_precision());
+}
+
+template <>
+inline void from_proto(const component::proto::ValueDomain& proto, component::ValueDomain* domain) {
+  domain->type = static_cast<component::Type>(proto.type().type());
+  from_proto(proto.min_value(), &domain->min_value);
+  from_proto(proto.max_value(), &domain->max_value);
+  from_proto(proto.precision(), &domain->precision);
+}
+
+template <>
+inline void to_proto(const component::Parameter& parameter, component::proto::Parameter* proto) {
+  proto->set_name(parameter.name);
+  to_proto(parameter.domain, proto->mutable_domain());
+  to_proto(parameter.default_value, proto->mutable_default_value());
+}
+
+template <>
+inline void from_proto(const component::proto::Parameter& proto, component::Parameter* parameter) {
+  parameter->name = proto.name();
+  from_proto(proto.domain(), &parameter->domain);
+  from_proto(proto.default_value(), &parameter->default_value);
+}
+
+template <>
+inline void to_proto(const component::ParameterBinding& binding, component::proto::ParameterBinding* proto) {
   proto->set_name(binding.name);
   to_proto(binding.value, proto->mutable_value());
 }
 
-inline void from_proto(const proto::ParameterBinding& proto, ParameterBinding* binding) {
+template <>
+inline void from_proto(const component::proto::ParameterBinding& proto, component::ParameterBinding* binding) {
   binding->name = proto.name();
   from_proto(proto.value(), &binding->value);
 }
 
-}  // namespace pack::component
+}  // namespace pack

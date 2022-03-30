@@ -7,11 +7,11 @@ cc_library(
     ],
     hdrs = [
         "position.h",
-        "serialize.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
         "//position/proto",
+        "//serialization",
         "//third_party/glog",
     ],
 )
@@ -22,6 +22,7 @@ cc_test(
     deps = [
         ":position",
         "//position/proto",
+        "//serialization",
         "//third_party/gtest",
     ],
 )

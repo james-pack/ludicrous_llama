@@ -5,8 +5,8 @@
 #include <variant>
 
 #include "component/proto/component.pb.h"
-#include "component/serialize.h"
 #include "component/value.h"
+#include "serialization/serialize.h"
 
 namespace pack::component {
 
@@ -44,15 +44,19 @@ inline bool operator==(const Expression& lhs, const Expression& rhs) {
   }
 }
 
+}  // namespace pack::component
+
+namespace pack {
+
 template <>
-inline void to_proto(const Expression& expr, proto::Expression* proto) {
+inline void to_proto(const component::Expression& expr, component::proto::Expression* proto) {
   using std::to_string;
   switch (expr.index()) {
     case 0:
-      proto->set_expression(as_expression(expr));
+      proto->set_expression(component::as_expression(expr));
       break;
     case 1:
-      to_proto(as_literal(expr), proto->mutable_literal());
+      to_proto(component::as_literal(expr), proto->mutable_literal());
       break;
     default:
       throw std::invalid_argument("Unknown expression storage '" + to_string(expr.index()) + "'");
@@ -60,15 +64,15 @@ inline void to_proto(const Expression& expr, proto::Expression* proto) {
 }
 
 template <>
-inline void from_proto(const proto::Expression& proto, Expression* expr) {
+inline void from_proto(const component::proto::Expression& proto, component::Expression* expr) {
   using std::to_string;
   if (proto.has_expression()) {
     expr->emplace<0>(proto.expression());
   } else if (proto.has_literal()) {
-    expr->emplace<1>(from_proto<Value, proto::Value>(proto.literal()));
+    expr->emplace<1>(from_proto<component::Value, component::proto::Value>(proto.literal()));
   } else {
     throw std::invalid_argument("Unknown expression proto structure");
   }
 }
 
-}  // namespace pack::component
+}  // namespace pack

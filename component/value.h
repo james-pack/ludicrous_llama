@@ -5,7 +5,7 @@
 #include <variant>
 
 #include "component/proto/component.pb.h"
-#include "component/serialize.h"
+#include "serialization/serialize.h"
 
 namespace pack::component {
 
@@ -81,24 +81,28 @@ inline bool operator==(const Value& lhs, const Value& rhs) {
   }
 }
 
+}  // namespace pack::component
+
+namespace pack {
+
 template <>
-inline void to_proto(const Value& value, proto::Value* proto) {
+inline void to_proto(const component::Value& value, component::proto::Value* proto) {
   using std::to_string;
-  proto->mutable_type()->set_type(static_cast<proto::Type::Types>(value.index()));
-  switch (static_cast<Type>(value.index())) {
-    case Type::UNTYPED:
+  proto->mutable_type()->set_type(static_cast<component::proto::Type::Types>(value.index()));
+  switch (static_cast<component::Type>(value.index())) {
+    case component::Type::UNTYPED:
       break;
-    case Type::FLOAT:
-      proto->set_float_value(as_float(value));
+    case component::Type::FLOAT:
+      proto->set_float_value(component::as_float(value));
       break;
-    case Type::INTEGER:
-      proto->set_integer_value(as_integer(value));
+    case component::Type::INTEGER:
+      proto->set_integer_value(component::as_integer(value));
       break;
-    case Type::STRING:
-      proto->set_string_value(as_string(value));
+    case component::Type::STRING:
+      proto->set_string_value(component::as_string(value));
       break;
-    case Type::ID:
-      proto->set_id(as_id(value));
+    case component::Type::ID:
+      proto->set_id(component::as_id(value));
       break;
     default:
       throw std::invalid_argument("Unknown Type '" + to_string(value.index()) + "'");
@@ -106,28 +110,28 @@ inline void to_proto(const Value& value, proto::Value* proto) {
 }
 
 template <>
-inline void from_proto(const proto::Value& proto, Value* value) {
+inline void from_proto(const component::proto::Value& proto, component::Value* value) {
   using std::to_string;
-  Type result_type = static_cast<Type>(proto.type().type());
+  component::Type result_type = static_cast<component::Type>(proto.type().type());
   switch (result_type) {
-    case Type::UNTYPED:
-      value->emplace<as_index(Type::UNTYPED)>();
+    case component::Type::UNTYPED:
+      value->emplace<component::as_index(component::Type::UNTYPED)>();
       break;
-    case Type::FLOAT:
-      value->emplace<as_index(Type::FLOAT)>(proto.float_value());
+    case component::Type::FLOAT:
+      value->emplace<component::as_index(component::Type::FLOAT)>(proto.float_value());
       break;
-    case Type::INTEGER:
-      value->emplace<as_index(Type::INTEGER)>(proto.integer_value());
+    case component::Type::INTEGER:
+      value->emplace<component::as_index(component::Type::INTEGER)>(proto.integer_value());
       break;
-    case Type::STRING:
-      value->emplace<as_index(Type::STRING)>(proto.string_value());
+    case component::Type::STRING:
+      value->emplace<component::as_index(component::Type::STRING)>(proto.string_value());
       break;
-    case Type::ID:
-      value->emplace<as_index(Type::ID)>(proto.id());
+    case component::Type::ID:
+      value->emplace<component::as_index(component::Type::ID)>(proto.id());
       break;
     default:
-      throw std::invalid_argument("Unknown Type '" + to_string(as_index(result_type)) + "'");
+      throw std::invalid_argument("Unknown Type '" + to_string(component::as_index(result_type)) + "'");
   }
 }
 
-}  // namespace pack::component
+}  // namespace pack

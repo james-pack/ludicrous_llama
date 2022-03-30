@@ -10,7 +10,7 @@
  */
 #pragma once
 
-namespace pack::component {
+namespace pack {
 
 template <typename T, typename MessageT>
 void to_proto(const T& t, MessageT* msg);
@@ -32,4 +32,4 @@ T from_proto(const MessageT& msg) {
   return result;
 }
 
-}  // namespace pack::component
+}  // namespace pack

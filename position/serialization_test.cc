@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "position/position.h"
 #include "position/proto/position.pb.h"
-#include "position/serialize.h"
+#include "serialization/serialize.h"
 
 namespace pack::position {
 
