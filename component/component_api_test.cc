@@ -2,8 +2,9 @@
 #include <string_view>
 
 #include "component/components.h"
+#include "component/parameter.h"
 #include "component/primitive.h"
-#include "component/types.h"
+#include "component/property.h"
 #include "gtest/gtest.h"
 #include "guid/guid.h"
 #include "proto/proto_utils.h"

@@ -6,8 +6,7 @@
 #include <vector>
 
 #include "component/ordering.h"
-#include "component/types.h"
-#include "guid/guid.h"
+#include "component/parameter.h"
 
 namespace pack::component {
 

@@ -4,20 +4,21 @@
 #include <string_view>
 #include <vector>
 
-#include "component/types.h"
+#include "component/parameter.h"
+#include "component/value.h"
 
 namespace pack::component {
 
 namespace {
 
-Parameter build_parameter(std::string_view name, Type type) {
+[[maybe_unused]] Parameter build_parameter(std::string_view name, Type type) {
   Parameter result{};
   result.name = name;
   result.domain.type = Type::FLOAT;
   return result;
 }
 
-Parameter build_parameter(std::string_view name, float min_value) {
+[[maybe_unused]] Parameter build_parameter(std::string_view name, float min_value) {
   Parameter result{};
   result.name = name;
   result.domain.type = Type::FLOAT;
@@ -25,7 +26,7 @@ Parameter build_parameter(std::string_view name, float min_value) {
   return result;
 }
 
-Parameter build_parameter(std::string_view name, float min_value, float max_value) {
+[[maybe_unused]] Parameter build_parameter(std::string_view name, float min_value, float max_value) {
   Parameter result{};
   result.name = name;
   result.domain.type = Type::FLOAT;
@@ -34,7 +35,7 @@ Parameter build_parameter(std::string_view name, float min_value, float max_valu
   return result;
 }
 
-Parameter build_parameter(std::string_view name, int64_t min_value) {
+[[maybe_unused]] Parameter build_parameter(std::string_view name, int64_t min_value) {
   Parameter result{};
   result.name = name;
   result.domain.type = Type::INTEGER;
@@ -42,7 +43,7 @@ Parameter build_parameter(std::string_view name, int64_t min_value) {
   return result;
 }
 
-Parameter build_parameter(std::string_view name, int64_t min_value, int64_t max_value) {
+[[maybe_unused]] Parameter build_parameter(std::string_view name, int64_t min_value, int64_t max_value) {
   Parameter result{};
   result.name = name;
   result.domain.type = Type::INTEGER;

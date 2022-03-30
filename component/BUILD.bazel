@@ -9,9 +9,13 @@ cc_library(
     hdrs = [
         "component.h",
         "components.h",
+        "expression.h",
         "ordering.h",
+        "parameter.h",
         "primitive.h",
-        "types.h",
+        "property.h",
+        "serialize.h",
+        "value.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
@@ -62,10 +66,22 @@ cc_test(
 )
 
 cc_test(
-    name = "types_test",
-    srcs = ["types_test.cc"],
+    name = "value_test",
+    srcs = ["value_test.cc"],
     deps = [
         ":component",
+        "//third_party/gtest",
+    ],
+)
+
+cc_test(
+    name = "serialization_test",
+    srcs = ["serialization_test.cc"],
+    deps = [
+        ":component",
+        "//component/proto",
+        "//proto",
+        "//testing",
         "//third_party/gtest",
     ],
 )

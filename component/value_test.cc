@@ -1,12 +1,10 @@
-#include "component/types.h"
-
-#include <variant>
+#include "component/value.h"
 
 #include "gtest/gtest.h"
 
 namespace pack::component {
 
-TEST(TypesTest, CanUseEnumAsVariantIndex) {
+TEST(ValueTest, CanUseEnumAsVariantIndex) {
   Value value{};
   as_float(value) = 1.f;
   EXPECT_EQ(1.f, as_float(value));

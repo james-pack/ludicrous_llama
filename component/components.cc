@@ -3,8 +3,9 @@
 #include <string>
 #include <string_view>
 
+#include "component/component.h"
+#include "component/parameter.h"
 #include "component/primitive.h"
-#include "component/types.h"
 #include "guid/guid.h"
 
 namespace pack::component {

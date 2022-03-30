@@ -18,11 +18,12 @@ message Type {
 }
 
 message Value {
+  Type type = 1;
   oneof value {
-    float float_value = 1;
-    int64 int_value = 2;
-    string string_value = 3;
-    string id = 4;
+    float float_value = 2;
+    int64 integer_value = 3;
+    string string_value = 4;
+    string id = 5;
   }
 }
 
@@ -63,7 +64,8 @@ message Parameter {
 
 // An expression that generates a value to be passed to a parameter.
 message ParameterBinding {
-  string parameter_name = 1;
+  // Name of the parameter being bound.
+  string name = 1;
 
   Expression value = 2;
 }
@@ -111,7 +113,7 @@ message Subcomponent {
   Position position = 2;
   Orientation orientation = 3;
 
-  repeated ParameterBinding parameters = 4;
+  repeated ParameterBinding bindings = 4;
 }
 
 message Constraint {
@@ -133,20 +135,14 @@ message Component {
   // components; children don't have any dependency on their parent(s).
   repeated Subcomponent children = 3;
 
-  // Primitives and an ordered list of processes used to construct this component.
-  repeated ProcessedPrimitive primitives = 4;
+  string primitive_name = 4;
+  repeated ParameterBinding bindings = 5;
 
-  // All parameters of a component and its children must either be bound as properties or exposed as parameters of this
-  // component.
+  repeated Property properties = 6;
 
-  // Value bindings for the parameters of the child component, primitives, or this component.
-  repeated Property properties = 5;
+  repeated Parameter parameters = 7;
 
-  // Parameters intrinsic to this component that must be bound by parents using this component.
-  repeated Parameter parameters = 6;
-
-  // Constraints on the values of the parameters.
-  repeated Constraint constraints = 7;
+  repeated Constraint constraints = 8;
 }
 
 message Components {
