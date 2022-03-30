@@ -1,9 +1,9 @@
 #pragma once
 
-#include "color/colors.h"
-#include "color/proto/material.pb.h"
+#include "material/colors.h"
+#include "material/proto/material.pb.h"
 
-namespace pack::color {
+namespace pack::material {
 
 class Materials final {
  public:
@@ -56,4 +56,4 @@ class Materials final {
   }
 };
 
-}  // namespace pack::color
+}  // namespace pack::material

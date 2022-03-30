@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "color/proto/color.pb.h"
+#include "material/proto/color.pb.h"
 
 namespace pack::ui::model {
 
@@ -13,10 +13,10 @@ struct Color final {
   // memory for the color in order to make it easier to create materials.
   float values[4]{};
 
-  static Color from_proto(const color::proto::Rgba& proto);
-  static void from_proto(const color::proto::Rgba& proto, Color* color);
-  static color::proto::Rgba to_proto(const Color& color);
-  static void to_proto(const Color& color, color::proto::Rgba* proto);
+  static Color from_proto(const material::proto::Rgba& proto);
+  static void from_proto(const material::proto::Rgba& proto, Color* color);
+  static material::proto::Rgba to_proto(const Color& color);
+  static void to_proto(const Color& color, material::proto::Rgba* proto);
 };
 
 std::string to_string(const Color& color);

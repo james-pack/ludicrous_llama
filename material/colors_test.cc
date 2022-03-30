@@ -1,13 +1,13 @@
-#include "color/colors.h"
+#include "material/colors.h"
 
 #include <limits>
 #include <stdexcept>
 
 #include "gtest/gtest.h"
 
-namespace pack::color {
+namespace pack::material {
 
-using namespace pack::color::proto;
+using namespace pack::material::proto;
 
 ::testing::AssertionResult has_matching_float_color_data(Rgba expected, Rgba actual, int bits_accuracy = 32) {
   if (bits_accuracy == 0) {
@@ -483,4 +483,4 @@ TEST(AsIntsTest, RoundTripsAreStable) {
   }
 }
 
-}  // namespace pack::color
+}  // namespace pack::material

@@ -1,4 +1,3 @@
-#include "color/materials.h"
 #include "component/gear.pb.h"
 #include "component/position.h"
 #include "demo/gears_ui.h"
@@ -6,6 +5,7 @@
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 #include "lighting/proto/light.pb.h"
+#include "material/materials.h"
 #include "proto/proto_utils.h"
 #include "ui/animator.h"
 #include "ui/application.h"
@@ -51,8 +51,8 @@ void populate_registry(entt::registry& registry, pack::ui::Camera camera, pack::
 }
 
 int main(int argc, char* argv[]) {
-  using namespace pack::color;
   using namespace pack::demo;
+  using namespace pack::material;
   using namespace pack::proto;
   using namespace pack::ui;
   using namespace pack::ui::model;

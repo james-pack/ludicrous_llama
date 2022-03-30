@@ -25,10 +25,10 @@ cc_binary(
         ":lighting_configurations",
     ],
     deps = [
-        "//color",
         "//component",
         "//lighting",
         "//lighting/proto",
+        "//material",
         "//proto",
         "//third_party/entt",
         "//third_party/gflags",

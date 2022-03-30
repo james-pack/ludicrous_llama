@@ -1,12 +1,12 @@
-#include "color/colors.h"
+#include "material/colors.h"
 
 #include <limits>
 #include <stdexcept>
 #include <string>
 
-#include "color/proto/color.pb.h"
+#include "material/proto/color.pb.h"
 
-namespace pack::color {
+namespace pack::material {
 
 void Colors::to_array(const proto::Rgba& color, float* values) {
   constexpr double MAX_VALUE{1.};
@@ -162,4 +162,4 @@ proto::Rgba Colors::as_uint32s(const proto::Rgba& color) {
   return result;
 }
 
-}  // namespace pack::color
+}  // namespace pack::material

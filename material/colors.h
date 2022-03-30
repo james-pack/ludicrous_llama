@@ -2,9 +2,9 @@
 
 #include <limits>
 
-#include "color/proto/color.pb.h"
+#include "material/proto/color.pb.h"
 
-namespace pack::color {
+namespace pack::material {
 
 class Colors final {
  public:
@@ -34,7 +34,7 @@ class Colors final {
   }
 
   static proto::Rgba create(uint32_t red, uint32_t green, uint32_t blue,
-                                    uint32_t alpha = std::numeric_limits<uint32_t>::max()) {
+                            uint32_t alpha = std::numeric_limits<uint32_t>::max()) {
     proto::Rgba result{};
     result.mutable_uint32_values()->set_red(red);
     result.mutable_uint32_values()->set_green(green);
@@ -44,4 +44,4 @@ class Colors final {
   }
 };
 
-}  // namespace pack::color
+}  // namespace pack::material

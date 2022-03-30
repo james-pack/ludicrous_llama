@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "color/proto/material.proto";
+import "material/proto/material.proto";
 
 package pack.component;
 
@@ -16,7 +16,7 @@ message Gear {
   float phase = 9;
 
   oneof material_specification {
-    pack.color.proto.Material material = 10;
+    pack.material.proto.Material material = 10;
     string material_id = 11;
   }
 }

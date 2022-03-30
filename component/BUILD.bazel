@@ -22,9 +22,9 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":gear_cc_proto",
-        "//color",
         "//component/proto",
         "//guid",
+        "//material",
         "//third_party/entt",
         "//third_party/glad",
         "//third_party/glfw",
@@ -41,7 +41,7 @@ proto_library(
     name = "gear_proto",
     srcs = ["gear.proto"],
     deps = [
-        "//color/proto:material_proto",
+        "//material/proto:material_proto",
     ],
 )
 

@@ -4,9 +4,9 @@ cc_library(
     name = "lighting",
     visibility = ["//visibility:public"],
     deps = [
-        "//color",
         "//component",
-        "//proto",
         "//lighting/proto",
+        "//material",
+        "//proto",
     ],
 )

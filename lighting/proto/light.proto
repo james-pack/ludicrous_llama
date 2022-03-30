@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-import "color/proto/color.proto";
 import "component/proto/position.proto";
+import "material/proto/color.proto";
 
 package pack.lighting.proto;
 
@@ -9,9 +9,9 @@ message Light {
   int32 light_num = 1;
   component.proto.Position position = 2;
   component.proto.Orientation orientation = 7;
-  color.proto.Rgba ambient = 3;
-  color.proto.Rgba diffuse = 4;
-  color.proto.Rgba specular = 5;
+  material.proto.Rgba ambient = 3;
+  material.proto.Rgba diffuse = 4;
+  material.proto.Rgba specular = 5;
   bool enabled = 6;
 }
 

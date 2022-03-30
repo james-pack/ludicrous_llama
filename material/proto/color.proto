@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package pack.color.proto;
+package pack.material.proto;
 
 message Rgba {
   message AsFloats {
