@@ -11,10 +11,11 @@
 
 #include "component/gear.pb.h"
 #include "glog/logging.h"
+#include "material/material.h"
 #include "position/position.h"
+#include "serialization/serialize.h"
 #include "third_party/glfw/glfw.h"
 #include "ui/model/animate.h"
-#include "ui/model/material.h"
 
 namespace pack::ui::model {
 
@@ -28,7 +29,7 @@ void Gear::from_proto(const component::Gear& proto, Gear* gear) {
   gear->tooth_depth = proto.tooth_depth();
   gear->angle_coefficient = proto.angle_coefficient();
   gear->phase = proto.phase();
-  Material::from_proto(proto.material(), &gear->material);
+  pack::from_proto(proto.material(), &gear->material);
 }
 
 Gear Gear::from_proto(const component::Gear& proto) {
@@ -47,7 +48,7 @@ void Gear::to_proto(const Gear& gear, component::Gear* proto) {
   proto->set_tooth_depth(gear.tooth_depth);
   proto->set_angle_coefficient(gear.angle_coefficient);
   proto->set_phase(gear.phase);
-  Material::to_proto(gear.material, proto->mutable_material());
+  pack::to_proto(gear.material, proto->mutable_material());
 }
 
 component::Gear Gear::to_proto(const Gear& gear) {

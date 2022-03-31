@@ -3,8 +3,9 @@
 #include <string>
 
 #include "lighting/proto/light.pb.h"
+#include "material/color.h"
 #include "position/position.h"
-#include "ui/model/color.h"
+#include "serialization/serialize.h"
 
 namespace pack::ui::model {
 
@@ -19,9 +20,9 @@ void Light::from_proto(const lighting::proto::Light& proto, Light* light, positi
 
   pack::from_proto(proto.position(), position);
   pack::from_proto(proto.orientation(), orientation);
-  Color::from_proto(proto.ambient(), &light->ambient);
-  Color::from_proto(proto.diffuse(), &light->diffuse);
-  Color::from_proto(proto.specular(), &light->specular);
+  pack::from_proto(proto.ambient(), &light->ambient);
+  pack::from_proto(proto.diffuse(), &light->diffuse);
+  pack::from_proto(proto.specular(), &light->specular);
 }
 
 void Light::to_proto(const Light& light, const position::Position& position, const position::Orientation& orientation,
@@ -29,9 +30,9 @@ void Light::to_proto(const Light& light, const position::Position& position, con
   proto->set_light_num(light.light_num);
   pack::to_proto(position, proto->mutable_position());
   pack::to_proto(orientation, proto->mutable_orientation());
-  Color::to_proto(light.ambient, proto->mutable_ambient());
-  Color::to_proto(light.diffuse, proto->mutable_diffuse());
-  Color::to_proto(light.specular, proto->mutable_specular());
+  pack::to_proto(light.ambient, proto->mutable_ambient());
+  pack::to_proto(light.diffuse, proto->mutable_diffuse());
+  pack::to_proto(light.specular, proto->mutable_specular());
   proto->set_enabled(light.enabled);
 }
 

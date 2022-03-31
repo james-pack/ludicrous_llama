@@ -3,7 +3,7 @@
 #include <string>
 
 #include "component/gear.pb.h"
-#include "ui/model/material.h"
+#include "material/material.h"
 #include "ui/model/animate.h"
 
 namespace pack::ui::model {
@@ -19,7 +19,7 @@ struct Gear final {
   float angle_coefficient{};
   float phase{};
 
-  Material material{};
+  material::Material material{};
 
   static Gear from_proto(const component::Gear& proto);
   static void from_proto(const component::Gear& proto, Gear* gear);
