@@ -5,11 +5,11 @@
 #include "entt/entity/observer.hpp"
 #include "entt/entity/registry.hpp"
 #include "glog/logging.h"
+#include "lighting/light.h"
 #include "position/position.h"
 #include "third_party/glfw/glfw.h"
 #include "ui/camera.h"
 #include "ui/model/gear.h"
-#include "ui/model/light.h"
 #include "ui/render.h"
 
 namespace pack::ui {
@@ -23,7 +23,7 @@ void render_camera(const Camera& camera, const position::Position& position, con
   glTranslatef(position.position[0], position.position[1], position.position[2]);
 }
 
-void render_light(const ui::model::Light& light, const position::Position& position,
+void render_light(const lighting::Light& light, const position::Position& position,
                   const position::Orientation& orientation) {
   using std::to_string;
 
@@ -52,8 +52,8 @@ ComponentPane::ComponentPane()
                               .update<position::Position>()
                               .update<position::Orientation>()),
       lighting_observer_(registry(),  //
-                         entt::collector.group<ui::model::Light, position::Position, position::Orientation>()
-                             .update<ui::model::Light>()
+                         entt::collector.group<lighting::Light, position::Position, position::Orientation>()
+                             .update<lighting::Light>()
                              .update<position::Position>()
                              .update<position::Orientation>()) {}
 
@@ -106,8 +106,8 @@ void ComponentPane::render() {
 
     glPopMatrix();
 
-    reg.view<ui::model::Light, position::Position, position::Orientation>().each(
-        [&reg](const ui::model::Light& light, const position::Position& position,
+    reg.view<lighting::Light, position::Position, position::Orientation>().each(
+        [&reg](const lighting::Light& light, const position::Position& position,
                const position::Orientation& orientation) { render_light(light, position, orientation); });
     lighting_observer_.clear();
 
@@ -131,7 +131,7 @@ void ComponentPane::render() {
 
     lighting_observer_.each([&reg](const auto entity) {
       const auto& [light, position, orientation] =
-          reg.get<ui::model::Light, position::Position, position::Orientation>(entity);
+          reg.get<lighting::Light, position::Position, position::Orientation>(entity);
       render_light(light, position, orientation);
     });
   }

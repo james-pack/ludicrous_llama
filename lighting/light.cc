@@ -1,4 +1,4 @@
-#include "ui/model/light.h"
+#include "lighting/light.h"
 
 #include <string>
 
@@ -7,9 +7,9 @@
 #include "position/position.h"
 #include "serialization/serialize.h"
 
-namespace pack::ui::model {
+namespace pack::lighting {
 
-void Light::from_proto(const lighting::proto::Light& proto, Light* light, position::Position* position,
+void Light::from_proto(const proto::Light& proto, Light* light, position::Position* position,
                        position::Orientation* orientation) {
   using std::to_string;
 
@@ -26,7 +26,7 @@ void Light::from_proto(const lighting::proto::Light& proto, Light* light, positi
 }
 
 void Light::to_proto(const Light& light, const position::Position& position, const position::Orientation& orientation,
-                     lighting::proto::Light* proto) {
+                     proto::Light* proto) {
   proto->set_light_num(light.light_num);
   pack::to_proto(position, proto->mutable_position());
   pack::to_proto(orientation, proto->mutable_orientation());
@@ -36,9 +36,9 @@ void Light::to_proto(const Light& light, const position::Position& position, con
   proto->set_enabled(light.enabled);
 }
 
-lighting::proto::Light Light::to_proto(const Light& light, const position::Position& position,
-                                       const position::Orientation& orientation) {
-  lighting::proto::Light proto{};
+proto::Light Light::to_proto(const Light& light, const position::Position& position,
+                             const position::Orientation& orientation) {
+  proto::Light proto{};
   to_proto(light, position, orientation, &proto);
   return proto;
 }
@@ -50,4 +50,4 @@ std::string to_string(const Light& light) {
          ", diffuse: " + to_string(light.diffuse) + ", specular: " + to_string(light.specular) + "}";
 }
 
-}  // namespace pack::ui::model
+}  // namespace pack::lighting

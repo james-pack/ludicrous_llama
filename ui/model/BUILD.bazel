@@ -4,12 +4,10 @@ cc_library(
     name = "model",
     srcs = [
         "gear.cc",
-        "light.cc",
     ],
     hdrs = [
         "animate.h",
         "gear.h",
-        "light.h",
     ],
     visibility = ["//visibility:public"],
     deps = [

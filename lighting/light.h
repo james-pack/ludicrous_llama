@@ -6,7 +6,7 @@
 #include "material/color.h"
 #include "position/position.h"
 
-namespace pack::ui::model {
+namespace pack::lighting {
 
 struct Light final {
   std::string id{};
@@ -17,14 +17,14 @@ struct Light final {
   material::Color specular{{1.f, 1.f, 1.f, 1.f}};
   bool enabled{};
 
-  static void from_proto(const lighting::proto::Light& proto, Light* light, position::Position* position,
+  static void from_proto(const proto::Light& proto, Light* light, position::Position* position,
                          position::Orientation* orientation);
   static void to_proto(const Light& light, const position::Position& position, const position::Orientation& orientation,
-                       lighting::proto::Light* proto);
-  static lighting::proto::Light to_proto(const Light& light, const position::Position& position,
-                                         const position::Orientation& orientation);
+                       proto::Light* proto);
+  static proto::Light to_proto(const Light& light, const position::Position& position,
+                               const position::Orientation& orientation);
 };
 
 std::string to_string(const Light& light);
 
-}  // namespace pack::ui::model
+}  // namespace pack::lighting

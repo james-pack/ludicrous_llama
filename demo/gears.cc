@@ -3,6 +3,7 @@
 #include "entt/entity/registry.hpp"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
+#include "lighting/light.h"
 #include "lighting/proto/light.pb.h"
 #include "material/materials.h"
 #include "position/position.h"
@@ -11,7 +12,6 @@
 #include "ui/application.h"
 #include "ui/camera.h"
 #include "ui/model/gear.h"
-#include "ui/model/light.h"
 #include "ui/render.h"
 
 void populate_registry(entt::registry& registry, pack::ui::model::Gear gear, pack::position::Position position,
@@ -29,12 +29,12 @@ void populate_registry(entt::registry& registry, pack::ui::model::Gear gear, pac
   registry.emplace<pack::position::Orientation>(gear_id, std::move(orientation));
 }
 
-void populate_registry(entt::registry& registry, pack::ui::model::Light light, pack::position::Position position,
+void populate_registry(entt::registry& registry, pack::lighting::Light light, pack::position::Position position,
                        pack::position::Orientation orientation) {
   using namespace pack::ui::model;
 
   const auto id = registry.create();
-  registry.emplace<Light>(id, std::move(light));
+  registry.emplace<pack::lighting::Light>(id, std::move(light));
   registry.emplace<pack::position::Position>(id, std::move(position));
   registry.emplace<pack::position::Orientation>(id, std::move(orientation));
 }
@@ -87,10 +87,10 @@ int main(int argc, char* argv[]) {
     pack::lighting::proto::LightingConfiguration lights =
         load_text_proto<pack::lighting::proto::LightingConfiguration>("demo/lighting_configuration.pb.txt");
     for (const auto& proto : lights.light()) {
-      Light light{};
+      pack::lighting::Light light{};
       pack::position::Position position{};
       pack::position::Orientation orientation{};
-      Light::from_proto(proto, &light, &position, &orientation);
+      pack::lighting::Light::from_proto(proto, &light, &position, &orientation);
       populate_registry(application.registry(), light, position, orientation);
     }
   }
