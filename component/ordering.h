@@ -25,50 +25,64 @@ struct HashByIdField final {
   }
 };
 
-template <typename T>
+template <typename T, typename U = T>
 struct CompareById final {
   using is_transparent = std::string;
-  bool operator()(const T& lhs, const T& rhs) const { return lhs.id() == rhs.id(); }
+  bool operator()(const T& lhs, const U& rhs) const { return lhs.id() == rhs.id(); }
   bool operator()(std::string_view lhs, const T& rhs) const { return lhs == rhs.id(); }
   bool operator()(const guid::Guid& lhs, const T& rhs) const { return lhs == rhs.id(); }
 };
 
-template <typename T>
+template <typename T, typename U = T>
 struct CompareByIdField final {
   using is_transparent = std::string;
-  bool operator()(const T& lhs, const T& rhs) const { return lhs.id == rhs.id; }
+  bool operator()(const T& lhs, const U& rhs) const { return lhs.id == rhs.id; }
   bool operator()(std::string_view lhs, const T& rhs) const { return lhs == rhs.id; }
   bool operator()(const guid::Guid& lhs, const T& rhs) const { return lhs == rhs.id; }
 };
 
-template <typename T>
+template <typename T, typename U = T>
+struct CompareByName final {
+  using is_transparent = std::string;
+  bool operator()(const T& lhs, const U& rhs) const { return lhs.name() == rhs.name(); }
+  bool operator()(std::string_view lhs, const T& rhs) const { return lhs == rhs.name(); }
+};
+
+template <typename T, typename U = T>
+struct CompareByNameField final {
+  using is_transparent = std::string;
+  bool operator()(const T& lhs, const U& rhs) const { return lhs.name == rhs.name; }
+  bool operator()(std::string_view lhs, const T& rhs) const { return lhs == rhs.name; }
+};
+
+template <typename T, typename U = T>
 struct OrderById final {
   using is_transparent = std::string;
-  bool operator()(const T& lhs, const T& rhs) const { return lhs.id() < rhs.id(); }
+  bool operator()(const T& lhs, const U& rhs) const { return lhs.id() < rhs.id(); }
   bool operator()(std::string_view lhs, const T& rhs) const { return lhs < rhs.id(); }
   bool operator()(const guid::Guid& lhs, const T& rhs) const { return lhs < rhs.id(); }
 };
 
-template <typename T>
+template <typename T, typename U = T>
 struct OrderByIdField final {
   using is_transparent = std::string;
-  bool operator()(const T& lhs, const T& rhs) const { return lhs.id < rhs.id; }
+  bool operator()(const T& lhs, const U& rhs) const { return lhs.id < rhs.id; }
   bool operator()(std::string_view lhs, const T& rhs) const { return lhs < rhs.id; }
   bool operator()(const guid::Guid& lhs, const T& rhs) const { return lhs < rhs.id; }
 };
 
-template <typename T>
+template <typename T, typename U = T>
 struct OrderByName final {
   using is_transparent = std::string;
-  bool operator()(const T& lhs, const T& rhs) const { return lhs.name() < rhs.name(); }
+  bool operator()(const T& lhs, const U& rhs) const { return lhs.name() < rhs.name(); }
   bool operator()(const T& lhs, std::string_view rhs) const { return lhs.name() < rhs; }
   bool operator()(std::string_view lhs, const T& rhs) const { return lhs < rhs.name(); }
 };
 
-template <typename T>
+template <typename T, typename U = T>
 struct OrderByNameField final {
   using is_transparent = std::string;
-  bool operator()(const T& lhs, const T& rhs) const { return lhs.name < rhs.name; }
+  bool operator()(const T& lhs, const U& rhs) const { return lhs.name < rhs.name; }
   bool operator()(const T& lhs, std::string_view rhs) const { return lhs.name < rhs; }
   bool operator()(std::string_view lhs, const T& rhs) const { return lhs < rhs.name; }
 };
