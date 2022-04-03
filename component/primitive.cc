@@ -1,15 +1,23 @@
 #include "component/primitive.h"
 
-#include <set>
+#include <functional>
 #include <string_view>
-#include <vector>
 
+#include "component/box.h"
+#include "component/gear.h"
 #include "component/parameter.h"
 #include "component/value.h"
 
 namespace pack::component {
 
 namespace {
+
+Primitive::GeneratorFunc construct_draw_list_generator(std::function<GLint(const ParameterBinding::Set&)> builder) {
+  return [builder](const ParameterBinding::Set& bindings) {
+    GLint draw_list_id = builder(bindings);
+    return [draw_list_id]() { glCallList(draw_list_id); };
+  };
+}
 
 [[maybe_unused]] Parameter build_parameter(std::string_view name, Type type) {
   Parameter result{};
@@ -52,22 +60,27 @@ namespace {
   return result;
 }
 
+// TODO(james): This function should be constexpr. All of the details are known at compile-time.
 Primitive::Set generate_primitives() {
   Primitive::Set primitives{};
-  primitives.emplace("gear", std::vector<Parameter>{
-                                 build_parameter("inner_radius", Type::FLOAT),
-                                 build_parameter("outer_radius", Type::FLOAT),
-                                 build_parameter("width", Type::FLOAT),
-                                 build_parameter("teeth", Type::INTEGER),
-                                 build_parameter("tooth_depth", Type::FLOAT),
-                                 build_parameter("angle_coefficient", Type::FLOAT),
-                                 build_parameter("phase", Type::FLOAT),
-                             });
-  primitives.emplace("box", std::vector<Parameter>{
-                                build_parameter("width", Type::FLOAT),   //
-                                build_parameter("height", Type::FLOAT),  //
-                                build_parameter("depth", Type::FLOAT),   //
-                            });
+  primitives.emplace("gear",
+                     Parameter::Set{
+                         build_parameter("inner_radius", Type::FLOAT),
+                         build_parameter("outer_radius", Type::FLOAT),
+                         build_parameter("width", Type::FLOAT),
+                         build_parameter("teeth", Type::INTEGER),
+                         build_parameter("tooth_depth", Type::FLOAT),
+                         build_parameter("angle_coefficient", Type::FLOAT),
+                         build_parameter("phase", Type::FLOAT),
+                     },
+                     construct_draw_list_generator(build_gear));
+  primitives.emplace("box",
+                     Parameter::Set{
+                         build_parameter("width", Type::FLOAT),   //
+                         build_parameter("height", Type::FLOAT),  //
+                         build_parameter("depth", Type::FLOAT),   //
+                     },
+                     construct_draw_list_generator(build_box));
   return primitives;
 }
 

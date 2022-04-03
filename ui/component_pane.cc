@@ -9,8 +9,6 @@
 #include "position/position.h"
 #include "third_party/glfw/glfw.h"
 #include "ui/camera.h"
-#include "ui/model/gear.h"
-#include "ui/render.h"
 
 namespace pack::ui {
 
@@ -45,12 +43,13 @@ ComponentPane::ComponentPane()
                            .update<Camera>()
                            .update<position::Position>()
                            .update<position::Orientation>()),
-      component_observer_(registry(),  //
+      /*      component_observer_(registry(),  //
                           entt::collector.group<Render, ui::model::Gear, position::Position, position::Orientation>()
                               .update<Render>()
                               .update<ui::model::Gear>()
                               .update<position::Position>()
                               .update<position::Orientation>()),
+      */
       lighting_observer_(registry(),  //
                          entt::collector.group<lighting::Light, position::Position, position::Orientation>()
                              .update<lighting::Light>()
@@ -99,10 +98,12 @@ void ComponentPane::render() {
         });
     camera_observer_.clear();
 
+    /*
     reg.view<Render, ui::model::Gear, position::Position, position::Orientation>().each(
         [&reg](const Render& render, const ui::model::Gear& component, const position::Position& position,
                const position::Orientation& orientation) { render(component, position, orientation); });
     component_observer_.clear();
+    */
 
     glPopMatrix();
 
@@ -121,11 +122,13 @@ void ComponentPane::render() {
       render_camera(camera, position, orientation);
     });
 
+    /*
     component_observer_.each([&reg](const auto entity) {
       const auto& [render, component, position, orientation] =
           reg.get<Render, ui::model::Gear, position::Position, position::Orientation>(entity);
       render(component, position, orientation);
     });
+    */
 
     glPopMatrix();
 

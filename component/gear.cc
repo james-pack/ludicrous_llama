@@ -1,4 +1,4 @@
-#include "ui/model/gear.h"
+#include "component/gear.h"
 
 // TODO(james): Extract to a separate file to manage math constants. Configure to use C++20 std::numbers::pi when
 // available. Feature testing macro: __cpp_lib_math_constants.
@@ -9,63 +9,27 @@
 #include <cmath>
 #include <string>
 
-#include "component/gear.pb.h"
 #include "glog/logging.h"
 #include "material/material.h"
 #include "position/position.h"
-#include "serialization/serialize.h"
 #include "third_party/glfw/glfw.h"
-#include "ui/model/animate.h"
 
-namespace pack::ui::model {
+namespace pack::component {
 
-void Gear::from_proto(const component::Gear& proto, Gear* gear) {
-  gear->id = proto.id();
-  gear->name = proto.name();
-  gear->inner_radius = proto.inner_radius();
-  gear->outer_radius = proto.outer_radius();
-  gear->width = proto.width();
-  gear->teeth = proto.teeth();
-  gear->tooth_depth = proto.tooth_depth();
-  gear->angle_coefficient = proto.angle_coefficient();
-  gear->phase = proto.phase();
-  pack::from_proto(proto.material(), &gear->material);
-}
+struct Gear final {
+  float inner_radius{};
+  float outer_radius{};
+  float width{};
+  int32_t teeth{};
+  float tooth_depth{};
+  float angle_coefficient{};
+  float phase{};
 
-Gear Gear::from_proto(const component::Gear& proto) {
-  Gear result{};
-  from_proto(proto, &result);
-  return result;
-}
-
-void Gear::to_proto(const Gear& gear, component::Gear* proto) {
-  proto->set_id(gear.id);
-  proto->set_name(gear.name);
-  proto->set_inner_radius(gear.inner_radius);
-  proto->set_outer_radius(gear.outer_radius);
-  proto->set_width(gear.width);
-  proto->set_teeth(gear.teeth);
-  proto->set_tooth_depth(gear.tooth_depth);
-  proto->set_angle_coefficient(gear.angle_coefficient);
-  proto->set_phase(gear.phase);
-  pack::to_proto(gear.material, proto->mutable_material());
-}
-
-component::Gear Gear::to_proto(const Gear& gear) {
-  component::Gear proto{};
-  to_proto(gear, &proto);
-  return proto;
-}
-
-Animate construct_gear_animator() {
-  return [](double seconds, Gear& component, position::Position& /* ignored */, position::Orientation& orientation) {
-    orientation.orientation[2] =
-        2.f * 1000.f * seconds / component.teeth * component.angle_coefficient + component.phase;
-  };
-}
+  material::Material material{};
+};
 
 GLint build_gear(const Gear& gear) {
-  const unsigned int id = glGenLists(1);
+  const GLint id = glGenLists(1);
   glNewList(id, GL_COMPILE);
 
   glMaterialfv(GL_FRONT, GL_AMBIENT, gear.material.ambient.values);
@@ -191,4 +155,16 @@ GLint build_gear(const Gear& gear) {
   return id;
 }
 
-}  // namespace pack::ui::model
+GLint build_gear(const ParameterBinding::Set& bindings) {
+  Gear gear{};
+  gear.inner_radius = as_float(as_literal(bindings.find("inner_radius")->value));
+  gear.outer_radius = as_float(as_literal(bindings.find("outer_radius")->value));
+  gear.width = as_float(as_literal(bindings.find("width")->value));
+  gear.teeth = as_integer(as_literal(bindings.find("teeth")->value));
+  gear.tooth_depth = as_float(as_literal(bindings.find("tooth_depth")->value));
+  gear.angle_coefficient = as_float(as_literal(bindings.find("angle_coefficient")->value));
+  gear.phase = as_float(as_literal(bindings.find("phase")->value));
+  return build_gear(gear);
+}
+
+}  // namespace pack::component

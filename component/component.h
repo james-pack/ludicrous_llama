@@ -101,7 +101,7 @@ void to_proto(const component::Component& component, component::proto::Component
   proto->set_name(component.name);
 
   if (component.primitive) {
-    proto->set_primitive_name(component.primitive->name());
+    proto->set_primitive_name(std::string(component.primitive->name()));
   } else {
     proto->clear_primitive_name();
   }

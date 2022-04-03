@@ -1,4 +1,3 @@
-#include "component/gear.pb.h"
 #include "demo/gears_ui.h"
 #include "entt/entity/registry.hpp"
 #include "gflags/gflags.h"
@@ -11,9 +10,8 @@
 #include "ui/animator.h"
 #include "ui/application.h"
 #include "ui/camera.h"
-#include "ui/model/gear.h"
-#include "ui/render.h"
 
+/*
 void populate_registry(entt::registry& registry, pack::ui::model::Gear gear, pack::position::Position position,
                        pack::position::Orientation orientation) {
   using namespace pack::ui;
@@ -28,11 +26,10 @@ void populate_registry(entt::registry& registry, pack::ui::model::Gear gear, pac
   registry.emplace<pack::position::Position>(gear_id, std::move(position));
   registry.emplace<pack::position::Orientation>(gear_id, std::move(orientation));
 }
+*/
 
 void populate_registry(entt::registry& registry, pack::lighting::Light light, pack::position::Position position,
                        pack::position::Orientation orientation) {
-  using namespace pack::ui::model;
-
   const auto id = registry.create();
   registry.emplace<pack::lighting::Light>(id, std::move(light));
   registry.emplace<pack::position::Position>(id, std::move(position));
@@ -42,7 +39,6 @@ void populate_registry(entt::registry& registry, pack::lighting::Light light, pa
 void populate_registry(entt::registry& registry, pack::ui::Camera camera, pack::position::Position position,
                        pack::position::Orientation orientation) {
   using namespace pack::ui;
-  using namespace pack::ui::model;
 
   const auto id = registry.create();
   registry.emplace<Camera>(id, std::move(camera));
@@ -55,7 +51,6 @@ int main(int argc, char* argv[]) {
   using namespace pack::material;
   using namespace pack::proto;
   using namespace pack::ui;
-  using namespace pack::ui::model;
 
   // Default logging configuration.
   FLAGS_logtostderr = true;
@@ -75,6 +70,7 @@ int main(int argc, char* argv[]) {
 
   populate_registry(application.registry(), Camera{}, pack::position::Position{}, pack::position::Orientation{});
 
+  /*
   {
     pack::component::Gears gears = load_text_proto<pack::component::Gears>("demo/trivial_demo_gears.pb.txt");
     for (pack::component::Gear gear : gears.gear()) {
@@ -82,6 +78,7 @@ int main(int argc, char* argv[]) {
                         pack::position::Orientation{});
     }
   }
+  */
 
   {
     pack::lighting::proto::LightingConfiguration lights =

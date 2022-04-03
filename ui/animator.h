@@ -5,6 +5,8 @@
 
 namespace pack::ui {
 
+// TODO(james): Redesign this concept to use time-based expressions and handle changes to create animations during
+// expression evaluation.
 class Animator final : public Service {
  private:
   bool is_paused_{false};

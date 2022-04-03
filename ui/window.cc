@@ -14,11 +14,8 @@
 #include "ui/camera.h"
 #include "ui/imgui_framer.h"
 #include "ui/pane.h"
-#include "ui/render.h"
 
 namespace pack::ui {
-
-using namespace pack::ui::model;
 
 void reshape(GLFWwindow* gl_window, int width, int height) {
   Window& window = *static_cast<Window*>(glfwGetWindowUserPointer(gl_window));

@@ -3,13 +3,17 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 cc_library(
     name = "component",
     srcs = [
+        "box.cc",
         "components.cc",
+        "gear.cc",
         "primitive.cc",
     ],
     hdrs = [
+        "box.h",
         "component.h",
         "components.h",
         "expression.h",
+        "gear.h",
         "ordering.h",
         "parameter.h",
         "primitive.h",
@@ -18,7 +22,6 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        ":gear_cc_proto",
         "//component/proto",
         "//guid",
         "//material",
