@@ -7,6 +7,7 @@ cc_library(
         "components.cc",
         "gear.cc",
         "primitive.cc",
+        "render.cc",
     ],
     hdrs = [
         "box.h",
@@ -18,6 +19,7 @@ cc_library(
         "parameter.h",
         "primitive.h",
         "property.h",
+        "render.h",
         "value.h",
     ],
     visibility = ["//visibility:public"],
