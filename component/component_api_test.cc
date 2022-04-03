@@ -12,19 +12,6 @@
 
 namespace pack::component {
 
-/*
-namespace fs = std::filesystem;
-
-fs::path create_path(const std::string_view& filename, bool persist_after_test = false) {
-  if (persist_after_test) {
-    return filename;
-  } else {
-    fs::path tmp_dir = testing::TestTempDirectory::getInstance()->createTestSubdirectory();
-    return tmp_dir / filename;
-  }
-}
-*/
-
 TEST(ApiTest, CanConstructTrivialComponentFromPrimitive) {
   Component shelf{};
   shelf.name = "shelf";
@@ -162,6 +149,8 @@ TEST(ApiTest, CanConstructSimpleBoxWithProperties) {
   EXPECT_EQ(6, box.children.size());
   // The box_components contains all of the components of the box, plus 1 for the box itself.
   EXPECT_EQ(box_components.size(), box.children.size() + 1);
+
+  // pack::proto::save_text_proto("simple_box.pb.txt", to_proto<Components, proto::Components>(box_components));
 }
 
 TEST(ApiTest, CanConstructNestingBoxes) {
@@ -312,6 +301,8 @@ TEST(ApiTest, CanConstructNestingBoxes) {
   // The box_components contains all of the components of the box, plus 1 for the template box itself, plus 1 for each
   // box instance.
   EXPECT_EQ(box_components.size(), template_box.children.size() + 1 + NUM_BOXES);
+
+  // pack::proto::save_text_proto("nested_boxes.pb.txt", to_proto<Components, proto::Components>(box_components));
 }
 
 }  // namespace pack::component

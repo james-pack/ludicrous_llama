@@ -1,33 +1,71 @@
 components {
+  id: "a5c9cd38-e5af-4fac-9f7c-baa845400671"
   children {
-    child_id: "710dece5-79a2-4a53-9518-56b60be41dfe"
+    child_id: "9e28ba7c-e1aa-4548-93d2-daaaade56b4a"
+    position {
+    }
+    orientation {
+    }
   }
   children {
-    child_id: "9c3de19f-fbef-45e3-b38c-938f1cd308c9"
+    child_id: "4315d63e-14ca-4b3d-bbcc-e52efd72d11e"
+    position {
+    }
+    orientation {
+    }
   }
   children {
-    child_id: "3785d4e9-9373-45fe-a7f1-61c076accc63"
+    child_id: "0b366ca8-a848-4210-b2ce-38e504daf766"
+    position {
+    }
+    orientation {
+    }
   }
   children {
-    child_id: "90351855-9f87-429c-9669-220ae7420d10"
+    child_id: "b8d8cb1e-afe7-4253-8fa9-63eba7f9f6e0"
+    position {
+    }
+    orientation {
+    }
   }
   children {
-    child_id: "a24ba22c-dfe3-4ce2-8120-f4f3fb378012"
+    child_id: "77e1a0da-226b-4e72-9f17-df4f54ef0830"
+    position {
+    }
+    orientation {
+    }
   }
   children {
-    child_id: "7618d1a1-dc40-4bf0-a265-b8b32a00fafe"
+    child_id: "b0510423-8ebc-4c98-b2d1-3163346775fa"
+    position {
+    }
+    orientation {
+    }
   }
   parameters {
-    name: "width"
+    name: "depth"
     domain {
       type {
         type: FLOAT
       }
       min_value {
+        type {
+          type: FLOAT
+        }
         float_value: 1
       }
       max_value {
+        type {
+          type: FLOAT
+        }
         float_value: 2435
+      }
+      precision {
+        num_decimal_places: -1
+      }
+    }
+    default_value {
+      type {
       }
     }
   }
@@ -38,24 +76,23 @@ components {
         type: FLOAT
       }
       min_value {
+        type {
+          type: FLOAT
+        }
         float_value: 1
       }
       max_value {
+        type {
+          type: FLOAT
+        }
         float_value: 2435
+      }
+      precision {
+        num_decimal_places: -1
       }
     }
-  }
-  parameters {
-    name: "depth"
-    domain {
+    default_value {
       type {
-        type: FLOAT
-      }
-      min_value {
-        float_value: 1
-      }
-      max_value {
-        float_value: 2435
       }
     }
   }
@@ -66,201 +103,84 @@ components {
         type: FLOAT
       }
       min_value {
+        type {
+          type: FLOAT
+        }
         float_value: 1
       }
       max_value {
+        type {
+          type: FLOAT
+        }
+        float_value: 25.4
+      }
+      precision {
+        num_decimal_places: -1
+      }
+    }
+    default_value {
+      type {
+      }
+    }
+  }
+  parameters {
+    name: "width"
+    domain {
+      type {
+        type: FLOAT
+      }
+      min_value {
+        type {
+          type: FLOAT
+        }
+        float_value: 1
+      }
+      max_value {
+        type {
+          type: FLOAT
+        }
         float_value: 2435
       }
+      precision {
+        num_decimal_places: -1
+      }
     }
-  }
-}
-components {
-  id: "710dece5-79a2-4a53-9518-56b60be41dfe"
-  name: "top"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../width"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../depth"
-        }
+    default_value {
+      type {
       }
     }
   }
 }
 components {
-  id: "9c3de19f-fbef-45e3-b38c-938f1cd308c9"
-  name: "top"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../width"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../depth"
-        }
-      }
-    }
-  }
-}
-components {
-  id: "3785d4e9-9373-45fe-a7f1-61c076accc63"
-  name: "left"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../height"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../depth"
-        }
-      }
-    }
-  }
-}
-components {
-  id: "90351855-9f87-429c-9669-220ae7420d10"
-  name: "right"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../height"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../depth"
-        }
-      }
-    }
-  }
-}
-components {
-  id: "a24ba22c-dfe3-4ce2-8120-f4f3fb378012"
-  name: "front"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../width"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../height"
-        }
-      }
-    }
-  }
-}
-components {
-  id: "7618d1a1-dc40-4bf0-a265-b8b32a00fafe"
-  name: "back"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../width"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../height"
-        }
-      }
-    }
-  }
-}
-components {
-  name: "outermost_box"
+  id: "8b0fc2af-9bf2-433c-857c-3e9dbb5aeb4b"
   children {
-    parameters {
-      parameter_name: "width"
-      value {
-        expression: "../width"
-      }
+    child_id: "a5c9cd38-e5af-4fac-9f7c-baa845400671"
+    position {
     }
-    parameters {
-      parameter_name: "height"
-      value {
-        expression: "../height"
-      }
+    orientation {
     }
-    parameters {
-      parameter_name: "depth"
+    bindings {
+      name: "depth"
       value {
         expression: "../depth"
       }
     }
-    parameters {
-      parameter_name: "material_thickness"
+    bindings {
+      name: "height"
+      value {
+        expression: "../height"
+      }
+    }
+    bindings {
+      name: "material_thickness"
       value {
         expression: "../material_thickness"
+      }
+    }
+    bindings {
+      name: "width"
+      value {
+        expression: "../width"
       }
     }
   }
@@ -268,23 +188,422 @@ components {
     name: "box_number"
     value {
       literal {
-        int_value: 0
+        type {
+          type: INTEGER
+        }
+        integer_value: 3
+      }
+    }
+  }
+  properties {
+    name: "depth"
+    value {
+      expression: "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+  properties {
+    name: "height"
+    value {
+      expression: "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+  properties {
+    name: "material_thickness"
+    value {
+      literal {
+        type {
+          type: FLOAT
+        }
+        float_value: 18
       }
     }
   }
   properties {
     name: "width"
     value {
-      literal {
-        float_value: 1390
+      expression: "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+}
+components {
+  id: "2b0e0c3e-27f5-4ce0-a63b-d8c75370ac8a"
+  children {
+    child_id: "a5c9cd38-e5af-4fac-9f7c-baa845400671"
+    position {
+    }
+    orientation {
+    }
+    bindings {
+      name: "depth"
+      value {
+        expression: "../depth"
       }
+    }
+    bindings {
+      name: "height"
+      value {
+        expression: "../height"
+      }
+    }
+    bindings {
+      name: "material_thickness"
+      value {
+        expression: "../material_thickness"
+      }
+    }
+    bindings {
+      name: "width"
+      value {
+        expression: "../width"
+      }
+    }
+  }
+  properties {
+    name: "box_number"
+    value {
+      literal {
+        type {
+          type: INTEGER
+        }
+        integer_value: 2
+      }
+    }
+  }
+  properties {
+    name: "depth"
+    value {
+      expression: "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)"
     }
   }
   properties {
     name: "height"
     value {
+      expression: "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+  properties {
+    name: "material_thickness"
+    value {
       literal {
-        float_value: 450
+        type {
+          type: FLOAT
+        }
+        float_value: 18
+      }
+    }
+  }
+  properties {
+    name: "width"
+    value {
+      expression: "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+}
+components {
+  id: "9c4ed3b8-faec-4e01-ad7b-94d091abd4df"
+  children {
+    child_id: "a5c9cd38-e5af-4fac-9f7c-baa845400671"
+    position {
+    }
+    orientation {
+    }
+    bindings {
+      name: "depth"
+      value {
+        expression: "../depth"
+      }
+    }
+    bindings {
+      name: "height"
+      value {
+        expression: "../height"
+      }
+    }
+    bindings {
+      name: "material_thickness"
+      value {
+        expression: "../material_thickness"
+      }
+    }
+    bindings {
+      name: "width"
+      value {
+        expression: "../width"
+      }
+    }
+  }
+  properties {
+    name: "box_number"
+    value {
+      literal {
+        type {
+          type: INTEGER
+        }
+        integer_value: 1
+      }
+    }
+  }
+  properties {
+    name: "depth"
+    value {
+      expression: "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+  properties {
+    name: "height"
+    value {
+      expression: "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+  properties {
+    name: "material_thickness"
+    value {
+      literal {
+        type {
+          type: FLOAT
+        }
+        float_value: 18
+      }
+    }
+  }
+  properties {
+    name: "width"
+    value {
+      expression: "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+}
+components {
+  id: "9e28ba7c-e1aa-4548-93d2-daaaade56b4a"
+  name: "back"
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../height"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../width"
+    }
+  }
+}
+components {
+  id: "4315d63e-14ca-4b3d-bbcc-e52efd72d11e"
+  name: "front"
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../height"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../width"
+    }
+  }
+}
+components {
+  id: "0b366ca8-a848-4210-b2ce-38e504daf766"
+  name: "right"
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../depth"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../height"
+    }
+  }
+}
+components {
+  id: "b8d8cb1e-afe7-4253-8fa9-63eba7f9f6e0"
+  name: "left"
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../depth"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../height"
+    }
+  }
+}
+components {
+  id: "77e1a0da-226b-4e72-9f17-df4f54ef0830"
+  name: "bottom"
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../depth"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../width"
+    }
+  }
+}
+components {
+  id: "aca86b0b-fc4b-435e-8c68-66df2fad12cd"
+  children {
+    child_id: "a5c9cd38-e5af-4fac-9f7c-baa845400671"
+    position {
+    }
+    orientation {
+    }
+    bindings {
+      name: "depth"
+      value {
+        expression: "../depth"
+      }
+    }
+    bindings {
+      name: "height"
+      value {
+        expression: "../height"
+      }
+    }
+    bindings {
+      name: "material_thickness"
+      value {
+        expression: "../material_thickness"
+      }
+    }
+    bindings {
+      name: "width"
+      value {
+        expression: "../width"
+      }
+    }
+  }
+  properties {
+    name: "box_number"
+    value {
+      literal {
+        type {
+          type: INTEGER
+        }
+        integer_value: 4
+      }
+    }
+  }
+  properties {
+    name: "depth"
+    value {
+      expression: "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+  properties {
+    name: "height"
+    value {
+      expression: "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+  properties {
+    name: "material_thickness"
+    value {
+      literal {
+        type {
+          type: FLOAT
+        }
+        float_value: 18
+      }
+    }
+  }
+  properties {
+    name: "width"
+    value {
+      expression: "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+    }
+  }
+}
+components {
+  id: "a83fad19-5d94-4ead-9f72-df34ac91cd80"
+  name: "outermost_box"
+  children {
+    child_id: "a5c9cd38-e5af-4fac-9f7c-baa845400671"
+    position {
+    }
+    orientation {
+    }
+    bindings {
+      name: "depth"
+      value {
+        expression: "../depth"
+      }
+    }
+    bindings {
+      name: "height"
+      value {
+        expression: "../height"
+      }
+    }
+    bindings {
+      name: "material_thickness"
+      value {
+        expression: "../material_thickness"
+      }
+    }
+    bindings {
+      name: "width"
+      value {
+        expression: "../width"
+      }
+    }
+  }
+  properties {
+    name: "box_number"
+    value {
+      literal {
+        type {
+          type: INTEGER
+        }
+        integer_value: 0
       }
     }
   }
@@ -292,244 +611,67 @@ components {
     name: "depth"
     value {
       literal {
+        type {
+          type: FLOAT
+        }
         float_value: 400
       }
     }
   }
   properties {
+    name: "height"
+    value {
+      literal {
+        type {
+          type: FLOAT
+        }
+        float_value: 450
+      }
+    }
+  }
+  properties {
     name: "material_thickness"
     value {
       literal {
+        type {
+          type: FLOAT
+        }
         float_value: 18
       }
     }
   }
-}
-components {
-  children {
-    parameters {
-      parameter_name: "width"
-      value {
-        expression: "../width"
-      }
-    }
-    parameters {
-      parameter_name: "height"
-      value {
-        expression: "../height"
-      }
-    }
-    parameters {
-      parameter_name: "depth"
-      value {
-        expression: "../depth"
-      }
-    }
-    parameters {
-      parameter_name: "material_thickness"
-      value {
-        expression: "../material_thickness"
-      }
-    }
-  }
-  properties {
-    name: "box_number"
-    value {
-      literal {
-        int_value: 1
-      }
-    }
-  }
   properties {
     name: "width"
     value {
-      expression: "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+      literal {
+        type {
+          type: FLOAT
+        }
+        float_value: 1390
+      }
     }
-  }
-  properties {
-    name: "height"
-    value {
-      expression: "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)"
-    }
-  }
-  properties {
-    name: "depth"
-    value {
-      expression: "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)"
-    }
-  }
-  properties {
-    name: "material_thickness"
   }
 }
 components {
-  children {
-    parameters {
-      parameter_name: "width"
-      value {
-        expression: "../width"
-      }
-    }
-    parameters {
-      parameter_name: "height"
-      value {
-        expression: "../height"
-      }
-    }
-    parameters {
-      parameter_name: "depth"
-      value {
-        expression: "../depth"
-      }
-    }
-    parameters {
-      parameter_name: "material_thickness"
-      value {
-        expression: "../material_thickness"
-      }
-    }
-  }
-  properties {
-    name: "box_number"
-    value {
-      literal {
-        int_value: 2
-      }
-    }
-  }
-  properties {
-    name: "width"
-    value {
-      expression: "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)"
-    }
-  }
-  properties {
-    name: "height"
-    value {
-      expression: "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)"
-    }
-  }
-  properties {
+  id: "b0510423-8ebc-4c98-b2d1-3163346775fa"
+  name: "top"
+  primitive_name: "box"
+  bindings {
     name: "depth"
     value {
-      expression: "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+      expression: "../depth"
     }
   }
-  properties {
-    name: "material_thickness"
-  }
-}
-components {
-  children {
-    parameters {
-      parameter_name: "width"
-      value {
-        expression: "../width"
-      }
-    }
-    parameters {
-      parameter_name: "height"
-      value {
-        expression: "../height"
-      }
-    }
-    parameters {
-      parameter_name: "depth"
-      value {
-        expression: "../depth"
-      }
-    }
-    parameters {
-      parameter_name: "material_thickness"
-      value {
-        expression: "../material_thickness"
-      }
-    }
-  }
-  properties {
-    name: "box_number"
-    value {
-      literal {
-        int_value: 3
-      }
-    }
-  }
-  properties {
-    name: "width"
-    value {
-      expression: "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)"
-    }
-  }
-  properties {
+  bindings {
     name: "height"
     value {
-      expression: "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+      expression: "../material_thickness"
     }
   }
-  properties {
-    name: "depth"
-    value {
-      expression: "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)"
-    }
-  }
-  properties {
-    name: "material_thickness"
-  }
-}
-components {
-  children {
-    parameters {
-      parameter_name: "width"
-      value {
-        expression: "../width"
-      }
-    }
-    parameters {
-      parameter_name: "height"
-      value {
-        expression: "../height"
-      }
-    }
-    parameters {
-      parameter_name: "depth"
-      value {
-        expression: "../depth"
-      }
-    }
-    parameters {
-      parameter_name: "material_thickness"
-      value {
-        expression: "../material_thickness"
-      }
-    }
-  }
-  properties {
-    name: "box_number"
-    value {
-      literal {
-        int_value: 4
-      }
-    }
-  }
-  properties {
+  bindings {
     name: "width"
     value {
-      expression: "#outermost_box/width - box_number * (2 * #outermost_box/material_thickness + 0.2)"
+      expression: "../width"
     }
-  }
-  properties {
-    name: "height"
-    value {
-      expression: "#outermost_box/height - box_number * (2 * #outermost_box/material_thickness + 0.2)"
-    }
-  }
-  properties {
-    name: "depth"
-    value {
-      expression: "#outermost_box/depth - box_number * (2 * #outermost_box/material_thickness + 0.2)"
-    }
-  }
-  properties {
-    name: "material_thickness"
   }
 }

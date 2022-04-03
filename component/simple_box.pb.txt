@@ -1,298 +1,227 @@
 components {
+  id: "997ccc2c-7e99-4669-b4cf-a5d5554bd799"
   children {
-    child_id: "283ee1f2-20b3-4d3a-8881-dba150132ae9"
-  }
-  children {
-    child_id: "92104846-afd0-4470-99b9-e78314fe88c5"
-  }
-  children {
-    child_id: "4317db9a-c7ad-4f82-ad1a-fc3ba9ab7699"
-  }
-  children {
-    child_id: "af9005cc-99e1-4c21-ad76-0cba7b2dd02d"
+    child_id: "fa99ae5d-6210-49f9-8865-51f40d2896c1"
+    position {
+    }
+    orientation {
+    }
   }
   children {
-    child_id: "82f2fded-fe0e-42ef-86b0-db234be9dd1a"
+    child_id: "1bcd5e5a-6ea7-4add-be07-fc109c86e3dc"
+    position {
+    }
+    orientation {
+    }
   }
   children {
-    child_id: "509b923c-cf43-4b96-b938-877919fcb798"
-  }
-  parameters {
-    name: "width"
-    domain {
-      type {
-        type: FLOAT
-      }
-      min_value {
-        float_value: 1
-      }
-      max_value {
-        float_value: 2435
-      }
+    child_id: "ca4b67ed-83d5-410d-835d-78372ebc887f"
+    position {
+    }
+    orientation {
     }
   }
-  parameters {
-    name: "height"
-    domain {
-      type {
-        type: FLOAT
-      }
-      min_value {
-        float_value: 1
-      }
-      max_value {
-        float_value: 2435
-      }
-    }
-  }
-  parameters {
-    name: "depth"
-    domain {
-      type {
-        type: FLOAT
-      }
-      min_value {
-        float_value: 1
-      }
-      max_value {
-        float_value: 2435
-      }
-    }
-  }
-  parameters {
-    name: "material_thickness"
-    domain {
-      type {
-        type: FLOAT
-      }
-      min_value {
-        float_value: 1
-      }
-      max_value {
-        float_value: 2435
-      }
-    }
-  }
-}
-components {
   children {
-    parameters {
-      parameter_name: "width"
-      value {
-        expression: "../width"
-      }
+    child_id: "8db49067-b9e9-43e9-bff0-75ad1d4659df"
+    position {
     }
-    parameters {
-      parameter_name: "height"
-      value {
-        expression: "../height"
-      }
-    }
-    parameters {
-      parameter_name: "depth"
-      value {
-        expression: "../depth"
-      }
-    }
-    parameters {
-      parameter_name: "material_thickness"
-      value {
-        expression: "../material_thickness"
-      }
+    orientation {
     }
   }
-  properties {
-    name: "width"
-    value {
-      literal {
-        float_value: 1390
-      }
+  children {
+    child_id: "3462ec35-a33f-4135-b8de-151967516918"
+    position {
+    }
+    orientation {
     }
   }
-  properties {
-    name: "height"
-    value {
-      literal {
-        float_value: 450
-      }
+  children {
+    child_id: "d966c8cc-0419-4513-bb85-7ce502f1acdb"
+    position {
+    }
+    orientation {
     }
   }
   properties {
     name: "depth"
     value {
       literal {
+        type {
+          type: FLOAT
+        }
         float_value: 400
       }
     }
   }
   properties {
+    name: "height"
+    value {
+      literal {
+        type {
+          type: FLOAT
+        }
+        float_value: 450
+      }
+    }
+  }
+  properties {
     name: "material_thickness"
     value {
       literal {
+        type {
+          type: FLOAT
+        }
         float_value: 18
       }
     }
   }
-}
-components {
-  id: "283ee1f2-20b3-4d3a-8881-dba150132ae9"
-  name: "top"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../width"
+  properties {
+    name: "width"
+    value {
+      literal {
+        type {
+          type: FLOAT
         }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../depth"
-        }
+        float_value: 1390
       }
     }
   }
 }
 components {
-  id: "92104846-afd0-4470-99b9-e78314fe88c5"
-  name: "top"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../width"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../depth"
-        }
-      }
-    }
-  }
-}
-components {
-  id: "4317db9a-c7ad-4f82-ad1a-fc3ba9ab7699"
-  name: "left"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../height"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../depth"
-        }
-      }
-    }
-  }
-}
-components {
-  id: "af9005cc-99e1-4c21-ad76-0cba7b2dd02d"
-  name: "right"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../height"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../depth"
-        }
-      }
-    }
-  }
-}
-components {
-  id: "82f2fded-fe0e-42ef-86b0-db234be9dd1a"
+  id: "fa99ae5d-6210-49f9-8865-51f40d2896c1"
   name: "front"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../width"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../height"
-        }
-      }
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../height"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../width"
     }
   }
 }
 components {
-  id: "509b923c-cf43-4b96-b938-877919fcb798"
+  id: "1bcd5e5a-6ea7-4add-be07-fc109c86e3dc"
   name: "back"
-  primitives {
-    primitive {
-      name: "box"
-      parameters {
-        parameter_name: "width"
-        value {
-          expression: "../../width"
-        }
-      }
-      parameters {
-        parameter_name: "height"
-        value {
-          expression: "../../material_thickness"
-        }
-      }
-      parameters {
-        parameter_name: "depth"
-        value {
-          expression: "../../height"
-        }
-      }
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../height"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../width"
+    }
+  }
+}
+components {
+  id: "ca4b67ed-83d5-410d-835d-78372ebc887f"
+  name: "right"
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../depth"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../height"
+    }
+  }
+}
+components {
+  id: "8db49067-b9e9-43e9-bff0-75ad1d4659df"
+  name: "left"
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../depth"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../height"
+    }
+  }
+}
+components {
+  id: "3462ec35-a33f-4135-b8de-151967516918"
+  name: "bottom"
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../depth"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../width"
+    }
+  }
+}
+components {
+  id: "d966c8cc-0419-4513-bb85-7ce502f1acdb"
+  name: "top"
+  primitive_name: "box"
+  bindings {
+    name: "depth"
+    value {
+      expression: "../depth"
+    }
+  }
+  bindings {
+    name: "height"
+    value {
+      expression: "../material_thickness"
+    }
+  }
+  bindings {
+    name: "width"
+    value {
+      expression: "../width"
     }
   }
 }
