@@ -147,7 +147,6 @@ Component* find_by_id(Components& components, std::string_view id) {
 }
 
 std::string to_string(const Components& components) {
-  using std::to_string;
   std::string result{"{"};
   bool need_comma{false};
   for (const auto& component : components) {

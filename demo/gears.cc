@@ -66,7 +66,6 @@ int main(int argc, char* argv[]) {
   {
     pack::component::proto::Components proto =
         load_text_proto<pack::component::proto::Components>("demo/trivial_demo_components.pb.txt");
-    LOG(INFO) << "Read components (proto form):\n" << proto.DebugString();
     pack::component::Components components =
         pack::from_proto<pack::component::Components, pack::component::proto::Components>(proto);
     LOG(INFO) << "Read components:\n" << to_string(components);

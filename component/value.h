@@ -118,9 +118,7 @@ inline void to_proto(const component::Value& value, component::proto::Value* pro
 template <>
 inline void from_proto(const component::proto::Value& proto, component::Value* value) {
   using std::to_string;
-  LOG(INFO) << "Value proto: " << proto.DebugString();
   component::Type result_type = static_cast<component::Type>(proto.type().type());
-  LOG(INFO) << "Extracting a value with type " << to_string(result_type);
   switch (result_type) {
     case component::Type::UNTYPED:
       value->emplace<component::as_index(component::Type::UNTYPED)>();

@@ -140,9 +140,7 @@ inline void from_proto(const component::proto::Component& proto, component::Comp
   }
 
   for (const auto& binding : proto.bindings()) {
-    LOG(INFO) << "Processing binding '" << binding.name() << "'";
     component->bindings.insert(from_proto<component::ParameterBinding, component::proto::ParameterBinding>(binding));
-    LOG(INFO) << "Bindings at this point: " << to_string(component->bindings);
   }
 
   for (const auto& child : proto.children()) {

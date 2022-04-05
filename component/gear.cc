@@ -174,21 +174,13 @@ GLint build_gear(const Gear& gear) {
 
 GLint build_gear(const ParameterBinding::Set& bindings) {
   Gear gear{};
-  LOG(INFO) << "Building gear primitive";
-  LOG(INFO) << "Bindings: " << to_string(bindings);
-  LOG(INFO) << "inner_radius";
+  DLOG(INFO) << "Building gear primitive. Bindings: " << to_string(bindings);
   gear.inner_radius = as_float(as_literal(bindings.find("inner_radius")->value));
-  LOG(INFO) << "outer_radius";
   gear.outer_radius = as_float(as_literal(bindings.find("outer_radius")->value));
-  LOG(INFO) << "width";
   gear.width = as_float(as_literal(bindings.find("width")->value));
-  LOG(INFO) << "teeth";
   gear.teeth = as_integer(as_literal(bindings.find("teeth")->value));
-  LOG(INFO) << "tooth_depth";
   gear.tooth_depth = as_float(as_literal(bindings.find("tooth_depth")->value));
-  LOG(INFO) << "angle_coefficient";
   gear.angle_coefficient = as_float(as_literal(bindings.find("angle_coefficient")->value));
-  LOG(INFO) << "phase";
   gear.phase = as_float(as_literal(bindings.find("phase")->value));
   return build_gear(gear);
 }

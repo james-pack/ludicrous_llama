@@ -56,7 +56,6 @@ std::string to_string(const Parameter::Set& parameters) {
 std::string to_string(const ParameterBinding& binding) { return binding.name + ": " + to_string(binding.value); }
 
 std::string to_string(const ParameterBinding::Set& bindings) {
-  using std::to_string;
   std::string result{"{"};
   bool need_comma{false};
   for (const auto& binding : bindings) {
