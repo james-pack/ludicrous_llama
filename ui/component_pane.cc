@@ -34,7 +34,6 @@ void render_light(const lighting::Light& light, const position::Position& positi
     glLightfv(GL_LIGHT0 + light.light_num, GL_DIFFUSE, light.diffuse.values);
     glLightfv(GL_LIGHT0 + light.light_num, GL_SPECULAR, light.specular.values);
   } else {
-    DLOG(INFO) << "light_num: " << light.light_num << " is disabled";
     glDisable(GL_LIGHT0 + light.light_num);
   }
 }
