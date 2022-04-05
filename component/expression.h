@@ -6,6 +6,7 @@
 
 #include "component/proto/component.pb.h"
 #include "component/value.h"
+#include "glog/logging.h"
 #include "serialization/serialize.h"
 
 namespace pack::component {
@@ -44,6 +45,8 @@ inline bool operator==(const Expression& lhs, const Expression& rhs) {
   }
 }
 
+std::string to_string(const Expression& expr);
+
 }  // namespace pack::component
 
 namespace pack {
@@ -67,8 +70,10 @@ template <>
 inline void from_proto(const component::proto::Expression& proto, component::Expression* expr) {
   using std::to_string;
   if (proto.has_expression()) {
+    LOG(INFO) << "Extracting expression string from expression";
     expr->emplace<0>(proto.expression());
   } else if (proto.has_literal()) {
+    LOG(INFO) << "Extracting literal value from expression";
     expr->emplace<1>(from_proto<component::Value, component::proto::Value>(proto.literal()));
   } else {
     throw std::invalid_argument("Unknown expression proto structure");

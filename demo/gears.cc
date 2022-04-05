@@ -1,3 +1,5 @@
+#include "component/component.h"
+#include "component/components.h"
 #include "demo/gears_ui.h"
 #include "entt/entity/registry.hpp"
 #include "gflags/gflags.h"
@@ -7,26 +9,17 @@
 #include "material/materials.h"
 #include "position/position.h"
 #include "proto/proto_utils.h"
+#include "render/render_node.h"
+#include "serialization/serialize.h"
 #include "ui/animator.h"
 #include "ui/application.h"
 #include "ui/camera.h"
 
-/*
-void populate_registry(entt::registry& registry, pack::ui::model::Gear gear, pack::position::Position position,
-                       pack::position::Orientation orientation) {
-  using namespace pack::ui;
-  using namespace pack::ui::model;
-
-  int draw_list_id = build_gear(gear);
-
-  const auto gear_id = registry.create();
-  registry.emplace<Render>(gear_id, construct_draw_list_renderer(draw_list_id));
-  registry.emplace<Animate>(gear_id, construct_gear_animator());
-  registry.emplace<Gear>(gear_id, std::move(gear));
-  registry.emplace<pack::position::Position>(gear_id, std::move(position));
-  registry.emplace<pack::position::Orientation>(gear_id, std::move(orientation));
+void populate_registry(entt::registry& registry, pack::component::Component component) {
+  const auto id = registry.create();
+  pack::component::Component& stored_component = registry.emplace<pack::component::Component>(id, std::move(component));
+  registry.emplace<pack::render::RenderNode>(id, stored_component);
 }
-*/
 
 void populate_registry(entt::registry& registry, pack::lighting::Light light, pack::position::Position position,
                        pack::position::Orientation orientation) {
@@ -70,15 +63,17 @@ int main(int argc, char* argv[]) {
 
   populate_registry(application.registry(), Camera{}, pack::position::Position{}, pack::position::Orientation{});
 
-  /*
   {
-    pack::component::Gears gears = load_text_proto<pack::component::Gears>("demo/trivial_demo_gears.pb.txt");
-    for (pack::component::Gear gear : gears.gear()) {
-      populate_registry(application.registry(), Gear::from_proto(gear), pack::position::Position{-3.1f, 4.2f, 0.f},
-                        pack::position::Orientation{});
+    pack::component::proto::Components proto =
+        load_text_proto<pack::component::proto::Components>("demo/trivial_demo_components.pb.txt");
+    LOG(INFO) << "Read components (proto form):\n" << proto.DebugString();
+    pack::component::Components components =
+        pack::from_proto<pack::component::Components, pack::component::proto::Components>(proto);
+    LOG(INFO) << "Read components:\n" << to_string(components);
+    for (pack::component::Component component : components) {
+      populate_registry(application.registry(), component);
     }
   }
-  */
 
   {
     pack::lighting::proto::LightingConfiguration lights =

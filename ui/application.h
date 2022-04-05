@@ -3,6 +3,7 @@
 #include <functional>
 #include <vector>
 
+#include "component/component_table.h"
 #include "entt/entity/registry.hpp"
 
 namespace pack::ui {
@@ -12,12 +13,18 @@ class Service;
 class Window;
 
 class Application final {
+ public:
+  using registry_type = entt::registry;
+  using entity_type = typename registry_type::entity_type;
+  using component_table_type = typename component::ComponentTable<entity_type>;
+
  private:
   static Application* instance_;
 
   std::vector<std::function<void()>> event_queue_{};
   std::vector<Service*> services_{};
-  entt::registry registry_{};
+  registry_type registry_{};
+  component_table_type component_table_{registry_};
   bool should_stop_{false};
 
   Animator* animator_{nullptr};
@@ -27,7 +34,8 @@ class Application final {
   Application();
   ~Application();
 
-  entt::registry& registry() { return registry_; };
+  registry_type& registry() { return registry_; };
+  component_table_type& component_table() { return component_table_; };
 
   void add_service(Service& service) { services_.push_back(&service); }
 
@@ -53,23 +61,38 @@ class Application final {
 
 class Service {
  private:
-  mutable entt::registry* registry_{nullptr};
+  mutable Application::registry_type* registry_{nullptr};
+  mutable Application::component_table_type* component_table_{nullptr};
 
  protected:
   Service() = default;
 
-  entt::registry& registry() {
+  auto& registry() {
     if (registry_ == nullptr) {
       registry_ = &Application::current().registry();
     }
     return *registry_;
   }
 
-  const entt::registry& registry() const {
+  const auto& registry() const {
     if (registry_ == nullptr) {
       registry_ = &Application::current().registry();
     }
     return *registry_;
+  }
+
+  auto& component_table() {
+    if (component_table_ == nullptr) {
+      component_table_ = &Application::current().component_table();
+    }
+    return *component_table_;
+  }
+
+  const auto& component_table() const {
+    if (component_table_ == nullptr) {
+      component_table_ = &Application::current().component_table();
+    }
+    return *component_table_;
   }
 
  public:

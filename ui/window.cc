@@ -56,6 +56,12 @@ void handle_key(GLFWwindow* window, int k, int s, int action, int mods) {
             orientation.orientation[2] += 5.0;
           }
           break;
+        case GLFW_KEY_W:
+          position.position[2] += 5.0;
+          break;
+        case GLFW_KEY_X:
+          position.position[2] -= 5.0;
+          break;
         default:
           return;
       }

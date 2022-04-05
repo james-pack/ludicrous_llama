@@ -1,0 +1,18 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+cc_library(
+    name = "render",
+    srcs = [
+        "render_node.cc",
+    ],
+    hdrs = [
+        "render_node.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//component",
+        "//position",
+        "//third_party/entt",
+        "//third_party/glog",
+    ],
+)

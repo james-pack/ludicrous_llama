@@ -69,6 +69,9 @@ struct ParameterBinding final {
   }
 };
 
+std::string to_string(const ParameterBinding& binding);
+std::string to_string(const ParameterBinding::Set& bindings);
+
 }  // namespace pack::component
 
 namespace pack {

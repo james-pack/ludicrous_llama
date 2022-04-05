@@ -5,6 +5,7 @@
 #include <variant>
 
 #include "component/proto/component.pb.h"
+#include "glog/logging.h"
 #include "serialization/serialize.h"
 
 namespace pack::component {
@@ -18,9 +19,12 @@ enum class Type : uint8_t {
   // Additional types to consider adding: SET, SET_MEMBER, POINT, DIRECTION, and LINE.
 };
 inline constexpr auto as_index(Type type) { return static_cast<std::underlying_type_t<Type>>(type); }
+std::string to_string(Type type);
 
 // The index of a type in the variant type list corresponds to the C++ type of the enum value in Type.
 using Value = std::variant<std::monostate, float, int64_t, std::string, std::string>;
+inline Type get_type(const Value& value) { return static_cast<Type>(value.index()); }
+
 inline float& as_float(Value& value) {
   if (value.index() != as_index(Type::FLOAT)) {
     value.emplace<as_index(Type::FLOAT)>();
@@ -56,8 +60,8 @@ inline const std::string& as_id(const Value& value) { return std::get<as_index(T
 inline bool operator==(const Value& lhs, const Value& rhs) {
   using std::to_string;
 
-  Type lhs_type = static_cast<Type>(lhs.index());
-  Type rhs_type = static_cast<Type>(rhs.index());
+  Type lhs_type = get_type(lhs);
+  Type rhs_type = get_type(rhs);
 
   // TODO(james): Modify to handle type promotion.
   if (lhs_type != rhs_type) {
@@ -80,6 +84,8 @@ inline bool operator==(const Value& lhs, const Value& rhs) {
       throw std::invalid_argument("Unknown Type '" + to_string(as_index(lhs_type)) + "'");
   }
 }
+
+std::string to_string(const Value& value);
 
 }  // namespace pack::component
 
@@ -112,7 +118,9 @@ inline void to_proto(const component::Value& value, component::proto::Value* pro
 template <>
 inline void from_proto(const component::proto::Value& proto, component::Value* value) {
   using std::to_string;
+  LOG(INFO) << "Value proto: " << proto.DebugString();
   component::Type result_type = static_cast<component::Type>(proto.type().type());
+  LOG(INFO) << "Extracting a value with type " << to_string(result_type);
   switch (result_type) {
     case component::Type::UNTYPED:
       value->emplace<component::as_index(component::Type::UNTYPED)>();

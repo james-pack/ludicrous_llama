@@ -146,4 +146,19 @@ Component* find_by_id(Components& components, std::string_view id) {
   return nullptr;
 }
 
+std::string to_string(const Components& components) {
+  using std::to_string;
+  std::string result{"{"};
+  bool need_comma{false};
+  for (const auto& component : components) {
+    if (need_comma) {
+      result += ",\n";
+    }
+    result += to_string(component);
+    need_comma = true;
+  }
+  result += "}";
+  return result;
+}
+
 }  // namespace pack::component

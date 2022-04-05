@@ -1,7 +1,5 @@
 #pragma once
 
-#include "entt/entity/registry.hpp"
-#include "glog/logging.h"
 #include "ui/application.h"
 #include "ui/layout.h"
 
@@ -9,25 +7,40 @@ namespace pack::ui {
 
 class Pane {
  private:
-  mutable entt::registry* registry_{nullptr};
+  mutable Application::registry_type* registry_{nullptr};
+  mutable Application::component_table_type* component_table_{nullptr};
 
   Layout* layout_{nullptr};
 
  protected:
   Pane() = default;
 
-  entt::registry& registry() {
+  auto& registry() {
     if (registry_ == nullptr) {
       registry_ = &Application::current().registry();
     }
     return *registry_;
   }
 
-  const entt::registry& registry() const {
+  const auto& registry() const {
     if (registry_ == nullptr) {
       registry_ = &Application::current().registry();
     }
     return *registry_;
+  }
+
+  auto& component_table() {
+    if (component_table_ == nullptr) {
+      component_table_ = &Application::current().component_table();
+    }
+    return *component_table_;
+  }
+
+  const auto& component_table() const {
+    if (component_table_ == nullptr) {
+      component_table_ = &Application::current().component_table();
+    }
+    return *component_table_;
   }
 
  public:

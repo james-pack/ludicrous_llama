@@ -9,6 +9,7 @@
 #include "component/primitive.h"
 #include "component/property.h"
 #include "component/proto/component.pb.h"
+#include "glog/logging.h"
 #include "guid/guid.h"
 #include "position/position.h"
 #include "serialization/serialize.h"
@@ -67,12 +68,14 @@ struct Component final {
   }
 };
 
+std::string to_string(const Component& component);
+
 }  // namespace pack::component
 
 namespace pack {
 
 template <>
-void to_proto(const component::Subcomponent& subcomponent, component::proto::Subcomponent* proto) {
+inline void to_proto(const component::Subcomponent& subcomponent, component::proto::Subcomponent* proto) {
   proto->set_child_id(subcomponent.id.as_string());
 
   to_proto(subcomponent.position, proto->mutable_position());
@@ -96,7 +99,7 @@ inline void from_proto(const component::proto::Subcomponent& proto, component::S
 }
 
 template <>
-void to_proto(const component::Component& component, component::proto::Component* proto) {
+inline void to_proto(const component::Component& component, component::proto::Component* proto) {
   proto->set_id(component.id.as_string());
   proto->set_name(component.name);
 
@@ -134,7 +137,9 @@ inline void from_proto(const component::proto::Component& proto, component::Comp
   }
 
   for (const auto& binding : proto.bindings()) {
+    LOG(INFO) << "Processing binding '" << binding.name() << "'";
     component->bindings.insert(from_proto<component::ParameterBinding, component::proto::ParameterBinding>(binding));
+    LOG(INFO) << "Bindings at this point: " << to_string(component->bindings);
   }
 
   for (const auto& child : proto.children()) {

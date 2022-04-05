@@ -25,6 +25,12 @@ cc_library(
     ] + PLATFORM_DEPS,
 )
 
+cc_binary(
+    name = "create_guid",
+    srcs = ["create_guid.cc"],
+    deps = [":guid"],
+)
+
 cc_library(
     name = "guid_header",
     hdrs = [

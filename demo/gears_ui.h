@@ -13,8 +13,8 @@ class ApplicationPane final : public ui::Pane {
   ui::CompassLayout layout_{};
   ui::ComponentPane component_pane_{};
   // ui::GearEditPane gui_pane_{};
-  // ui::LightEditPane gui_pane_{};
-  ui::DemoPane gui_pane_{};
+  ui::LightEditPane gui_pane_{};
+  // ui::DemoPane gui_pane_{};
 
  public:
   ApplicationPane() {

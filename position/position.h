@@ -16,6 +16,12 @@ struct Orientation final {
            orientation[1] == rhs.orientation[1] &&  //
            orientation[2] == rhs.orientation[2];
   }
+
+  bool is_nonzero() const {
+    return orientation[0] != 0.f ||  //
+           orientation[1] != 0.f ||  //
+           orientation[2] != 0.f;
+  }
 };
 
 std::string to_string(const Orientation& orientation);
@@ -29,6 +35,13 @@ struct Position final {
            position[1] == rhs.position[1] &&  //
            position[2] == rhs.position[2] &&  //
            position[3] == rhs.position[3];
+  }
+
+  bool is_nonzero() const {
+    return position[0] != 0.f ||  //
+           position[1] != 0.f ||  //
+           position[2] != 0.f ||  //
+           position[3] != 0.f;
   }
 };
 

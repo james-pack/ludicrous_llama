@@ -4,14 +4,18 @@ cc_library(
     name = "component",
     srcs = [
         "box.cc",
+        "component.cc",
         "components.cc",
+        "expression.cc",
         "gear.cc",
+        "parameter.cc",
         "primitive.cc",
-        "render.cc",
+        "value.cc",
     ],
     hdrs = [
         "box.h",
         "component.h",
+        "component_table.h",
         "components.h",
         "expression.h",
         "gear.h",
@@ -19,7 +23,6 @@ cc_library(
         "parameter.h",
         "primitive.h",
         "property.h",
-        "render.h",
         "value.h",
     ],
     visibility = ["//visibility:public"],
@@ -88,6 +91,17 @@ cc_test(
         "//component/proto",
         "//proto",
         "//testing",
+        "//third_party/gtest",
+    ],
+)
+
+cc_test(
+    name = "component_table_test",
+    srcs = ["component_table_test.cc"],
+    deps = [
+        ":component",
+        "//guid",
+        "//third_party/entt",
         "//third_party/gtest",
     ],
 )
