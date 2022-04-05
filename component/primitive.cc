@@ -12,9 +12,10 @@ namespace pack::component {
 
 namespace {
 
-Primitive::GeneratorFunc construct_draw_list_generator(std::function<GLint(const ParameterBinding::Set&)> builder) {
-  return [builder](const ParameterBinding::Set& bindings) {
-    GLint draw_list_id = builder(bindings);
+Primitive::GeneratorFunc construct_draw_list_generator(
+    std::function<GLint(const ParameterBinding::Set&, const material::Material&)> builder) {
+  return [builder](const ParameterBinding::Set& bindings, const material::Material& material) {
+    GLint draw_list_id = builder(bindings, material);
     return [draw_list_id]() { glCallList(draw_list_id); };
   };
 }

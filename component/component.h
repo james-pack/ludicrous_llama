@@ -11,6 +11,7 @@
 #include "component/proto/component.pb.h"
 #include "glog/logging.h"
 #include "guid/guid.h"
+#include "material/material.h"
 #include "position/position.h"
 #include "serialization/serialize.h"
 
@@ -54,6 +55,7 @@ struct Component final {
 
   const Primitive* primitive{nullptr};
   ParameterBinding::Set bindings{};
+  material::Material material{};
 
   Subcomponent::Set children{};
 
@@ -116,6 +118,8 @@ inline void to_proto(const component::Component& component, component::proto::Co
     to_proto(binding, proto->add_bindings());
   }
 
+  to_proto(component.material, proto->mutable_material());
+
   for (const auto& child : component.children) {
     to_proto(child, proto->add_children());
   }
@@ -142,6 +146,8 @@ inline void from_proto(const component::proto::Component& proto, component::Comp
   for (const auto& binding : proto.bindings()) {
     component->bindings.insert(from_proto<component::ParameterBinding, component::proto::ParameterBinding>(binding));
   }
+
+  from_proto(proto.material(), &component->material);
 
   for (const auto& child : proto.children()) {
     component->children.insert(from_proto<component::Subcomponent, component::proto::Subcomponent>(child));

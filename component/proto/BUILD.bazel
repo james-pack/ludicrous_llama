@@ -18,6 +18,7 @@ proto_library(
     srcs = ["component.proto"],
     visibility = ["//visibility:public"],
     deps = [
+        "//material/proto:material_proto",
         "//position/proto:position_proto",
     ],
 )

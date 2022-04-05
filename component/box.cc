@@ -52,11 +52,12 @@ GLint build_box(const Box& box) {
   return id;
 }
 
-GLint build_box(const ParameterBinding::Set& bindings) {
+GLint build_box(const ParameterBinding::Set& bindings, const material::Material& material) {
   Box box{};
   box.width = as_float(as_literal(bindings.find("width")->value));
   box.height = as_float(as_literal(bindings.find("height")->value));
   box.depth = as_float(as_literal(bindings.find("depth")->value));
+  box.material = material;
   return build_box(box);
 }
 

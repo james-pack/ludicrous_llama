@@ -15,23 +15,6 @@
 #include "third_party/glfw/glfw.h"
 
 namespace pack::component {
-material::Material random_color() {
-  material::Material result{};
-  result.ambient.values[0] = std::numeric_limits<float>::max() / 2.f;
-  result.ambient.values[1] = std::numeric_limits<float>::max() / 2.f;
-  result.ambient.values[2] = std::numeric_limits<float>::max() / 2.f;
-  result.ambient.values[3] = std::numeric_limits<float>::max() / 2.f;
-  result.diffuse.values[0] = std::numeric_limits<float>::max() / 2.f;
-  result.diffuse.values[1] = std::numeric_limits<float>::max() / 2.f;
-  result.diffuse.values[2] = std::numeric_limits<float>::max() / 2.f;
-  result.diffuse.values[3] = std::numeric_limits<float>::max() / 2.f;
-  result.specular.values[0] = std::numeric_limits<float>::max() / 2.f;
-  result.specular.values[1] = std::numeric_limits<float>::max() / 2.f;
-  result.specular.values[2] = std::numeric_limits<float>::max() / 2.f;
-  result.specular.values[3] = std::numeric_limits<float>::max() / 2.f;
-  result.shininess = 128.f;
-  return result;
-}
 
 struct Gear final {
   float inner_radius{};
@@ -42,7 +25,7 @@ struct Gear final {
   float angle_coefficient{};
   float phase{};
 
-  material::Material material{random_color()};
+  material::Material material{};
 };
 
 GLint build_gear(const Gear& gear) {
@@ -172,7 +155,7 @@ GLint build_gear(const Gear& gear) {
   return id;
 }
 
-GLint build_gear(const ParameterBinding::Set& bindings) {
+GLint build_gear(const ParameterBinding::Set& bindings, const material::Material& material) {
   Gear gear{};
   DLOG(INFO) << "Building gear primitive. Bindings: " << to_string(bindings);
   gear.inner_radius = as_float(as_literal(bindings.find("inner_radius")->value));
@@ -182,6 +165,7 @@ GLint build_gear(const ParameterBinding::Set& bindings) {
   gear.tooth_depth = as_float(as_literal(bindings.find("tooth_depth")->value));
   gear.angle_coefficient = as_float(as_literal(bindings.find("angle_coefficient")->value));
   gear.phase = as_float(as_literal(bindings.find("phase")->value));
+  gear.material = material;
   return build_gear(gear);
 }
 

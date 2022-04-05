@@ -50,16 +50,19 @@ std::string to_string(const Component& component) {
   }
   result += ", ";
 
-  result += to_string(component.bindings);
+  result += "bindings: " + to_string(component.bindings);
   result += ", ";
 
-  result += to_string(component.children);
+  result += "material: " + to_string(component.material);
   result += ", ";
 
-  result += to_string(component.parameters);
+  result += "children: " + to_string(component.children);
   result += ", ";
 
-  result += to_string(component.properties);
+  result += "parameters: " + to_string(component.parameters);
+  result += ", ";
+
+  result += "properties: " + to_string(component.properties);
 
   return result;
 }

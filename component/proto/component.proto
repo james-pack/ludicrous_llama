@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "position/proto/position.proto";
+import "material/proto/material.proto";
 
 package pack.component.proto;
 
@@ -137,12 +138,13 @@ message Component {
 
   string primitive_name = 4;
   repeated ParameterBinding bindings = 5;
+  material.proto.Material material = 6;
 
-  repeated Property properties = 6;
+  repeated Property properties = 7;
 
-  repeated Parameter parameters = 7;
+  repeated Parameter parameters = 8;
 
-  repeated Constraint constraints = 8;
+  repeated Constraint constraints = 9;
 }
 
 message Components {

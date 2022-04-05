@@ -26,6 +26,8 @@ struct Material final {
   }
 };
 
+std::string to_string(const Material& material);
+
 }  // namespace pack::material
 
 namespace pack {

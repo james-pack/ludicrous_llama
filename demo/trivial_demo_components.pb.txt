@@ -79,6 +79,30 @@ components {
       }
     }
   }
+  material {
+    ambient {
+      float_values {
+        red: 0.8
+        green: 0.1
+        alpha: 1
+      }
+    }
+    diffuse {
+      float_values {
+        red: 0.8
+        green: 0.1
+        alpha: 1
+      }
+    }
+    specular {
+      float_values {
+        green: 0.9
+        blue: 0.25
+        alpha: 1
+      }
+    }
+    shininess: 75
+  }
 }
 components {
   id: "c2229c04-d934-46da-8f46-49e4e52dbe2a"
@@ -161,6 +185,30 @@ components {
       }
     }
   }
+  material {
+    ambient {
+      float_values {
+        green: 0.8
+        blue: 0.2
+        alpha: 1
+      }
+    }
+    diffuse {
+      float_values {
+        green: 0.8
+        blue: 0.2
+        alpha: 1
+      }
+    }
+    specular {
+      float_values {
+        green: 0.9
+        blue: 0.25
+        alpha: 1
+      }
+    }
+    shininess: 75
+  }
 }
 components {
   id: "97624619-4d04-43e0-bdda-698a2eec330a"
@@ -242,5 +290,31 @@ components {
         float_value: -25
       }
     }
+  }
+  material {
+    ambient {
+      float_values {
+        red: 0.2
+        green: 0.2
+        blue: 1
+        alpha: 1
+      }
+    }
+    diffuse {
+      float_values {
+        red: 0.2
+        green: 0.2
+        blue: 1
+        alpha: 1
+      }
+    }
+    specular {
+      float_values {
+        green: 0.4
+        blue: 0.9
+        alpha: 1
+      }
+    }
+    shininess: 80
   }
 }

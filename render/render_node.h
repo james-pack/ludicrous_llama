@@ -15,9 +15,14 @@ class RenderNode final {
   // Cached rendering details.
   // The set of previous parameter bindings. If these change, we need to regenerate the draw function.
   mutable component::ParameterBinding::Set previous_bindings_{};
+
+  // The material used to render the component. Again, if this changes, we need to regenerate the draw function.
+  mutable material::Material previous_material_{};
+
   // Draw function. Calling this renders the component. Note that the draw function may contain cached information or
   // may manage objects on the GPU (VBO, PBO, draw lists, etc.)
   mutable component::DrawFunc draw_func_{};
+
   // Allows for the cached objects to be marked as valid or invalid. If they are invalid, they need to be recalculated.
   mutable bool is_valid_{false};
 

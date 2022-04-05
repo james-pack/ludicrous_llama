@@ -8,6 +8,7 @@
 
 #include "component/ordering.h"
 #include "component/parameter.h"
+#include "material/material.h"
 
 namespace pack::component {
 
@@ -26,7 +27,7 @@ class Primitive final {
  public:
   using Set = std::set<Primitive, OrderByName<Primitive>>;
 
-  using GeneratorFunc = std::function<DrawFunc(const ParameterBinding::Set&)>;
+  using GeneratorFunc = std::function<DrawFunc(const ParameterBinding::Set&, const material::Material&)>;
 
  private:
   static const Set primitives_;
@@ -55,7 +56,9 @@ class Primitive final {
     return true;
   }
 
-  DrawFunc generate(const ParameterBinding::Set& bindings) const { return generator_(bindings); }
+  DrawFunc generate(const ParameterBinding::Set& bindings, const material::Material& material) const {
+    return generator_(bindings, material);
+  }
 
   static const Set& primitives() { return primitives_; }
   static const Primitive* by_name(std::string_view name) {
