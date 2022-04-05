@@ -60,6 +60,8 @@ class Guid final {
 inline bool operator==(std::string_view lhs, const Guid &rhs) { return rhs == lhs; }
 inline bool operator!=(std::string_view lhs, const Guid &rhs) { return rhs != lhs; }
 
+std::string to_string(const Guid &guid);
+
 struct GuidHash {
   size_t operator()(const Guid &guid) const {
     using BytesT = std::invoke_result_t<decltype (&Guid::bytes)()>;

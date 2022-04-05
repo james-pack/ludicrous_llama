@@ -72,7 +72,7 @@ class ComponentTable final {
     if (result != nullptr) {
       return *result;
     }
-    throw std::logic_error("ComponentTable does not contain an entity with Guid '" + guid.as_string() + "'");
+    throw std::logic_error("ComponentTable does not contain an entity with Guid '" + to_string(guid) + "'");
   }
 
   template <typename T>
@@ -81,7 +81,7 @@ class ComponentTable final {
     if (result != nullptr) {
       return *result;
     }
-    throw std::logic_error("ComponentTable does not contain an entity with Guid '" + guid.as_string() + "'");
+    throw std::logic_error("ComponentTable does not contain an entity with Guid '" + to_string(guid) + "'");
   }
 };  // namespace pack::component
 

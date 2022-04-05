@@ -6,7 +6,7 @@ namespace pack::component {
 
 std::string to_string(const Subcomponent& subcomponent) {
   std::string result{};
-  result += "id: " + subcomponent.id.as_string();
+  result += "id: " + to_string(subcomponent.id);
   result += ", ";
 
   result += "position: " + to_string(subcomponent.position);
@@ -36,7 +36,7 @@ std::string to_string(const Subcomponent::Set& subcomponents) {
 
 std::string to_string(const Component& component) {
   std::string result{};
-  result += "id: " + component.id.as_string();
+  result += "id: " + to_string(component.id);
   result += ", ";
 
   result += "name: '" + component.name + "'";

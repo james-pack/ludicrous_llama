@@ -37,6 +37,8 @@ std::string Guid::as_string() const {
   return result;
 }
 
+std::string to_string(const Guid& guid) { return guid.as_string(); }
+
 unsigned char hex_digit_to_char(char digit) {
   // 0-9
   if (digit > 47 && digit < 58) {
