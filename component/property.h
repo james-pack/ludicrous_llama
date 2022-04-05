@@ -22,6 +22,9 @@ struct Property final {
   }
 };
 
+std::string to_string(const Property& property);
+std::string to_string(const Property::Set& properties);
+
 }  // namespace pack::component
 
 namespace pack {

@@ -10,6 +10,7 @@ cc_library(
         "gear.cc",
         "parameter.cc",
         "primitive.cc",
+        "property.cc",
         "value.cc",
     ],
     hdrs = [

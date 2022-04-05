@@ -19,6 +19,8 @@ struct Precision final {
   bool operator==(const Precision& rhs) const { return num_decimal_places == rhs.num_decimal_places; }
 };
 
+std::string to_string(const Precision& precision);
+
 struct ValueDomain final {
   Type type{};
 
@@ -37,6 +39,8 @@ struct ValueDomain final {
   }
 };
 
+std::string to_string(const ValueDomain& domain);
+
 // A Parameter is a value provided to a primitive, component, process, etc. that allows for variable behavior. It is
 // similar to a parameter to a function.
 struct Parameter final {
@@ -53,6 +57,9 @@ struct Parameter final {
            default_value == rhs.default_value;
   }
 };
+
+std::string to_string(const Parameter& parameter);
+std::string to_string(const Parameter::Set& parameters);
 
 struct ParameterBinding final {
   using Set = std::set<ParameterBinding, OrderByNameField<ParameterBinding>>;

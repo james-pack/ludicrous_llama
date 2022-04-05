@@ -42,6 +42,9 @@ struct Subcomponent final {
   }
 };
 
+std::string to_string(const Subcomponent& subcomponent);
+std::string to_string(const Subcomponent::Set& subcomponents);
+
 struct Component final {
   using Set = std::unordered_set<Component, HashByIdField<Component, guid::GuidHash>, CompareByIdField<Component>>;
 
