@@ -2,15 +2,11 @@
 
 #include <string>
 
-#include "material/colors.h"
-#include "material/proto/color.pb.h"
-#include "serialization/serialize.h"
-
 namespace pack::material {
 
 struct Color final {
-  // The color is packed as four 32-bit signed integers. The exact encoding is currently platform-dependent. This type
-  // matches the memory layout that OpenGL wants for its colors in its glMaterialiv() -- int32[4]. That function, and
+  // The color is packed as four 32-bit float values. The exact encoding is currently platform-dependent. This type
+  // matches the memory layout that OpenGL wants for its colors in glMaterialfv(). That function, and
   // other material creation functions, only take colors by reference; this message layout is designed to own the
   // memory for the color in order to make it easier to create materials.
   float values[4]{};
@@ -26,17 +22,3 @@ struct Color final {
 std::string to_string(const Color& color);
 
 }  // namespace pack::material
-
-namespace pack {
-
-template <>
-inline void to_proto(const material::Color& color, material::proto::Rgba* proto) {
-  material::Colors::from_array(color.values, proto);
-}
-
-template <>
-inline void from_proto(const material::proto::Rgba& proto, material::Color* color) {
-  material::Colors::to_array(proto, color->values);
-}
-
-}  // namespace pack

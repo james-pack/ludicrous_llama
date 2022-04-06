@@ -4,40 +4,11 @@ cc_library(
     name = "material",
     srcs = [
         "color.cc",
-        "colors.cc",
         "material.cc",
     ],
     hdrs = [
         "color.h",
-        "colors.h",
         "material.h",
-        "materials.h",
     ],
     visibility = ["//visibility:public"],
-    deps = [
-        "//material/proto",
-        "//serialization",
-    ],
-)
-
-cc_test(
-    name = "colors_test",
-    srcs = ["colors_test.cc"],
-    deps = [
-        ":material",
-        "//third_party/gtest",
-    ],
-)
-
-cc_test(
-    name = "serialization_test",
-    srcs = ["serialization_test.cc"],
-    deps = [
-        ":material",
-        "//material/proto",
-        "//proto",
-        "//serialization",
-        "//testing",
-        "//third_party/gtest",
-    ],
 )

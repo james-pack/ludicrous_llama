@@ -1,0 +1,5 @@
+// This file exists to force various build targets to use the same proto library that is generated from
+// cc_proto_library(). The cc_proto_library() rule, and possibly other language-specific rules, depend on the existence
+// of at least one proto file. Note that a completely empty file would be perfectly valid, but the syntax line (and this
+// comment) give a bit more context.
+syntax = "proto3";

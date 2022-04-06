@@ -26,6 +26,7 @@ cc_binary(
     ],
     deps = [
         "//component",
+        "//component/proto",
         "//lighting",
         "//lighting/proto",
         "//material",

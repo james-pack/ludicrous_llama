@@ -2,10 +2,19 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 
 cc_library(
     name = "proto",
+    srcs = [
+        "colors.cc",
+    ],
+    hdrs = [
+        "colors.h",
+        "proto_serialization.h",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":color_cc_proto",
         ":material_cc_proto",
+        "//material",
+        "//serialization",
     ],
 )
 
@@ -31,5 +40,27 @@ proto_library(
     visibility = ["//visibility:public"],
     deps = [
         ":color_proto",
+    ],
+)
+
+cc_test(
+    name = "serialization_test",
+    srcs = ["serialization_test.cc"],
+    deps = [
+        ":proto",
+        "//material",
+        "//proto",
+        "//serialization",
+        "//testing",
+        "//third_party/gtest",
+    ],
+)
+
+cc_test(
+    name = "colors_test",
+    srcs = ["colors_test.cc"],
+    deps = [
+        ":proto",
+        "//third_party/gtest",
     ],
 )

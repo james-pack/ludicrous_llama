@@ -1,12 +1,12 @@
 #include "component/component.h"
 #include "component/components.h"
+#include "component/proto/proto_serialization.h"
 #include "demo/gears_ui.h"
 #include "entt/entity/registry.hpp"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 #include "lighting/light.h"
 #include "lighting/proto/light.pb.h"
-#include "material/materials.h"
 #include "position/position.h"
 #include "proto/proto_utils.h"
 #include "render/render_node.h"
@@ -41,7 +41,6 @@ void populate_registry(entt::registry& registry, pack::ui::Camera camera, pack::
 
 int main(int argc, char* argv[]) {
   using namespace pack::demo;
-  using namespace pack::material;
   using namespace pack::proto;
   using namespace pack::ui;
 

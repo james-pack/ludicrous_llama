@@ -1,9 +1,19 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 
+cc_proto_library(
+    name = "protobuf",
+    visibility = ["//visibility:public"],
+    deps = [":empty_proto"],
+)
+
+proto_library(
+    name = "empty_proto",
+    srcs = ["empty.proto"],
+)
+
 cc_test(
     name = "protobuf_test",
     srcs = ["protobuf_test.cc"],
-    visibility = ["//visibility:public"],
     deps = [
         ":hello_cc_proto",
         "//third_party/gtest",

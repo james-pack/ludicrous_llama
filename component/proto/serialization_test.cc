@@ -4,6 +4,7 @@
 #include "component/parameter.h"
 #include "component/property.h"
 #include "component/proto/component.pb.h"
+#include "component/proto/proto_serialization.h"
 #include "component/value.h"
 #include "gtest/gtest.h"
 #include "proto/proto_utils.h"

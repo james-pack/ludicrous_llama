@@ -83,6 +83,6 @@ class ComponentTable final {
     }
     throw std::logic_error("ComponentTable does not contain an entity with Guid '" + to_string(guid) + "'");
   }
-};  // namespace pack::component
+};
 
 }  // namespace pack::component

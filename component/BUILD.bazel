@@ -28,11 +28,9 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//component/proto",
         "//guid",
         "//material",
         "//position",
-        "//serialization",
         "//third_party/entt",
         "//third_party/glad",
         "//third_party/glfw",
@@ -80,18 +78,6 @@ cc_test(
     srcs = ["value_test.cc"],
     deps = [
         ":component",
-        "//third_party/gtest",
-    ],
-)
-
-cc_test(
-    name = "serialization_test",
-    srcs = ["serialization_test.cc"],
-    deps = [
-        ":component",
-        "//component/proto",
-        "//proto",
-        "//testing",
         "//third_party/gtest",
     ],
 )

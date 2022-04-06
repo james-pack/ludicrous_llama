@@ -13,6 +13,8 @@ cc_library(
         "//lighting/proto",
         "//material",
         "//position",
+        "//material/proto",
+        "//position/proto",
         "//proto",
         "//serialization",
     ],

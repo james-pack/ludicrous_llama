@@ -9,20 +9,4 @@ cc_library(
         "position.h",
     ],
     visibility = ["//visibility:public"],
-    deps = [
-        "//position/proto",
-        "//serialization",
-        "//third_party/glog",
-    ],
-)
-
-cc_test(
-    name = "serialization_test",
-    srcs = ["serialization_test.cc"],
-    deps = [
-        ":position",
-        "//position/proto",
-        "//serialization",
-        "//third_party/gtest",
-    ],
 )

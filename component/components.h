@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "component/component.h"
-#include "serialization/serialize.h"
 
 namespace pack::component {
 
@@ -59,21 +58,3 @@ Component* find_by_id(Components& components, std::string_view id);
 std::string to_string(const Components& components);
 
 }  // namespace pack::component
-
-namespace pack {
-
-template <>
-inline void to_proto(const component::Components& components, component::proto::Components* proto) {
-  for (const auto& component : components) {
-    to_proto(component, proto->add_components());
-  }
-}
-
-template <>
-inline void from_proto(const component::proto::Components& proto, component::Components* components) {
-  for (const auto& component : proto.components()) {
-    components->insert(from_proto<component::Component, component::proto::Component>(component));
-  }
-}
-
-}  // namespace pack

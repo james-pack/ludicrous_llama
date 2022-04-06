@@ -10,22 +10,28 @@
  */
 #pragma once
 
+#include "google/protobuf/message_lite.h"
+
 namespace pack {
 
-template <typename T, typename MessageT>
+template <typename T, typename MessageT,
+          typename = std::enable_if_t<std::is_base_of_v<google::protobuf::MessageLite, MessageT>>>
 void to_proto(const T& t, MessageT* msg);
 
-template <typename T, typename MessageT>
+template <typename T, typename MessageT,
+          typename = std::enable_if_t<std::is_base_of_v<google::protobuf::MessageLite, MessageT>>>
 MessageT to_proto(const T& t) {
   MessageT result{};
   to_proto(t, &result);
   return result;
 }
 
-template <typename T, typename MessageT>
+template <typename T, typename MessageT,
+          typename = std::enable_if_t<std::is_base_of_v<google::protobuf::MessageLite, MessageT>>>
 void from_proto(const MessageT& msg, T* t);
 
-template <typename T, typename MessageT>
+template <typename T, typename MessageT,
+          typename = std::enable_if_t<std::is_base_of_v<google::protobuf::MessageLite, MessageT>>>
 T from_proto(const MessageT& msg) {
   T result{};
   from_proto(msg, &result);

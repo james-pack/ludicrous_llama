@@ -3,11 +3,12 @@
 #include <filesystem>
 #include <fstream>
 
+#include "google/protobuf/message_lite.h"
 #include "google/protobuf/text_format.h"
 
 namespace pack::proto {
 
-template <typename MessageT>
+template <typename MessageT, typename = std::enable_if_t<std::is_base_of_v<google::protobuf::MessageLite, MessageT>>>
 MessageT load_proto(const std::filesystem::path& filename) {
   MessageT result{};
   std::ifstream file{filename};
@@ -15,13 +16,13 @@ MessageT load_proto(const std::filesystem::path& filename) {
   return result;
 }
 
-template <typename MessageT>
+template <typename MessageT, typename = std::enable_if_t<std::is_base_of_v<google::protobuf::MessageLite, MessageT>>>
 void save_proto(const std::filesystem::path& filename, const MessageT& msg) {
   std::ofstream file{filename};
   msg.SerializeToOstream(&file);
 }
 
-template <typename MessageT>
+template <typename MessageT, typename = std::enable_if_t<std::is_base_of_v<google::protobuf::MessageLite, MessageT>>>
 MessageT load_text_proto(const std::filesystem::path& filename) {
   std::ifstream file(filename, std::ios::binary | std::ios::ate);
   const auto size = file.tellg();
@@ -33,7 +34,7 @@ MessageT load_text_proto(const std::filesystem::path& filename) {
   return result;
 }
 
-template <typename MessageT>
+template <typename MessageT, typename = std::enable_if_t<std::is_base_of_v<google::protobuf::MessageLite, MessageT>>>
 void save_text_proto(const std::filesystem::path& filename, const MessageT& msg) {
   std::string buffer{};
   google::protobuf::TextFormat::PrintToString(msg, &buffer);

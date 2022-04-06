@@ -2,9 +2,14 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 
 cc_library(
     name = "proto",
+    hdrs = [
+        "proto_serialization.h",
+    ],
     visibility = ["//visibility:public"],
     deps = [
         ":position_cc_proto",
+        "//position",
+        "//serialization",
     ],
 )
 
@@ -17,4 +22,15 @@ proto_library(
     name = "position_proto",
     srcs = ["position.proto"],
     visibility = ["//visibility:public"],
+)
+
+cc_test(
+    name = "serialization_test",
+    srcs = ["serialization_test.cc"],
+    deps = [
+        ":proto",
+        "//position",
+        "//serialization",
+        "//third_party/gtest",
+    ],
 )

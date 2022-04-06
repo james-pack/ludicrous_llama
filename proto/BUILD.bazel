@@ -4,6 +4,9 @@ cc_library(
         "proto_utils.h",
     ],
     visibility = ["//visibility:public"],
+    deps = [
+        "//third_party/protobuf",
+    ],
 )
 
 cc_test(

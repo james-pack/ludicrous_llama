@@ -4,7 +4,9 @@
 
 #include "lighting/proto/light.pb.h"
 #include "material/color.h"
+#include "material/proto/proto_serialization.h"
 #include "position/position.h"
+#include "position/proto/proto_serialization.h"
 #include "serialization/serialize.h"
 
 namespace pack::lighting {
