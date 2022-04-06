@@ -141,7 +141,7 @@ TEST(CompassLayoutTest, EastWestTwoRegionRelativeSizeGetsSpecifiedWidthHeight) {
   using std::to_string;
   constexpr int SIZE{100};
   constexpr float SPECIFIED_SIZE{0.5f};
-  constexpr int EXPECTED_SIZE{std::lround(SIZE * SPECIFIED_SIZE)};
+  constexpr int EXPECTED_SIZE{(int)(SIZE * SPECIFIED_SIZE)};
   DemoPane east_pane{};
   DemoPane west_pane{};
   CompassLayout layout{};
@@ -172,7 +172,7 @@ TEST(CompassLayoutTest, NorthSouthTwoRegionRelativeSizeGetsSpecifiedWidthHeight)
   using std::to_string;
   constexpr int SIZE{100};
   constexpr float SPECIFIED_SIZE{0.5f};
-  constexpr int EXPECTED_SIZE{std::lround(SIZE * SPECIFIED_SIZE)};
+  constexpr int EXPECTED_SIZE{int(SIZE * SPECIFIED_SIZE)};
   DemoPane north_pane{};
   DemoPane south_pane{};
   CompassLayout layout{};
@@ -204,8 +204,8 @@ TEST(CompassLayoutTest, EastWestThreeRegionRelativeSizeGetsSpecifiedWidthHeight)
   constexpr int SIZE{100};
   constexpr float SPECIFIED_SIZE{0.2f};
   ASSERT_LT(2.f * SPECIFIED_SIZE, 1.f) << "Test requires the total size for the non-center region be less than 1.";
-  constexpr int EXPECTED_SIZE{std::lround(SIZE * SPECIFIED_SIZE)};
-  constexpr int EXPECTED_CENTER_SIZE{std::lround(SIZE * (1.f - 2.f * SPECIFIED_SIZE))};
+  constexpr int EXPECTED_SIZE{(int)(SIZE * SPECIFIED_SIZE)};
+  constexpr int EXPECTED_CENTER_SIZE{(int)(SIZE * (1.f - 2.f * SPECIFIED_SIZE))};
   DemoPane east_pane{};
   DemoPane west_pane{};
   DemoPane center_pane{};
@@ -246,8 +246,8 @@ TEST(CompassLayoutTest, NorthSouthThreeRegionRelativeSizeGetsSpecifiedWidthHeigh
   constexpr int SIZE{100};
   constexpr float SPECIFIED_SIZE{0.2f};
   ASSERT_LT(2.f * SPECIFIED_SIZE, 1.f) << "Test requires the total size for the non-center region be less than 1.";
-  constexpr int EXPECTED_SIZE{std::lround(SIZE * SPECIFIED_SIZE)};
-  constexpr int EXPECTED_CENTER_SIZE{std::lround(SIZE * (1.f - 2.f * SPECIFIED_SIZE))};
+  constexpr int EXPECTED_SIZE{(int)(SIZE * SPECIFIED_SIZE)};
+  constexpr int EXPECTED_CENTER_SIZE{(int)(SIZE * (1.f - 2.f * SPECIFIED_SIZE))};
   DemoPane north_pane{};
   DemoPane south_pane{};
   DemoPane center_pane{};

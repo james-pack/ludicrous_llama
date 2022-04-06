@@ -1,9 +1,9 @@
 #include "language/expression_language.h"
 
 #include <memory>
+#include <sstream>
 #include <string>
 #include <string_view>
-#include <strstream>
 
 #include "tao/pegtl.hpp"
 #include "tao/pegtl/contrib/analyze.hpp"
@@ -15,9 +15,8 @@ namespace pack::language {
 using namespace tao::pegtl;
 
 std::string to_string(const parse_tree::node& node) {
-  std::ostrstream stream{};
+  std::stringstream stream{};
   parse_tree::print_dot(stream, node);
-  stream << std::ends;
   return stream.str();
 }
 
