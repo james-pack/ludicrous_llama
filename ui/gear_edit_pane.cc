@@ -14,7 +14,13 @@ namespace pack::ui {
 bool render_parameter(component::ParameterBinding& binding) {
   component::Value& value = component::as_literal(binding.value);
   if (component::get_type(value) == component::Type::FLOAT) {
+    // TODO(james): Change these to get the parameters of the ValueDomain from the Parameter.
     return ImGui::SliderFloat(binding.name.c_str(), &component::as_float(value), 0.f, 25.f, "%.2f");
+  } else if (component::get_type(value) == component::Type::INTEGER) {
+    // TODO(james): Change these to get the parameters of the ValueDomain from the Parameter.
+    const int64_t min{2};
+    const int64_t max{250};
+    return ImGui::SliderScalar(binding.name.c_str(), ImGuiDataType_S64, &component::as_integer(value), &min, &max);
   } else {
     return false;
   }
