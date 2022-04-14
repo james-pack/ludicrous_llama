@@ -43,30 +43,32 @@ void GearEditPane::render() {
     auto& reg{registry()};
     auto models = reg.view<component::Subcomponent>();
     models.each([&reg](auto entity, component::Subcomponent& component) {
-      // bool position_was_changed{false};
       bool component_was_changed{false};
       // ImGui::PushID();
-      // TODO(james): Display the name of the component or primitive, instead of the fixed string "Component".
-      const char* name = "Component";
+      // TODO(james): Display the name of the component, instead of the fixed string "Component".
+      const char* const GENERIC_COMPONENT_NAME = "Component";
+      const char* name = GENERIC_COMPONENT_NAME;
       if (!component.name.empty()) {
-	name = component.name.c_str();
+        name = component.name.c_str();
+      } else if (component.type == component::Subcomponent::Type::PRIMITIVE) {
+        name = component.primitive->name().data();
       }
       if (ImGui::TreeNodeEx(&component, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Bullet, "%s", name)) {
         for (const auto& const_binding : component.bindings) {
           component::ParameterBinding& binding{const_cast<component::ParameterBinding&>(const_binding)};
           component_was_changed = render_parameter(binding) || component_was_changed;
         }
-        // position_was_changed =
-        //     ImGui::SliderFloat3("Position", position.position, -50.f, 50.f, "%.2f") || position_was_changed;
+        component_was_changed =
+            ImGui::SliderFloat3("Position", component.position.position, -50.f, 50.f, "%.2f") || component_was_changed;
+        component_was_changed =
+            ImGui::SliderFloat3("Orientation", component.orientation.orientation, -50.f, 50.f, "%.2f") ||
+            component_was_changed;
         ImGui::TreePop();
       }
       // ImGui::PopID();
       if (component_was_changed) {
         reg.replace<component::Subcomponent>(entity, component);
       }
-      // if (position_was_changed) {
-      //   reg.replace<position::Position>(entity, position);
-      // }
     });
   }
 
