@@ -14,9 +14,9 @@ class Window;
 
 class Application final {
  public:
-  using registry_type = entt::registry;
-  using entity_type = typename registry_type::entity_type;
-  using component_table_type = typename component::ComponentTable<entity_type>;
+  using entity_type = typename component::DefaultEntityType;
+  using component_table_type = component::ComponentTable;
+  using registry_type = entt::basic_registry<entity_type>;
 
  private:
   static Application* instance_;

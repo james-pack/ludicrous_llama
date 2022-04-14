@@ -84,15 +84,15 @@ void ComponentPane::render() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   const auto& reg{registry()};
-  const auto& comp_table{component_table()};
+  auto& comp_table{component_table()};
 
   if (requires_redraw_) {
     // DLOG(INFO) << "ComponentPane::render() -- full redraw was triggered.";
     glPushMatrix();
 
     reg.view<Camera, position::Position, position::Orientation>().each(
-        [&reg](const auto entity, const Camera& camera, const position::Position& position,
-               const position::Orientation& orientation) {  //
+        [](const auto entity, const Camera& camera, const position::Position& position,
+           const position::Orientation& orientation) {  //
           render_camera(camera, position, orientation);
         });
     camera_observer_.clear();
@@ -104,8 +104,9 @@ void ComponentPane::render() {
     glPopMatrix();
 
     reg.view<lighting::Light, position::Position, position::Orientation>().each(
-        [&reg](const lighting::Light& light, const position::Position& position,
-               const position::Orientation& orientation) { render_light(light, position, orientation); });
+        [](const lighting::Light& light, const position::Position& position, const position::Orientation& orientation) {
+          render_light(light, position, orientation);
+        });
     lighting_observer_.clear();
 
     // requires_redraw_ = false;

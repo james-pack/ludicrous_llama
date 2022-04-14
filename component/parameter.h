@@ -68,6 +68,9 @@ struct ParameterBinding final {
   // Value it is bound to.
   Expression value{};
 
+  // Cached lookup of parameter.
+  const Parameter* cached_parameter{nullptr};
+
   bool operator==(const ParameterBinding& rhs) const {
     return name == rhs.name &&  //
            value == rhs.value;

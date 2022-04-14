@@ -13,19 +13,21 @@ namespace pack::component {
 guid::Guid create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
                             Component* component) {
   component->name = std::move(name);
-  component->primitive = Primitive::by_name(primitive_name);
 
-  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{value1}});
+  Subcomponent& sub = component->children.emplace_back();
+  sub.primitive = Primitive::by_name(primitive_name);
+  sub.bindings.insert(ParameterBinding{std::move(parameter1), Expression{value1}});
   return component->id;
 }
 
 guid::Guid create_component(std::string name, std::string primitive_name, std::string parameter1, float value1,
                             std::string parameter2, float value2, Component* component) {
   component->name = std::move(name);
-  component->primitive = Primitive::by_name(primitive_name);
 
-  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{value1}});
-  component->bindings.insert(ParameterBinding{std::move(parameter2), Expression{value2}});
+  Subcomponent& sub = component->children.emplace_back();
+  sub.primitive = Primitive::by_name(primitive_name);
+  sub.bindings.insert(ParameterBinding{std::move(parameter1), Expression{value1}});
+  sub.bindings.insert(ParameterBinding{std::move(parameter2), Expression{value2}});
   return component->id;
 }
 
@@ -33,20 +35,22 @@ guid::Guid create_component(std::string name, std::string primitive_name, std::s
                             std::string parameter2, float value2, std::string parameter3, float value3,
                             Component* component) {
   component->name = std::move(name);
-  component->primitive = Primitive::by_name(primitive_name);
 
-  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{value1}});
-  component->bindings.insert(ParameterBinding{std::move(parameter2), Expression{value2}});
-  component->bindings.insert(ParameterBinding{std::move(parameter3), Expression{value3}});
+  Subcomponent& sub = component->children.emplace_back();
+  sub.primitive = Primitive::by_name(primitive_name);
+  sub.bindings.insert(ParameterBinding{std::move(parameter1), Expression{value1}});
+  sub.bindings.insert(ParameterBinding{std::move(parameter2), Expression{value2}});
+  sub.bindings.insert(ParameterBinding{std::move(parameter3), Expression{value3}});
   return component->id;
 }
 
 guid::Guid create_component(std::string name, std::string primitive_name, std::string parameter1,
                             std::string expression1, Component* component) {
   component->name = std::move(name);
-  component->primitive = Primitive::by_name(primitive_name);
 
-  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{std::move(expression1)}});
+  Subcomponent& sub = component->children.emplace_back();
+  sub.primitive = Primitive::by_name(primitive_name);
+  sub.bindings.insert(ParameterBinding{std::move(parameter1), Expression{std::move(expression1)}});
   return component->id;
 }
 
@@ -54,10 +58,11 @@ guid::Guid create_component(std::string name, std::string primitive_name, std::s
                             std::string expression1, std::string parameter2, std::string expression2,
                             Component* component) {
   component->name = std::move(name);
-  component->primitive = Primitive::by_name(primitive_name);
 
-  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{std::move(expression1)}});
-  component->bindings.insert(ParameterBinding{std::move(parameter2), Expression{std::move(expression2)}});
+  Subcomponent& sub = component->children.emplace_back();
+  sub.primitive = Primitive::by_name(primitive_name);
+  sub.bindings.insert(ParameterBinding{std::move(parameter1), Expression{std::move(expression1)}});
+  sub.bindings.insert(ParameterBinding{std::move(parameter2), Expression{std::move(expression2)}});
   return component->id;
 }
 
@@ -65,11 +70,12 @@ guid::Guid create_component(std::string name, std::string primitive_name, std::s
                             std::string expression1, std::string parameter2, std::string expression2,
                             std::string parameter3, std::string expression3, Component* component) {
   component->name = std::move(name);
-  component->primitive = Primitive::by_name(primitive_name);
 
-  component->bindings.insert(ParameterBinding{std::move(parameter1), Expression{std::move(expression1)}});
-  component->bindings.insert(ParameterBinding{std::move(parameter2), Expression{std::move(expression2)}});
-  component->bindings.insert(ParameterBinding{std::move(parameter3), Expression{std::move(expression3)}});
+  Subcomponent& sub = component->children.emplace_back();
+  sub.primitive = Primitive::by_name(primitive_name);
+  sub.bindings.insert(ParameterBinding{std::move(parameter1), Expression{std::move(expression1)}});
+  sub.bindings.insert(ParameterBinding{std::move(parameter2), Expression{std::move(expression2)}});
+  sub.bindings.insert(ParameterBinding{std::move(parameter3), Expression{std::move(expression3)}});
   return component->id;
 }
 

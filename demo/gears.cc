@@ -15,28 +15,27 @@
 #include "ui/application.h"
 #include "ui/camera.h"
 
-void populate_registry(entt::registry& registry, pack::component::Component component) {
-  const auto id = registry.create();
-  pack::component::Component& stored_component = registry.emplace<pack::component::Component>(id, std::move(component));
-  registry.emplace<pack::render::RenderNode>(id, stored_component);
+void populate_component(pack::component::ComponentTable& table, pack::component::Component component) {
+  const auto id = table.create();
+  table.emplace<pack::component::Component>(id, std::move(component));
 }
 
-void populate_registry(entt::registry& registry, pack::lighting::Light light, pack::position::Position position,
-                       pack::position::Orientation orientation) {
-  const auto id = registry.create();
-  registry.emplace<pack::lighting::Light>(id, std::move(light));
-  registry.emplace<pack::position::Position>(id, std::move(position));
-  registry.emplace<pack::position::Orientation>(id, std::move(orientation));
+void populate_component(pack::component::ComponentTable& table, pack::lighting::Light light,
+                        pack::position::Position position, pack::position::Orientation orientation) {
+  const auto id = table.create();
+  table.emplace<pack::lighting::Light>(id, std::move(light));
+  table.emplace<pack::position::Position>(id, std::move(position));
+  table.emplace<pack::position::Orientation>(id, std::move(orientation));
 }
 
-void populate_registry(entt::registry& registry, pack::ui::Camera camera, pack::position::Position position,
-                       pack::position::Orientation orientation) {
+void populate_component(pack::component::ComponentTable& table, pack::ui::Camera camera,
+                        pack::position::Position position, pack::position::Orientation orientation) {
   using namespace pack::ui;
 
-  const auto id = registry.create();
-  registry.emplace<Camera>(id, std::move(camera));
-  registry.emplace<pack::position::Position>(id, std::move(position));
-  registry.emplace<pack::position::Orientation>(id, std::move(orientation));
+  const auto id = table.create();
+  table.emplace<Camera>(id, std::move(camera));
+  table.emplace<pack::position::Position>(id, std::move(position));
+  table.emplace<pack::position::Orientation>(id, std::move(orientation));
 }
 
 int main(int argc, char* argv[]) {
@@ -60,7 +59,8 @@ int main(int argc, char* argv[]) {
   application.set_animator(animator);
   application.add_service(animator);
 
-  populate_registry(application.registry(), Camera{}, pack::position::Position{}, pack::position::Orientation{});
+  populate_component(application.component_table(), Camera{}, pack::position::Position{},
+                     pack::position::Orientation{});
 
   {
     pack::component::proto::Components proto =
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
         pack::from_proto<pack::component::Components, pack::component::proto::Components>(proto);
     LOG(INFO) << "Read components:\n" << to_string(components);
     for (pack::component::Component component : components) {
-      populate_registry(application.registry(), component);
+      populate_component(application.component_table(), component);
     }
   }
 
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
       pack::position::Position position{};
       pack::position::Orientation orientation{};
       pack::lighting::Light::from_proto(proto, &light, &position, &orientation);
-      populate_registry(application.registry(), light, position, orientation);
+      populate_component(application.component_table(), light, position, orientation);
     }
   }
 

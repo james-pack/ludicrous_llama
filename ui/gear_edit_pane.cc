@@ -41,13 +41,13 @@ void GearEditPane::render() {
   // Early out if the window is collapsed, as an optimization.
   if (ImGui::Begin("Edit components", &is_open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar)) {
     auto& reg{registry()};
-    auto models = reg.view<component::Component>();
-    models.each([&reg](auto entity, component::Component& component) {
+    auto models = reg.view<component::Subcomponent>();
+    models.each([&reg](auto entity, component::Subcomponent& component) {
       // bool position_was_changed{false};
       bool component_was_changed{false};
       // ImGui::PushID();
-      if (ImGui::TreeNodeEx(&component, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Bullet, "%s",
-                            component.name.c_str())) {
+      // TODO(james): Display the name of the component or primitive, instead of the fixed string "Component".
+      if (ImGui::TreeNodeEx(&component, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Bullet, "Component")) {
         for (const auto& const_binding : component.bindings) {
           component::ParameterBinding& binding{const_cast<component::ParameterBinding&>(const_binding)};
           component_was_changed = render_parameter(binding) || component_was_changed;
@@ -58,7 +58,7 @@ void GearEditPane::render() {
       }
       // ImGui::PopID();
       if (component_was_changed) {
-        reg.replace<component::Component>(entity, component);
+        reg.replace<component::Subcomponent>(entity, component);
       }
       // if (position_was_changed) {
       //   reg.replace<position::Position>(entity, position);

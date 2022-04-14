@@ -65,6 +65,7 @@ cc_test(
     data = [
         ":sample_component_configurations",
     ],
+    tags = ["manual"],
     deps = [
         ":component",
         "//proto",

@@ -8,8 +8,8 @@
 
 namespace pack::component {
 
-template <typename EntityT = entt::registry::entity_type>
-class ComponentTable final {
+template <typename EntityT>
+class BasicComponentTable final {
  public:
   using entity_type = EntityT;
   using registry_type = entt::basic_registry<entity_type>;
@@ -29,7 +29,7 @@ class ComponentTable final {
   std::unordered_map<Guid, entity_type, guid::GuidHash> guids_{};
 
  public:
-  ComponentTable(registry_type& registry) : registry_(&registry) {}
+  BasicComponentTable(registry_type& registry) : registry_(&registry) {}
 
   void add_id(const Guid& guid, entity_type entity) { guids_.emplace(guid, entity); }
 
@@ -46,6 +46,13 @@ class ComponentTable final {
   const registry_type& registry() const { return *registry_; }
   registry_type& registry() { return *registry_; }
 
+  const Guid& create() {
+    Guid guid{};
+    entity_type entity{registry_->create()};
+    auto result = guids_.emplace(guid, entity);
+    return result.first->first;
+  }
+  
   // Helper methods to look up components in an entity by guid. Note that these are deliberately incomplete; we do not
   // want to reimplement entt::registry.
   template <typename T>
@@ -83,6 +90,18 @@ class ComponentTable final {
     }
     throw std::logic_error("ComponentTable does not contain an entity with Guid '" + to_string(guid) + "'");
   }
+
+  template <typename T, typename ...Args>
+  T& emplace(const Guid& guid, Args&&... args) {
+    auto iter = guids_.find(guid);
+    if (iter == guids_.cend()) {
+      throw std::logic_error("ComponentTable does not contain an entity with Guid '" + to_string(guid) + "'");
+    }
+    return registry_->template emplace<T, Args...>(iter->second, std::forward<Args>(args)...);
+  }
 };
+
+using DefaultEntityType = entt::registry::entity_type;
+using ComponentTable = BasicComponentTable<DefaultEntityType>;
 
 }  // namespace pack::component

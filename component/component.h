@@ -1,8 +1,10 @@
 #pragma once
 
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 #include "component/ordering.h"
 #include "component/parameter.h"
@@ -20,28 +22,56 @@ namespace pack::component {
  * will likely result in confusion to the user and other programmers.
  */
 struct Subcomponent final {
-  using Set =
-      std::unordered_set<Subcomponent, HashByIdField<Subcomponent, guid::GuidHash>, CompareByIdField<Subcomponent>>;
+  using Container = std::vector<Subcomponent>;
 
-  // Id of the child component.
   guid::Guid id{};
 
-  // Position and orientation wrt parent's reference frame.
+  // Subcomponents can either refer to primitives or to child components. If it refers to a primitive, the primitive
+  // field will be non-null and the material field will be populated. If it refers to a child component, the primitive
+  // field will be null and the id below will refer to a valid component.
+  enum class Type : uint8_t {
+    UNTYPED,
+    PRIMITIVE,
+    COMPONENT,
+  };
+  // Type of subcomponent.
+  Type type{};
+
+  const Primitive* primitive{nullptr};
+  material::Material material{};
+
+  // Id of the child component.
+  guid::Guid child_id{};
+
+  // Position and orientation wrt parent's reference frame. These fields are independent of the type of subcomponent.
   position::Position position{};
   position::Orientation orientation{};
 
+  // Bindings of expressions / values to the subcomponent's parameters.
   ParameterBinding::Set bindings{};
 
   bool operator==(const Subcomponent& rhs) const {
-    return id == rhs.id &&                    //
-           position == rhs.position &&        //
-           orientation == rhs.orientation &&  //
-           bindings == rhs.bindings;
+    using std::to_string;
+    if (type != rhs.type || position != rhs.position || orientation != rhs.orientation || bindings != rhs.bindings) {
+      return false;
+    }
+    switch (type) {
+      case Type::UNTYPED:
+        return true;
+      case Type::PRIMITIVE:
+        return primitive == rhs.primitive && material == rhs.material;
+      case Type::COMPONENT:
+        return child_id == rhs.child_id;
+      default:
+        throw std::domain_error("Unknown Subcomponent type '" +
+                                to_string(static_cast<std::underlying_type_t<Type>>(type)) + "'");
+    }
   }
 };
 
 std::string to_string(const Subcomponent& subcomponent);
-std::string to_string(const Subcomponent::Set& subcomponents);
+std::string to_string(const Subcomponent::Type type);
+std::string to_string(const Subcomponent::Container& subcomponents);
 
 struct Component final {
   using Set = std::unordered_set<Component, HashByIdField<Component, guid::GuidHash>, CompareByIdField<Component>>;
@@ -50,11 +80,7 @@ struct Component final {
   guid::Guid id{};
   std::string name{};
 
-  const Primitive* primitive{nullptr};
-  ParameterBinding::Set bindings{};
-  material::Material material{};
-
-  Subcomponent::Set children{};
+  Subcomponent::Container children{};
 
   Parameter::Set parameters{};
   Property::Set properties{};
@@ -62,8 +88,6 @@ struct Component final {
   bool operator==(const Component& rhs) const {
     return id == rhs.id &&                  //
            name == rhs.name &&              //
-           primitive == rhs.primitive &&    //
-           bindings == rhs.bindings &&      //
            children == rhs.children &&      //
            parameters == rhs.parameters &&  //
            properties == rhs.properties;

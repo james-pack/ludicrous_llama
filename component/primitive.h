@@ -39,7 +39,7 @@ class Primitive final {
  public:
   // TODO(james): Rework to make constexpr. These are known fully at compile-time and should be defined that way.
   Primitive(std::string_view name, Parameter::Set&& parameters, GeneratorFunc generator)
-      : name_(name), parameters_(std::move(parameters)), generator_(std::move(generator)) {}
+    : name_(name), parameters_(std::move(parameters)), generator_(std::move(generator)) {}
 
   std::string_view name() const { return name_; }
   const Parameter::Set& parameters() const { return parameters_; }

@@ -1,3 +1,5 @@
+#include <string>
+
 #include "component/component.h"
 #include "component/components.h"
 #include "component/expression.h"
@@ -152,7 +154,8 @@ inline void from_proto(const component::proto::ParameterBinding& proto, componen
 
 template <>
 inline void to_proto(const component::Subcomponent& subcomponent, component::proto::Subcomponent* proto) {
-  proto->set_child_id(subcomponent.id.as_string());
+  using std::to_string;
+  proto->set_id(subcomponent.id.as_string());
 
   to_proto(subcomponent.position, proto->mutable_position());
   to_proto(subcomponent.orientation, proto->mutable_orientation());
@@ -160,11 +163,24 @@ inline void to_proto(const component::Subcomponent& subcomponent, component::pro
   for (const auto& binding : subcomponent.bindings) {
     to_proto(binding, proto->add_bindings());
   }
+
+  switch (subcomponent.type) {
+    case component::Subcomponent::Type::PRIMITIVE:
+      proto->mutable_primitive()->set_name(std::string(subcomponent.primitive->name()));
+      to_proto(subcomponent.material, proto->mutable_primitive()->mutable_material());
+      break;
+    case component::Subcomponent::Type::COMPONENT:
+      proto->set_child_id(subcomponent.child_id.as_string());
+      break;
+    default:
+      proto->clear_sub();
+      break;
+  }
 }
 
 template <>
 inline void from_proto(const component::proto::Subcomponent& proto, component::Subcomponent* subcomponent) {
-  subcomponent->id = guid::Guid(proto.child_id());
+  subcomponent->id = guid::Guid(proto.id());
 
   from_proto(proto.position(), &subcomponent->position);
   from_proto(proto.orientation(), &subcomponent->orientation);
@@ -172,24 +188,23 @@ inline void from_proto(const component::proto::Subcomponent& proto, component::S
   for (const auto& binding : proto.bindings()) {
     subcomponent->bindings.insert(from_proto<component::ParameterBinding, component::proto::ParameterBinding>(binding));
   }
+
+  if (proto.has_child_id()) {
+    subcomponent->type = component::Subcomponent::Type::COMPONENT;
+    subcomponent->child_id = guid::Guid(proto.child_id());
+  } else if (proto.has_primitive()) {
+    subcomponent->type = component::Subcomponent::Type::PRIMITIVE;
+    subcomponent->primitive = component::Primitive::by_name(proto.primitive().name());
+    from_proto(proto.primitive().material(), &subcomponent->material);
+  } else {
+    subcomponent->type = component::Subcomponent::Type::UNTYPED;
+  }
 }
 
 template <>
 inline void to_proto(const component::Component& component, component::proto::Component* proto) {
   proto->set_id(component.id.as_string());
   proto->set_name(component.name);
-
-  if (component.primitive) {
-    proto->set_primitive_name(std::string(component.primitive->name()));
-  } else {
-    proto->clear_primitive_name();
-  }
-
-  for (const auto& binding : component.bindings) {
-    to_proto(binding, proto->add_bindings());
-  }
-
-  to_proto(component.material, proto->mutable_material());
 
   for (const auto& child : component.children) {
     to_proto(child, proto->add_children());
@@ -208,20 +223,9 @@ template <>
 inline void from_proto(const component::proto::Component& proto, component::Component* component) {
   component->id = guid::Guid(proto.id());
   component->name = proto.name();
-  if (!proto.primitive_name().empty()) {
-    component->primitive = component::Primitive::by_name(proto.primitive_name());
-  } else {
-    component->primitive = nullptr;
-  }
-
-  for (const auto& binding : proto.bindings()) {
-    component->bindings.insert(from_proto<component::ParameterBinding, component::proto::ParameterBinding>(binding));
-  }
-
-  from_proto(proto.material(), &component->material);
 
   for (const auto& child : proto.children()) {
-    component->children.insert(from_proto<component::Subcomponent, component::proto::Subcomponent>(child));
+    component->children.emplace_back(from_proto<component::Subcomponent, component::proto::Subcomponent>(child));
   }
 
   for (const auto& parameter : proto.parameters()) {

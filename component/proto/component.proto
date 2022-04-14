@@ -107,14 +107,25 @@ message ProcessedPrimitive {
   repeated Process processing_steps = 4;
 }
 
+message PrimitiveReference {
+  string name = 1;
+  material.proto.Material material = 2;
+}
+
 message Subcomponent {
-  string child_id = 1;
+  string id = 1;
 
   // Position and orientation are expressed wrt the parent's coordinate frame.
   position.proto.Position position = 2;
   position.proto.Orientation orientation = 3;
 
   repeated ParameterBinding bindings = 4;
+
+  oneof sub {
+    // Id (GUID) of the child Component.
+    string child_id = 5;
+    PrimitiveReference primitive = 6;
+  }
 }
 
 message Constraint {
@@ -129,22 +140,19 @@ message Constraint {
 message Component {
   // Identifier for this component.
   string id = 1;
-  // Human-readable name for this component.
+  // Optional, human-readable name for this component.
   string name = 2;
 
-  // Child components, if any. Note that this structure is designed to make it easy to reuse and compose
-  // components; children don't have any dependency on their parent(s).
+  // Child components and primitives, if any. Note that this structure is designed to make it easy to reuse and compose
+  // components; children don't have any dependency on their parent(s), and the Subcomponent contains position and
+  // orientation information.
   repeated Subcomponent children = 3;
 
-  string primitive_name = 4;
-  repeated ParameterBinding bindings = 5;
-  material.proto.Material material = 6;
+  repeated Property properties = 4;
 
-  repeated Property properties = 7;
+  repeated Parameter parameters = 5;
 
-  repeated Parameter parameters = 8;
-
-  repeated Constraint constraints = 9;
+  repeated Constraint constraints = 6;
 }
 
 message Components {
