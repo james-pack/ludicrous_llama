@@ -27,7 +27,7 @@ class RenderNode final {
   mutable bool is_valid_{false};
 
   void render_primitive() const;
-  void render_child(component::ComponentTable& component_table) const;
+  void render_child(const component::ComponentTable& component_table) const;
 
  public:
   RenderNode(const component::Subcomponent& component) : component_(&component) {}
@@ -37,7 +37,7 @@ class RenderNode final {
   RenderNode& operator=(const RenderNode& rhs) = default;
   RenderNode& operator=(RenderNode&& rhs) = default;
 
-  void render(component::ComponentTable& component_table) const;
+  void render(const component::ComponentTable& component_table) const;
 };
 
 }  // namespace pack::render

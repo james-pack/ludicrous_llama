@@ -11,7 +11,7 @@ namespace pack::render {
 
 using namespace pack::component;
 
-void RenderNode::render(ComponentTable& component_table) const {
+void RenderNode::render(const ComponentTable& component_table) const {
   using std::to_string;
 
   bool nontrivial_orientation = !(component_->orientation.is_identity() || component_->orientation.is_zero());
@@ -66,14 +66,11 @@ void RenderNode::render_primitive() const {
   }
 }
 
-void RenderNode::render_child(ComponentTable& component_table) const {
+void RenderNode::render_child(const ComponentTable& component_table) const {
   const Component& child_component{component_table.template get_existing<Component>(component_->child_id)};
   for (const Subcomponent& subcomponent : child_component.children) {
-    const RenderNode* node{component_table.get<RenderNode>(subcomponent.id)};
-    if (node == nullptr) {
-      node = &component_table.emplace<RenderNode>(subcomponent.id, subcomponent);
-    }
-    node->render(component_table);
+    const RenderNode& node{component_table.get_existing<RenderNode>(subcomponent.id)};
+    node.render(component_table);
   }
 }
 
