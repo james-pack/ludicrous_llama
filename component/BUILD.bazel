@@ -24,6 +24,7 @@ cc_library(
         "parameter.h",
         "primitive.h",
         "property.h",
+        "scene.h",
         "value.h",
     ],
     visibility = ["//visibility:public"],

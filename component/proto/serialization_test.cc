@@ -5,6 +5,7 @@
 #include "component/property.h"
 #include "component/proto/component.pb.h"
 #include "component/proto/proto_serialization.h"
+#include "component/scene.h"
 #include "component/value.h"
 #include "gtest/gtest.h"
 #include "proto/proto_utils.h"
@@ -73,6 +74,13 @@ TEST(ProtoTest, CanRoundTripEmptyComponent) {
   Component original{};
   proto::Component proto = to_proto<Component, proto::Component>(original);
   Component cycled{from_proto<Component, proto::Component>(proto)};
+  EXPECT_EQ(original, cycled);
+}
+
+TEST(ProtoTest, CanRoundTripEmptyScene) {
+  Scene original{};
+  proto::Scene proto = to_proto<Scene, proto::Scene>(original);
+  Scene cycled{from_proto<Scene, proto::Scene>(proto)};
   EXPECT_EQ(original, cycled);
 }
 
