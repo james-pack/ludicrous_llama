@@ -13,7 +13,7 @@ std::string to_string(const Orientation& orientation) {
 std::string to_string(const Position& position) {
   using std::to_string;
   return "[" + to_string(position.position[0]) + ", " + to_string(position.position[1]) + ", " +
-         to_string(position.position[2]) + ", " + to_string(position.position[3]) + "]";
+         to_string(position.position[2]) + "]";
 }
 
 }  // namespace pack::position

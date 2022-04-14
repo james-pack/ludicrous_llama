@@ -3,17 +3,19 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 cc_library(
     name = "render",
     srcs = [
+        "camera.cc",
         "render_node.cc",
+        "scene.cc",
     ],
     hdrs = [
         "camera.h",
         "render_node.h",
+        "scene.h",
     ],
     visibility = ["//visibility:public"],
     deps = [
         "//component",
         "//position",
-        "//third_party/entt",
         "//third_party/glog",
     ],
 )

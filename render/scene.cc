@@ -1,19 +1,8 @@
-#pragma once
+#include "render/scene.h"
 
 #include <string>
 
-#include "component/component.h"
-
-namespace pack::component {
-
-struct Scene {
-  Subcomponent::Container root_components{};
-  Component::Set components{};
-
-  bool operator==(const Scene& rhs) const {
-    return root_components == rhs.root_components && components == rhs.components;
-  }
-};
+namespace pack::render {
 
 std::string to_string(const Scene& scene) {
   std::string result{};
@@ -38,7 +27,19 @@ std::string to_string(const Scene& scene) {
     need_comma = true;
   }
   result += "}";
+
+  result += "cameras: {";
+  need_comma = false;
+  for (const auto& camera : scene.cameras) {
+    if (need_comma) {
+      result += ", ";
+    }
+    result += to_string(camera);
+    need_comma = true;
+  }
+  result += "}";
+
   return result;
 }
 
-}  // namespace pack::component
+}  // namespace pack::render

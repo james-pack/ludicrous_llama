@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "component/proto/component.proto";
+import "render/proto/camera.proto";
+
+package pack.render.proto;
+
+message Scene {
+  // References to the components that are the root components of the scene.
+  repeated pack.component.proto.Subcomponent root_components = 1;
+
+  // Details of all of the components in the scene.
+  repeated pack.component.proto.Component components = 2;
+
+  repeated Camera cameras = 3;
+
+  // TODO(james): Add materials and lighting details.
+}

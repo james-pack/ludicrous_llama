@@ -1,3 +1,5 @@
+#pragma once
+
 #include "position/position.h"
 #include "position/proto/position.pb.h"
 #include "serialization/serialize.h"
@@ -23,7 +25,6 @@ inline void to_proto(const position::Position& position, position::proto::Positi
   proto->set_x(position.position[0]);
   proto->set_y(position.position[1]);
   proto->set_z(position.position[2]);
-  proto->set_w(position.position[3]);
 }
 
 template <>
@@ -31,7 +32,6 @@ inline void from_proto(const position::proto::Position& proto, position::Positio
   position->position[0] = proto.x();
   position->position[1] = proto.y();
   position->position[2] = proto.z();
-  position->position[3] = proto.w();
 }
 
 }  // namespace pack

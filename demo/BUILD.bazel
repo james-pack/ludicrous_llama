@@ -31,6 +31,8 @@ cc_binary(
         "//lighting/proto",
         "//material",
         "//proto",
+        "//render",
+        "//render/proto",
         "//serialization",
         "//third_party/entt",
         "//third_party/gflags",

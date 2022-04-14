@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 
 #include "component/component.h"
@@ -6,7 +8,6 @@
 #include "component/parameter.h"
 #include "component/property.h"
 #include "component/proto/component.pb.h"
-#include "component/scene.h"
 #include "component/value.h"
 #include "material/proto/proto_serialization.h"
 #include "position/proto/proto_serialization.h"
@@ -251,27 +252,6 @@ template <>
 inline void from_proto(const component::proto::Components& proto, component::Components* components) {
   for (const auto& component : proto.components()) {
     components->insert(from_proto<component::Component, component::proto::Component>(component));
-  }
-}
-
-template <>
-inline void to_proto(const component::Scene& scene, component::proto::Scene* proto) {
-  for (const auto& component : scene.root_components) {
-    to_proto(component, proto->add_root_components());
-  }
-  for (const auto& component : scene.components) {
-    to_proto(component, proto->add_components());
-  }
-}
-
-template <>
-inline void from_proto(const component::proto::Scene& proto, component::Scene* scene) {
-  for (const auto& subcomponent : proto.root_components()) {
-    scene->root_components.emplace_back(
-        from_proto<component::Subcomponent, component::proto::Subcomponent>(subcomponent));
-  }
-  for (const auto& component : proto.components()) {
-    scene->components.insert(from_proto<component::Component, component::proto::Component>(component));
   }
 }
 

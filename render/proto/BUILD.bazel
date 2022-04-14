@@ -1,0 +1,57 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+cc_library(
+    name = "proto",
+    hdrs = [
+        "proto_serialization.h",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":camera_cc_proto",
+        ":scene_cc_proto",
+        "//component",
+        "//component/proto",
+        "//position",
+        "//position/proto",
+        "//serialization",
+    ],
+)
+
+cc_proto_library(
+    name = "camera_cc_proto",
+    deps = [":camera_proto"],
+)
+
+proto_library(
+    name = "camera_proto",
+    srcs = ["camera.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//position/proto:position_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "scene_cc_proto",
+    deps = [":scene_proto"],
+)
+
+proto_library(
+    name = "scene_proto",
+    srcs = ["scene.proto"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":camera_proto",
+        "//component/proto:component_proto",
+    ],
+)
+
+cc_test(
+    name = "serialization_test",
+    srcs = ["serialization_test.cc"],
+    deps = [
+        ":proto",
+        "//render",
+        "//third_party/gtest",
+    ],
+)

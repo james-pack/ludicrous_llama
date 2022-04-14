@@ -1,6 +1,5 @@
 #include "component/component.h"
 #include "component/components.h"
-#include "component/proto/proto_serialization.h"
 #include "demo/gears_ui.h"
 #include "entt/entity/registry.hpp"
 #include "gflags/gflags.h"
@@ -10,7 +9,10 @@
 #include "position/position.h"
 #include "proto/proto_utils.h"
 #include "render/camera.h"
+#include "render/proto/proto_serialization.h"
+#include "render/proto/scene.pb.h"
 #include "render/render_node.h"
+#include "render/scene.h"
 #include "serialization/serialize.h"
 #include "ui/animator.h"
 #include "ui/application.h"
@@ -30,13 +32,6 @@ void populate_component(ComponentTable& table, Light light, Position position, O
   table.emplace<Orientation>(id, std::move(orientation));
 }
 
-void populate_component(ComponentTable& table, Camera camera, Position position, Orientation orientation) {
-  const auto id = table.create();
-  table.emplace<Camera>(id, std::move(camera));
-  table.emplace<Position>(id, std::move(position));
-  table.emplace<Orientation>(id, std::move(orientation));
-}
-
 void populate_table(ComponentTable& table, const Component& component) {
   table.add_id(component.id);
   table.emplace<Component>(component.id, component);
@@ -48,12 +43,20 @@ void populate_table(ComponentTable& table, const Subcomponent& subcomponent) {
   table.emplace<RenderNode>(subcomponent.id, RenderNode(inserted));
 }
 
+void populate_table(ComponentTable& table, const Camera& camera) {
+  const auto id = table.create();
+  table.emplace<Camera>(id, camera);
+}
+
 void populate_table(ComponentTable& table, const Scene& scene) {
   for (const auto& subcomponent : scene.root_components) {
     populate_table(table, subcomponent);
   }
   for (const auto& component : scene.components) {
     populate_table(table, component);
+  }
+  for (const auto& camera : scene.cameras) {
+    populate_table(table, camera);
   }
 }
 
@@ -74,11 +77,8 @@ int main(int argc, char* argv[]) {
   application.set_animator(animator);
   application.add_service(animator);
 
-  // TODO(james): Move camera to scene.
-  populate_component(application.component_table(), Camera{}, Position{}, Orientation{});
-
   {
-    component::proto::Scene proto = load_text_proto<component::proto::Scene>("demo/trivial_demo_scene.pb.txt");
+    render::proto::Scene proto = load_text_proto<render::proto::Scene>("demo/trivial_demo_scene.pb.txt");
     Scene scene{};
     from_proto(proto, &scene);
     LOG(INFO) << "Read scene:\n" << to_string(scene);
