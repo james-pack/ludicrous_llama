@@ -55,10 +55,16 @@ void populate_table(ComponentTable& table, const Scene& scene) {
   for (const auto& component : scene.components) {
     populate_table(table, component);
   }
-  for (const auto& camera : scene.cameras) {
-    populate_table(table, camera);
+  if (!scene.cameras.empty()) {
+    for (const auto& camera : scene.cameras) {
+      populate_table(table, camera);
+    }
+  } else {
+    populate_table(table, Camera{});
   }
 }
+
+DEFINE_string(scene_filename, "demo/trivial_demo_scene.pb.txt", "Filename of scene to load");
 
 int main(int argc, char* argv[]) {
   // Default logging configuration.
@@ -78,7 +84,7 @@ int main(int argc, char* argv[]) {
   application.add_service(animator);
 
   {
-    render::proto::Scene proto = load_text_proto<render::proto::Scene>("demo/trivial_demo_scene.pb.txt");
+    render::proto::Scene proto = load_text_proto<render::proto::Scene>(FLAGS_scene_filename);
     Scene scene{};
     from_proto(proto, &scene);
     LOG(INFO) << "Read scene:\n" << to_string(scene);

@@ -15,10 +15,14 @@
 namespace pack::ui {
 
 void render_camera(const render::Camera& camera) {
-  glRotatef(camera.orientation.orientation[0], 1.0, 0.0, 0.0);
-  glRotatef(camera.orientation.orientation[1], 0.0, 1.0, 0.0);
-  glRotatef(camera.orientation.orientation[2], 0.0, 0.0, 1.0);
-  glTranslatef(camera.position.position[0], camera.position.position[1], camera.position.position[2]);
+  if (camera.orientation.is_nonzero() && !camera.orientation.is_identity()) {
+    glRotatef(camera.orientation.orientation[0], 1.0, 0.0, 0.0);
+    glRotatef(camera.orientation.orientation[1], 0.0, 1.0, 0.0);
+    glRotatef(camera.orientation.orientation[2], 0.0, 0.0, 1.0);
+  }
+  if (!camera.position.is_identity()) {
+    glTranslatef(camera.position.position[0], camera.position.position[1], camera.position.position[2]);
+  }
 }
 
 void render_light(const lighting::Light& light, const position::Position& position,
@@ -86,17 +90,17 @@ void ComponentPane::render() {
     reg.view<render::Camera>().each([](const auto entity, const render::Camera& camera) { render_camera(camera); });
     camera_observer_.clear();
 
-    reg.view<render::RenderNode>().each(
-        [&comp_table](const render::RenderNode& render_node) { render_node.render(comp_table); });
-    component_observer_.clear();
-
-    glPopMatrix();
-
     reg.view<lighting::Light, position::Position, position::Orientation>().each(
         [](const lighting::Light& light, const position::Position& position, const position::Orientation& orientation) {
           render_light(light, position, orientation);
         });
     lighting_observer_.clear();
+
+    reg.view<render::RenderNode>().each(
+        [&comp_table](const render::RenderNode& render_node) { render_node.render(comp_table); });
+    component_observer_.clear();
+
+    glPopMatrix();
 
     // requires_redraw_ = false;
   } else {
@@ -108,18 +112,18 @@ void ComponentPane::render() {
       render_camera(camera);
     });
 
+    lighting_observer_.each([&reg](const auto entity) {
+      const auto& [light, position, orientation] =
+          reg.get<lighting::Light, position::Position, position::Orientation>(entity);
+      render_light(light, position, orientation);
+    });
+
     component_observer_.each([&reg, &comp_table](const auto entity) {
       const auto& render_node = reg.get<render::RenderNode>(entity);
       render_node.render(comp_table);
     });
 
     glPopMatrix();
-
-    lighting_observer_.each([&reg](const auto entity) {
-      const auto& [light, position, orientation] =
-          reg.get<lighting::Light, position::Position, position::Orientation>(entity);
-      render_light(light, position, orientation);
-    });
   }
 
   glEnable(GL_LIGHTING);

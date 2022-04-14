@@ -3,6 +3,7 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 filegroup(
     name = "scene_files",
     srcs = [
+        "single_camera_scene.pb.txt",
         "trivial_demo_scene.pb.txt",
     ],
 )
