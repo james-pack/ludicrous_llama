@@ -1,10 +1,8 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
 
 filegroup(
-    name = "gears_components",
+    name = "scene_files",
     srcs = [
-        "trivial_demo_components.pb.txt",
-        "trivial_demo_gears.pb.txt",
         "trivial_demo_scene.pb.txt",
     ],
 )
@@ -23,8 +21,8 @@ cc_binary(
         "gears_ui.h",
     ],
     data = [
-        ":gears_components",
         ":lighting_configurations",
+        ":scene_files",
     ],
     deps = [
         "//component",
