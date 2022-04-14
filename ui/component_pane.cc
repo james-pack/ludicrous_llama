@@ -8,25 +8,21 @@
 #include "glog/logging.h"
 #include "lighting/light.h"
 #include "position/position.h"
+#include "render/camera.h"
 #include "render/render_node.h"
 #include "third_party/glfw/glfw.h"
-#include "ui/camera.h"
 
 namespace pack::ui {
 
-void render_camera(const Camera& camera, const position::Position& position, const position::Orientation& orientation) {
-  using std::to_string;
-
-  glRotatef(orientation.orientation[0], 1.0, 0.0, 0.0);
-  glRotatef(orientation.orientation[1], 0.0, 1.0, 0.0);
-  glRotatef(orientation.orientation[2], 0.0, 0.0, 1.0);
-  glTranslatef(position.position[0], position.position[1], position.position[2]);
+void render_camera(const render::Camera& camera) {
+  glRotatef(camera.orientation.orientation[0], 1.0, 0.0, 0.0);
+  glRotatef(camera.orientation.orientation[1], 0.0, 1.0, 0.0);
+  glRotatef(camera.orientation.orientation[2], 0.0, 0.0, 1.0);
+  glTranslatef(camera.position.position[0], camera.position.position[1], camera.position.position[2]);
 }
 
 void render_light(const lighting::Light& light, const position::Position& position,
                   const position::Orientation& orientation) {
-  using std::to_string;
-
   if (light.enabled) {
     glEnable(GL_LIGHT0 + light.light_num);
     glLightfv(GL_LIGHT0 + light.light_num, GL_POSITION, position.position);
@@ -40,10 +36,7 @@ void render_light(const lighting::Light& light, const position::Position& positi
 
 ComponentPane::ComponentPane()
     : camera_observer_(registry(),  //
-                       entt::collector.group<Camera, position::Position, position::Orientation>()
-                           .update<Camera>()
-                           .update<position::Position>()
-                           .update<position::Orientation>()),
+                       entt::collector.group<render::Camera>().update<render::Camera>()),
       component_observer_(registry(),  //
                           entt::collector.group<component::Component, render::RenderNode>()
                               .update<component::Component>()
@@ -90,11 +83,7 @@ void ComponentPane::render() {
     // DLOG(INFO) << "ComponentPane::render() -- full redraw was triggered.";
     glPushMatrix();
 
-    reg.view<Camera, position::Position, position::Orientation>().each(
-        [](const auto entity, const Camera& camera, const position::Position& position,
-           const position::Orientation& orientation) {  //
-          render_camera(camera, position, orientation);
-        });
+    reg.view<render::Camera>().each([](const auto entity, const render::Camera& camera) { render_camera(camera); });
     camera_observer_.clear();
 
     reg.view<render::RenderNode>().each(
@@ -115,8 +104,8 @@ void ComponentPane::render() {
     glPushMatrix();
 
     camera_observer_.each([&reg](const auto entity) {
-      const auto& [camera, position, orientation] = reg.get<Camera, position::Position, position::Orientation>(entity);
-      render_camera(camera, position, orientation);
+      const auto& camera = reg.get<render::Camera>(entity);
+      render_camera(camera);
     });
 
     component_observer_.each([&reg, &comp_table](const auto entity) {

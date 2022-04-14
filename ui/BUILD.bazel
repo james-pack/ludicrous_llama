@@ -16,7 +16,6 @@ cc_library(
     hdrs = [
         "animator.h",
         "application.h",
-        "camera.h",
         "compass_layout.h",
         "component_pane.h",
         "demo_pane.h",

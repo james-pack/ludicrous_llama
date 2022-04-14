@@ -8,10 +8,10 @@
 #include "imgui_impl_opengl3.h"
 #include "position/position.h"
 #include "proto/proto_utils.h"
+#include "render/camera.h"
 #include "third_party/glfw/glfw.h"
 #include "third_party/imgui/imgui.h"
 #include "ui/animator.h"
-#include "ui/camera.h"
 #include "ui/imgui_framer.h"
 #include "ui/pane.h"
 
@@ -34,33 +34,33 @@ void handle_key(GLFWwindow* window, int k, int s, int action, int mods) {
   } else if (k == GLFW_KEY_ESCAPE) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
   } else {
-    auto cameras = Application::current().registry().view<Camera, position::Position, position::Orientation>();
-    cameras.each([k, mods](Camera& camera, position::Position& position, position::Orientation& orientation) {
+    auto cameras = Application::current().registry().view<render::Camera>();
+    cameras.each([k, mods](render::Camera& camera) {
       switch (k) {
         case GLFW_KEY_UP:
-          orientation.orientation[0] += 5.0;
+          camera.orientation.orientation[0] += 5.0;
           break;
         case GLFW_KEY_DOWN:
-          orientation.orientation[0] -= 5.0;
+          camera.orientation.orientation[0] -= 5.0;
           break;
         case GLFW_KEY_LEFT:
-          orientation.orientation[1] += 5.0;
+          camera.orientation.orientation[1] += 5.0;
           break;
         case GLFW_KEY_RIGHT:
-          orientation.orientation[1] -= 5.0;
+          camera.orientation.orientation[1] -= 5.0;
           break;
         case GLFW_KEY_Z:
           if (mods & GLFW_MOD_SHIFT) {
-            orientation.orientation[2] -= 5.0;
+            camera.orientation.orientation[2] -= 5.0;
           } else {
-            orientation.orientation[2] += 5.0;
+            camera.orientation.orientation[2] += 5.0;
           }
           break;
         case GLFW_KEY_W:
-          position.position[2] += 5.0;
+          camera.position.position[2] += 5.0;
           break;
         case GLFW_KEY_X:
-          position.position[2] -= 5.0;
+          camera.position.position[2] -= 5.0;
           break;
         default:
           return;

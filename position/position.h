@@ -44,43 +44,38 @@ struct Orientation final {
 std::string to_string(const Orientation& orientation);
 
 struct Position final {
-  // Position in 4D space (homogeneous object coordinates) as an array in the order [x, y, z, w].
-  float position[4]{};
+  // Position in 3D space as an array in the order [x, y, z].
+  float position[3]{};
 
   bool operator==(const Position& rhs) const {
     return position[0] == rhs.position[0] &&  //
            position[1] == rhs.position[1] &&  //
-           position[2] == rhs.position[2] &&  //
-           position[3] == rhs.position[3];
+           position[2] == rhs.position[2];
   }
 
   bool operator!=(const Position& rhs) const {
     return position[0] != rhs.position[0] ||  //
            position[1] != rhs.position[1] ||  //
-           position[2] != rhs.position[2] ||  //
-           position[3] != rhs.position[3];
+           position[2] != rhs.position[2];
   }
 
   bool is_nonzero() const {
     return position[0] != 0.f ||  //
            position[1] != 0.f ||  //
-           position[2] != 0.f ||  //
-           position[3] != 0.f;
+           position[2] != 0.f;
   }
 
   bool is_zero() const {
     return position[0] == 0.f &&  //
            position[1] == 0.f &&  //
-           position[2] == 0.f &&  //
-           position[3] == 0.f;
+           position[2] == 0.f;
   }
 
   // The identity vector for a position is the zero vector (additive identity).
   bool is_identity() const {
     return position[0] == 0.f &&  //
            position[1] == 0.f &&  //
-           position[2] == 0.f &&  //
-           position[3] == 0.f;
+           position[2] == 0.f;
   }
 };
 

@@ -9,11 +9,11 @@
 #include "lighting/proto/light.pb.h"
 #include "position/position.h"
 #include "proto/proto_utils.h"
+#include "render/camera.h"
 #include "render/render_node.h"
 #include "serialization/serialize.h"
 #include "ui/animator.h"
 #include "ui/application.h"
-#include "ui/camera.h"
 
 using namespace pack;
 using namespace pack::component;
