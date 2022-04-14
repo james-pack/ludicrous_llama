@@ -160,5 +160,11 @@ message Components {
 }
 
 message Scene {
+  // References to the components that are the root components of the scene.
   repeated Subcomponent root_components = 1;
+
+  // Details of all of the components in the scene.
+  repeated Component components = 2;
+
+  // TODO(james): Add materials, cameras and lighting details.
 }

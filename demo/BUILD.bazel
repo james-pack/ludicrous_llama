@@ -3,7 +3,9 @@ load("@rules_proto//proto:defs.bzl", "proto_library")
 filegroup(
     name = "gears_components",
     srcs = [
+        "trivial_demo_components.pb.txt",
         "trivial_demo_gears.pb.txt",
+        "trivial_demo_scene.pb.txt",
     ],
 )
 

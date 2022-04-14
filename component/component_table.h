@@ -32,6 +32,7 @@ class BasicComponentTable final {
   BasicComponentTable(registry_type& registry) : registry_(&registry) {}
 
   void add_id(const Guid& guid, entity_type entity) { guids_.emplace(guid, entity); }
+  void add_id(const Guid& guid) { guids_.emplace(guid, registry_->create()); }
 
   entity_type lookup(const Guid& guid) const {
     auto iter = guids_.find(guid);
@@ -52,7 +53,7 @@ class BasicComponentTable final {
     auto result = guids_.emplace(guid, entity);
     return result.first->first;
   }
-  
+
   // Helper methods to look up components in an entity by guid. Note that these are deliberately incomplete; we do not
   // want to reimplement entt::registry.
   template <typename T>
@@ -91,7 +92,7 @@ class BasicComponentTable final {
     throw std::logic_error("ComponentTable does not contain an entity with Guid '" + to_string(guid) + "'");
   }
 
-  template <typename T, typename ...Args>
+  template <typename T, typename... Args>
   T& emplace(const Guid& guid, Args&&... args) {
     auto iter = guids_.find(guid);
     if (iter == guids_.cend()) {
