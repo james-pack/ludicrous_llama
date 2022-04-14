@@ -5,6 +5,7 @@ import "position/proto/position.proto";
 package pack.render.proto;
 
 message Camera {
-  pack.position.proto.Position position = 1;
-  pack.position.proto.Orientation orientation = 2;
+  string name = 1;
+  pack.position.proto.Position position = 2;
+  pack.position.proto.Orientation orientation = 3;
 }

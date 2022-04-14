@@ -325,6 +325,7 @@ root_components {
   }
 }
 cameras {
+  name: "Camera 1"
   position {
     x: 0
     y: 0

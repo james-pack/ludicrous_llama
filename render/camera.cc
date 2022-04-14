@@ -7,6 +7,8 @@ namespace pack::render {
 std::string to_string(const Camera& camera) {
   std::string result{};
   result += "{";
+  result += "name: " + camera.name;
+  result += ", ";
   result += "position: " + to_string(camera.position);
   result += ", ";
   result += "orientation: " + to_string(camera.orientation);

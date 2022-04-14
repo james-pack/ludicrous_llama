@@ -13,12 +13,14 @@ namespace pack {
 
 template <>
 inline void to_proto(const render::Camera& camera, render::proto::Camera* proto) {
+  proto->set_name(camera.name);
   to_proto(camera.position, proto->mutable_position());
   to_proto(camera.orientation, proto->mutable_orientation());
 }
 
 template <>
 inline void from_proto(const render::proto::Camera& proto, render::Camera* camera) {
+  camera->name = proto.name();
   from_proto(proto.position(), &camera->position);
   from_proto(proto.orientation(), &camera->orientation);
 }
