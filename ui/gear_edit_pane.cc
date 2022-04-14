@@ -47,7 +47,11 @@ void GearEditPane::render() {
       bool component_was_changed{false};
       // ImGui::PushID();
       // TODO(james): Display the name of the component or primitive, instead of the fixed string "Component".
-      if (ImGui::TreeNodeEx(&component, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Bullet, "Component")) {
+      const char* name = "Component";
+      if (!component.name.empty()) {
+	name = component.name.c_str();
+      }
+      if (ImGui::TreeNodeEx(&component, ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Bullet, "%s", name)) {
         for (const auto& const_binding : component.bindings) {
           component::ParameterBinding& binding{const_cast<component::ParameterBinding&>(const_binding)};
           component_was_changed = render_parameter(binding) || component_was_changed;

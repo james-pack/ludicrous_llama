@@ -114,17 +114,18 @@ message PrimitiveReference {
 
 message Subcomponent {
   string id = 1;
+  string name = 2;
 
   // Position and orientation are expressed wrt the parent's coordinate frame.
-  position.proto.Position position = 2;
-  position.proto.Orientation orientation = 3;
+  position.proto.Position position = 3;
+  position.proto.Orientation orientation = 4;
 
-  repeated ParameterBinding bindings = 4;
+  repeated ParameterBinding bindings = 5;
 
   oneof sub {
     // Id (GUID) of the child Component.
-    string child_id = 5;
-    PrimitiveReference primitive = 6;
+    string child_id = 6;
+    PrimitiveReference primitive = 7;
   }
 }
 

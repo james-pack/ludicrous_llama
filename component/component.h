@@ -26,6 +26,10 @@ struct Subcomponent final {
 
   guid::Guid id{};
 
+  // As an instance of a primitive or a component, subcomponents may themselves have a name. Example: "Top right screw"
+  // to indicate a particular use of a screw component.
+  std::string name{};
+
   // Subcomponents can either refer to primitives or to child components. If it refers to a primitive, the primitive
   // field will be non-null and the material field will be populated. If it refers to a child component, the primitive
   // field will be null and the id below will refer to a valid component.

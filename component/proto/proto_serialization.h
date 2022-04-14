@@ -157,6 +157,7 @@ template <>
 inline void to_proto(const component::Subcomponent& subcomponent, component::proto::Subcomponent* proto) {
   using std::to_string;
   proto->set_id(subcomponent.id.as_string());
+  proto->set_name(subcomponent.name);
 
   to_proto(subcomponent.position, proto->mutable_position());
   to_proto(subcomponent.orientation, proto->mutable_orientation());
@@ -182,6 +183,7 @@ inline void to_proto(const component::Subcomponent& subcomponent, component::pro
 template <>
 inline void from_proto(const component::proto::Subcomponent& proto, component::Subcomponent* subcomponent) {
   subcomponent->id = guid::Guid(proto.id());
+  subcomponent->name = proto.name();
 
   from_proto(proto.position(), &subcomponent->position);
   from_proto(proto.orientation(), &subcomponent->orientation);
