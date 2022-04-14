@@ -15,36 +15,40 @@
 #include "ui/application.h"
 #include "ui/camera.h"
 
-void populate_component(pack::component::ComponentTable& table, pack::lighting::Light light,
-                        pack::position::Position position, pack::position::Orientation orientation) {
+using namespace pack;
+using namespace pack::component;
+using namespace pack::lighting;
+using namespace pack::position;
+using namespace pack::proto;
+using namespace pack::render;
+using namespace pack::ui;
+
+void populate_component(ComponentTable& table, Light light, Position position, Orientation orientation) {
   const auto id = table.create();
-  table.emplace<pack::lighting::Light>(id, std::move(light));
-  table.emplace<pack::position::Position>(id, std::move(position));
-  table.emplace<pack::position::Orientation>(id, std::move(orientation));
+  table.emplace<Light>(id, std::move(light));
+  table.emplace<Position>(id, std::move(position));
+  table.emplace<Orientation>(id, std::move(orientation));
 }
 
-void populate_component(pack::component::ComponentTable& table, pack::ui::Camera camera,
-                        pack::position::Position position, pack::position::Orientation orientation) {
-  using namespace pack::ui;
-
+void populate_component(ComponentTable& table, Camera camera, Position position, Orientation orientation) {
   const auto id = table.create();
   table.emplace<Camera>(id, std::move(camera));
-  table.emplace<pack::position::Position>(id, std::move(position));
-  table.emplace<pack::position::Orientation>(id, std::move(orientation));
+  table.emplace<Position>(id, std::move(position));
+  table.emplace<Orientation>(id, std::move(orientation));
 }
 
-void populate_table(pack::component::ComponentTable& table, const pack::component::Component& component) {
+void populate_table(ComponentTable& table, const Component& component) {
   table.add_id(component.id);
-  table.emplace<pack::component::Component>(component.id, component);
+  table.emplace<Component>(component.id, component);
 }
 
-void populate_table(pack::component::ComponentTable& table, const pack::component::Subcomponent& subcomponent) {
+void populate_table(ComponentTable& table, const Subcomponent& subcomponent) {
   table.add_id(subcomponent.id);
-  const auto& inserted = table.emplace<pack::component::Subcomponent>(subcomponent.id, subcomponent);
-  table.emplace<pack::render::RenderNode>(subcomponent.id, pack::render::RenderNode(inserted));
+  const auto& inserted = table.emplace<Subcomponent>(subcomponent.id, subcomponent);
+  table.emplace<RenderNode>(subcomponent.id, RenderNode(inserted));
 }
 
-void populate_table(pack::component::ComponentTable& table, const pack::component::Scene& scene) {
+void populate_table(ComponentTable& table, const Scene& scene) {
   for (const auto& subcomponent : scene.root_components) {
     populate_table(table, subcomponent);
   }
@@ -54,10 +58,6 @@ void populate_table(pack::component::ComponentTable& table, const pack::componen
 }
 
 int main(int argc, char* argv[]) {
-  using namespace pack::demo;
-  using namespace pack::proto;
-  using namespace pack::ui;
-
   // Default logging configuration.
   FLAGS_logtostderr = true;
   FLAGS_stderrthreshold = 0;
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   Application application{};
-  GearsUi ui{};
+  demo::GearsUi ui{};
   ui.assemble(application);
 
   Animator animator{};
@@ -75,27 +75,25 @@ int main(int argc, char* argv[]) {
   application.add_service(animator);
 
   // TODO(james): Move camera to scene.
-  populate_component(application.component_table(), Camera{}, pack::position::Position{},
-                     pack::position::Orientation{});
+  populate_component(application.component_table(), Camera{}, Position{}, Orientation{});
 
   {
-    pack::component::proto::Scene proto =
-        load_text_proto<pack::component::proto::Scene>("demo/trivial_demo_scene.pb.txt");
-    pack::component::Scene scene{};
-    pack::from_proto(proto, &scene);
+    component::proto::Scene proto = load_text_proto<component::proto::Scene>("demo/trivial_demo_scene.pb.txt");
+    Scene scene{};
+    from_proto(proto, &scene);
     LOG(INFO) << "Read scene:\n" << to_string(scene);
     populate_table(application.component_table(), scene);
   }
 
   {
     // TODO(james): Move lighting to scene.
-    pack::lighting::proto::LightingConfiguration lights =
-        load_text_proto<pack::lighting::proto::LightingConfiguration>("demo/lighting_configuration.pb.txt");
+    lighting::proto::LightingConfiguration lights =
+        load_text_proto<lighting::proto::LightingConfiguration>("demo/lighting_configuration.pb.txt");
     for (const auto& proto : lights.light()) {
-      pack::lighting::Light light{};
-      pack::position::Position position{};
-      pack::position::Orientation orientation{};
-      pack::lighting::Light::from_proto(proto, &light, &position, &orientation);
+      Light light{};
+      Position position{};
+      Orientation orientation{};
+      Light::from_proto(proto, &light, &position, &orientation);
       populate_component(application.component_table(), light, position, orientation);
     }
   }
